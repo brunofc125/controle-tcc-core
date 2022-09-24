@@ -1,4 +1,4 @@
-package com.tcc.controletcc;
+package com.controletcc;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
