@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +27,7 @@ import static java.util.Arrays.stream;
 @Slf4j
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().equals(SecurityConstants.API_LOGIN) || request.getServletPath().equals(SecurityConstants.API_REFRESH_TOKEN)) {
             filterChain.doFilter(request, response);
         } else {
@@ -44,18 +45,21 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
-                    log.error("Error logging in: {}", e.getMessage());
-                    response.setHeader("error", e.getMessage());
-                    response.setStatus(HttpStatus.FORBIDDEN.value());
-//                    response.sendError(HttpStatus.FORBIDDEN.value());
-                    var errorMap = new HashMap<String, String>();
-                    errorMap.put("error_message", e.getMessage());
-                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    new ObjectMapper().writeValue(response.getOutputStream(), errorMap);
+                    errorAuthenticationToken(response, e);
                 }
             } else {
                 filterChain.doFilter(request, response);
             }
         }
+    }
+
+    public static void errorAuthenticationToken(HttpServletResponse response, Exception e) throws IOException {
+        log.error("Error logging in: {}", e.getMessage());
+        response.setHeader("error", e.getMessage());
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+        var errorMap = new HashMap<String, String>();
+        errorMap.put("error_message", e.getMessage());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), errorMap);
     }
 }
