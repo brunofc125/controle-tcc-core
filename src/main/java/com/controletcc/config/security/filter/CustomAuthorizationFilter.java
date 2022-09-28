@@ -3,14 +3,15 @@ package com.controletcc.config.security.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.controletcc.config.security.SecurityConstants;
+import com.controletcc.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,12 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.stream;
 
 @Slf4j
+@RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
+
+    private final TokenService tokenService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (request.getServletPath().equals(SecurityConstants.API_LOGIN) || request.getServletPath().equals(SecurityConstants.API_REFRESH_TOKEN)) {
@@ -39,9 +41,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     var verifier = JWT.require(algorithm).build();
                     var decodedJWT = verifier.verify(token);
                     var username = decodedJWT.getSubject();
-                    var roles = decodedJWT.getClaim(SecurityConstants.CLAIM_NAME).asArray(String.class);
-                    var authorities = stream(roles).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-                    var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    var user = tokenService.getUserEnabled(username);
+                    var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
