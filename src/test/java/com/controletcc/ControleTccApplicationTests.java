@@ -1,4 +1,4 @@
-package com.tcc.controletcc;
+package com.controletcc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
