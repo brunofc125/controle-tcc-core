@@ -1,5 +1,6 @@
 package com.controletcc.service;
 
+import com.controletcc.config.security.CustomUserDetails;
 import com.controletcc.model.Role;
 import com.controletcc.model.User;
 import com.controletcc.repository.RoleRepository;
@@ -7,7 +8,6 @@ import com.controletcc.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,13 +28,13 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("Usuário não encontrado");
         }
         var authorities = user.getRoles().stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.isEnabled(), true, true, true, authorities);
+        return new CustomUserDetails(user, authorities);
     }
 
     public User saveUser(User user) {

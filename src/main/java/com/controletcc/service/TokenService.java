@@ -2,6 +2,7 @@ package com.controletcc.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.controletcc.config.security.CustomUserDetails;
 import com.controletcc.config.security.SecurityConstants;
 import com.controletcc.config.security.filter.CustomAuthorizationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +60,8 @@ public class TokenService {
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
                 .withIssuer(request.getRequestURL().toString())
                 .withClaim(SecurityConstants.CLAIM_NAME, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim("id_user", user.getId())
+                .withClaim("user_name", user.getName())
                 .sign(algorithm);
         var newRefreshToken = JWT.create()
                 .withSubject(user.getUsername())
@@ -72,11 +74,11 @@ public class TokenService {
         return tokenMap;
     }
 
-    public UserDetails getUserEnabled(String username) {
+    public CustomUserDetails getUserEnabled(String username) {
         var user = userDetailsService.loadUserByUsername(username);
         if (!user.isEnabled()) {
             throw new DisabledException("User is disabled");
         }
-        return user;
+        return (CustomUserDetails) user;
     }
 }
