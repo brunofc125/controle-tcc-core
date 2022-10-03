@@ -1,4 +1,4 @@
-package com.controletcc.model;
+package com.controletcc.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "\"user\"")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

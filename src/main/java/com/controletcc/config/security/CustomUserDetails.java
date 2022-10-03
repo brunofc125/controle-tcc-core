@@ -1,6 +1,6 @@
 package com.controletcc.config.security;
 
-import com.controletcc.model.User;
+import com.controletcc.model.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

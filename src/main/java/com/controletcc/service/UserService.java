@@ -1,8 +1,8 @@
 package com.controletcc.service;
 
 import com.controletcc.config.security.CustomUserDetails;
-import com.controletcc.model.Role;
-import com.controletcc.model.User;
+import com.controletcc.model.entity.Role;
+import com.controletcc.model.entity.User;
 import com.controletcc.repository.RoleRepository;
 import com.controletcc.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

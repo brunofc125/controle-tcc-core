@@ -1,6 +1,6 @@
 package com.controletcc.controller;
 
-import com.controletcc.model.User;
+import com.controletcc.model.entity.User;
 import com.controletcc.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

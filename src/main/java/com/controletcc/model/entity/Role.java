@@ -1,4 +1,4 @@
-package com.controletcc.model;
+package com.controletcc.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

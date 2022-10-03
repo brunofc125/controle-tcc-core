@@ -65,7 +65,7 @@ public class TokenService {
                 .sign(algorithm);
         var newRefreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.REFRESH_EXPIRATION_TIME))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
         var tokenMap = new HashMap<String, String>();
