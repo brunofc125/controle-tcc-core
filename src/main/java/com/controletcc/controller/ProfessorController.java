@@ -19,7 +19,7 @@ public class ProfessorController {
 
     private final ProfessorService professorService;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('professor.read')")
     @PostMapping("search")
     public ListResponseModel<ProfessorGridDTO> search(@RequestBody ProfessorGridOptions options) throws BusinessException {
         return professorService.search(options);

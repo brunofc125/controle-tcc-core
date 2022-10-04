@@ -19,10 +19,10 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
                 p.supervisorTcc
             ) FROM Professor p
                 where (:id is null or p.id = :id)
-                and (:nome is null or lower(p.nome) like concat('%', lower(:nome),'%') )
-                and (:cpf is null or lower(p.cpf) like concat('%', lower(:cpf),'%') )
-                and (:rg is null or lower(p.rg) like concat('%', lower(:rg),'%') )
-                and (:email is null or lower(p.email) like concat('%', lower(:email),'%') )
+                and (:nome is null or lower(p.nome) like concat('%', trim(lower(:nome)),'%') )
+                and (:cpf is null or lower(p.cpf) like concat('%', trim(lower(:cpf)),'%') )
+                and (:rg is null or lower(p.rg) like concat('%', trim(lower(:rg)),'%') )
+                and (:email is null or lower(p.email) like concat('%', trim(lower(:email)),'%') )
                 and (:supervisor is null or p.supervisorTcc = :supervisor)"""
     )
     Page<ProfessorGridDTO> search(@Param("id") Long id,
