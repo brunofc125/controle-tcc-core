@@ -22,6 +22,17 @@ public class Professor extends Pessoa {
     private boolean supervisorTcc;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario", unique = true)
+    @JoinColumn(name = "id_usuario", nullable = false, unique = true)
     private User usuario;
+
+    public Long getIdUsuario() {
+        return this.usuario != null ? this.usuario.getId() : null;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        if (this.usuario == null) {
+            this.usuario = new User();
+        }
+        this.usuario.setId(idUsuario);
+    }
 }

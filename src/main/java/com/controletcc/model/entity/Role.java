@@ -1,20 +1,29 @@
 package com.controletcc.model.entity;
 
+import com.controletcc.model.entity.base.BaseEntity;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class Role extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
-    @Column(name = "name", unique = true, nullable = false)
-    private String name;
+    @Column(name = "admin")
+    private boolean admin;
+
+    @Column(name = "professor")
+    private boolean professor;
+
+    @Column(name = "aluno")
+    private boolean aluno;
 }

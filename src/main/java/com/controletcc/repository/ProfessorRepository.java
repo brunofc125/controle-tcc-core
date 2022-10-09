@@ -33,5 +33,9 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
                                   @Param("supervisor") Boolean supervisor,
                                   Pageable pageable);
 
+    boolean existsByCpf(String cpf);
+
+    boolean existsByCpfAndIdNot(String cpf, Long id);
+
 }
 /**/

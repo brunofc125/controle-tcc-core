@@ -1,28 +1,46 @@
 package com.controletcc.controller;
 
+import com.controletcc.dto.SaveProfessorDTO;
 import com.controletcc.dto.base.ListResponseModel;
 import com.controletcc.dto.grid.ProfessorGridDTO;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
-import com.controletcc.service.ProfessorService;
+import com.controletcc.facade.ProfessorFacade;
+import com.controletcc.model.dto.ProfessorDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/professor")
 @RequiredArgsConstructor
 public class ProfessorController {
 
-    private final ProfessorService professorService;
+    private final ProfessorFacade professorFacade;
+
+    @PreAuthorize("hasAuthority('professor.read')")
+    @GetMapping("{id}")
+    public ProfessorDTO getById(@PathVariable Long id) {
+        return professorFacade.getById(id);
+    }
 
     @PreAuthorize("hasAuthority('professor.read')")
     @PostMapping("search")
     public ListResponseModel<ProfessorGridDTO> search(@RequestBody ProfessorGridOptions options) throws BusinessException {
-        return professorService.search(options);
+        return professorFacade.search(options);
+    }
+
+    @PreAuthorize("hasAuthority('professor.create')")
+    @PostMapping
+    public ProfessorDTO insert(@RequestBody SaveProfessorDTO saveProfessor) throws BusinessException {
+        return professorFacade.insert(saveProfessor);
+    }
+
+    @PreAuthorize("hasAuthority('professor.create')")
+    @PutMapping("{id}")
+    public ProfessorDTO update(@PathVariable Long id, @RequestBody ProfessorDTO professor) throws BusinessException {
+        professor.setId(id);
+        return professorFacade.update(professor);
     }
 
 }

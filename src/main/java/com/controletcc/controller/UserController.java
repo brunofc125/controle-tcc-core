@@ -1,26 +1,30 @@
 package com.controletcc.controller;
 
-import com.controletcc.model.entity.User;
-import com.controletcc.service.UserService;
+import com.controletcc.error.BusinessException;
+import com.controletcc.facade.UserFacade;
+import com.controletcc.model.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/users")
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserFacade userFacade;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping
-    public List<User> getUsers() {
-        return userService.getUsers();
+    @PreAuthorize("hasAuthority('usuario.create')")
+    @PostMapping("admin")
+    public UserDTO insert(@RequestBody UserDTO user) throws BusinessException {
+        return userFacade.insertAdmin(user);
+    }
+
+    @PreAuthorize("hasAuthority('usuario.create')")
+    @PutMapping("{id}")
+    public UserDTO update(@PathVariable Long id, @RequestBody UserDTO user) throws BusinessException {
+        user.setId(id);
+        return userFacade.update(user);
     }
 
 }
