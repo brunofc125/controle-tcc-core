@@ -3,6 +3,7 @@ package com.controletcc.config.security.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.controletcc.config.security.SecurityConstants;
+import com.controletcc.config.security.UserLogged;
 import com.controletcc.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     var decodedJWT = verifier.verify(token);
                     var username = decodedJWT.getSubject();
                     var user = tokenService.getUserEnabled(username);
-                    var authenticationToken = new UsernamePasswordAuthenticationToken(username, null, user.getAuthorities());
+                    var userLogged = new UserLogged(user.getId(), user.getName(), user.getType());
+                    var authenticationToken = new UsernamePasswordAuthenticationToken(userLogged, null, user.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {

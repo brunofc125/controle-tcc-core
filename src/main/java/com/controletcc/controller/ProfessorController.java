@@ -2,17 +2,17 @@ package com.controletcc.controller;
 
 import com.controletcc.dto.SaveProfessorDTO;
 import com.controletcc.dto.base.ListResponseModel;
-import com.controletcc.dto.grid.ProfessorGridDTO;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.facade.ProfessorFacade;
 import com.controletcc.model.dto.ProfessorDTO;
+import com.controletcc.repository.projection.ProfessorProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/professor")
+@RequestMapping("api/professores")
 @RequiredArgsConstructor
 public class ProfessorController {
 
@@ -26,7 +26,7 @@ public class ProfessorController {
 
     @PreAuthorize("hasAuthority('professor.read')")
     @PostMapping("search")
-    public ListResponseModel<ProfessorGridDTO> search(@RequestBody ProfessorGridOptions options) throws BusinessException {
+    public ListResponseModel<ProfessorProjection> search(@RequestBody ProfessorGridOptions options) throws BusinessException {
         return professorFacade.search(options);
     }
 

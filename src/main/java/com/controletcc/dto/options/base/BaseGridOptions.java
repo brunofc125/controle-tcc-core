@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,19 +23,11 @@ public class BaseGridOptions {
             return null;
         }
 
-        var pageable = PageRequest.of(this.page.intValue(), this.pageSize.intValue());
-
-        if (this.orderByField != null && !this.orderByField.isBlank()) {
-            var sort = Sort.by(this.orderByField);
-            if (OrderByDirection.ASC.equals(this.orderByDirection)) {
-                sort.ascending();
-            } else if (OrderByDirection.DESC.equals(this.orderByDirection)) {
-                sort.descending();
-            }
-            pageable.withSort(sort);
+        if (this.orderByDirection != null && this.orderByField != null && !this.orderByField.isBlank()) {
+            return PageRequest.of(this.page.intValue(), this.pageSize.intValue(), this.orderByDirection.getDirection(), this.orderByField);
         }
 
-        return pageable;
+        return PageRequest.of(this.page.intValue(), this.pageSize.intValue());
     }
 }
 

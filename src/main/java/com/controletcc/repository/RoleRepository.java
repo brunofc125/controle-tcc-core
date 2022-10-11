@@ -9,7 +9,7 @@ public interface RoleRepository extends JpaRepository<Role, String> {
 
     List<Role> getRolesByAdminIsTrue();
 
-    List<Role> getRolesByAdminIsTrueOrProfessorIsTrue();
+    List<Role> getRolesBySupervisorIsTrue();
 
     List<Role> getRolesByProfessorIsTrue();
 

@@ -1,11 +1,11 @@
 package com.controletcc.service;
 
 import com.controletcc.dto.base.ListResponseModel;
-import com.controletcc.dto.grid.ProfessorGridDTO;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Professor;
 import com.controletcc.repository.ProfessorRepository;
+import com.controletcc.repository.projection.ProfessorProjection;
 import com.controletcc.util.LocalDateUtil;
 import com.controletcc.util.StringUtil;
 import com.controletcc.util.ValidatorUtil;
@@ -30,7 +30,7 @@ public class ProfessorService {
         return professorRepository.getReferenceById(id);
     }
 
-    public ListResponseModel<ProfessorGridDTO> search(ProfessorGridOptions options) {
+    public ListResponseModel<ProfessorProjection> search(ProfessorGridOptions options) {
         var page = professorRepository.search(options.getId(), options.getNome(), options.getCpf(), options.getRg(), options.getEmail(), options.isCategoriaSupervisor(), options.getPageable());
         return new ListResponseModel<>(page.getContent(), page.getTotalElements());
     }
@@ -86,6 +86,13 @@ public class ProfessorService {
 
         if (professor.getUsuario() == null) {
             errors.add("Professor sem usuário informado");
+        } else if (professor.getId() != null) {
+            var professorBanco = getById(professor.getId());
+            if (professorBanco == null) {
+                errors.add("Professor não foi encontrado com o ID: " + professor.getId());
+            } else if (!professor.getIdUsuario().equals(professorBanco.getIdUsuario())) {
+                errors.add("Não é possível alterar o usuário de um professor");
+            }
         }
 
         if (!errors.isEmpty()) {

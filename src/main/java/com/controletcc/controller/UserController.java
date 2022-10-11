@@ -14,6 +14,12 @@ public class UserController {
 
     private final UserFacade userFacade;
 
+    @PreAuthorize("hasAuthority('usuario.read')")
+    @GetMapping("{id}")
+    public UserDTO insert(@PathVariable Long id) throws BusinessException {
+        return userFacade.getById(id);
+    }
+
     @PreAuthorize("hasAuthority('usuario.create')")
     @PostMapping("admin")
     public UserDTO insert(@RequestBody UserDTO user) throws BusinessException {

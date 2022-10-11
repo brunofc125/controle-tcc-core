@@ -2,13 +2,13 @@ package com.controletcc.facade;
 
 import com.controletcc.dto.SaveProfessorDTO;
 import com.controletcc.dto.base.ListResponseModel;
-import com.controletcc.dto.enums.UserType;
-import com.controletcc.dto.grid.ProfessorGridDTO;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProfessorDTO;
 import com.controletcc.model.entity.Professor;
 import com.controletcc.model.entity.User;
+import com.controletcc.model.enums.UserType;
+import com.controletcc.repository.projection.ProfessorProjection;
 import com.controletcc.service.ProfessorService;
 import com.controletcc.service.UserService;
 import com.controletcc.util.ModelMapperUtil;
@@ -32,7 +32,7 @@ public class ProfessorFacade {
         return ModelMapperUtil.map(professor, ProfessorDTO.class);
     }
 
-    public ListResponseModel<ProfessorGridDTO> search(ProfessorGridOptions options) {
+    public ListResponseModel<ProfessorProjection> search(ProfessorGridOptions options) {
         return professorService.search(options);
     }
 
@@ -48,6 +48,12 @@ public class ProfessorFacade {
 
     public ProfessorDTO update(ProfessorDTO professorDTO) throws BusinessException {
         var professor = ModelMapperUtil.map(professorDTO, Professor.class);
+        var professorBanco = professorService.getById(professor.getId());
+        if (professor.isSupervisorTcc() != professorBanco.isSupervisorTcc()) {
+            var userType = professor.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR;
+            userService.updateRoles(professorBanco.getIdUsuario(), userType);
+        }
+        userService.updateName(professorBanco.getIdUsuario(), professor.getNome());
         professor = professorService.update(professor.getId(), professor);
         return ModelMapperUtil.map(professor, ProfessorDTO.class);
     }

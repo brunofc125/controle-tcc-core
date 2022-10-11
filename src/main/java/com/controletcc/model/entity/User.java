@@ -1,6 +1,7 @@
 package com.controletcc.model.entity;
 
 import com.controletcc.model.entity.base.BaseEntity;
+import com.controletcc.model.enums.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,12 @@ import java.util.List;
 @Table(name = "\"user\"")
 public class User extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private UserType type;
 
     @Column(name = "name")
     private String name;

@@ -1,6 +1,5 @@
-package com.controletcc.model.dto;
+package com.controletcc.config.security;
 
-import com.controletcc.model.dto.base.BaseDTO;
 import com.controletcc.model.enums.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,11 +10,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserDTO extends BaseDTO {
+public class UserLogged {
     private Long id;
-    private UserType type;
     private String name;
-    private String username;
-    private String password;
-    private boolean enabled;
+    private UserType type;
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

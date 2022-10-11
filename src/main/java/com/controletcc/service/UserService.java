@@ -1,9 +1,10 @@
 package com.controletcc.service;
 
 import com.controletcc.config.security.CustomUserDetails;
-import com.controletcc.dto.enums.UserType;
 import com.controletcc.error.BusinessException;
+import com.controletcc.model.entity.Role;
 import com.controletcc.model.entity.User;
+import com.controletcc.model.enums.UserType;
 import com.controletcc.repository.RoleRepository;
 import com.controletcc.repository.UserRepository;
 import com.controletcc.util.StringUtil;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +30,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    
+
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUsername(username);
@@ -39,27 +41,54 @@ public class UserService implements UserDetailsService {
         return new CustomUserDetails(user, authorities);
     }
 
+    public User getById(@NonNull Long id) {
+        return userRepository.getReferenceById(id);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
     public User insert(@NonNull User user, @NonNull UserType userType) throws BusinessException {
         user.setId(null);
-        switch (userType) {
-            case ADMIN -> {
-                user.setRoles(roleRepository.getRolesByAdminIsTrue());
-                user.setName("Administrador");
-            }
-            case SUPERVISOR -> user.setRoles(roleRepository.getRolesByAdminIsTrueOrProfessorIsTrue());
-            case PROFESSOR -> user.setRoles(roleRepository.getRolesByProfessorIsTrue());
-            case ALUNO -> user.setRoles(roleRepository.getRolesByAlunoIsTrue());
+        user.setRoles(getRolesByUserType(userType));
+        user.setType(userType);
+        if (UserType.ADMIN.equals(userType)) {
+            user.setName("Administrador");
         }
-        return this.saveUser(user);
+        return this.saveCryptUser(user);
     }
 
     public User update(@NonNull Long idUser, @NonNull User user) throws BusinessException {
         var userEntity = userRepository.getReferenceById(idUser);
-        userEntity.setName(user.getName());
         userEntity.setUsername(user.getUsername());
         userEntity.setPassword(user.getPassword());
         userEntity.setEnabled(user.isEnabled());
-        return this.saveUser(userEntity);
+        return this.saveCryptUser(userEntity);
+    }
+
+    public void updateName(@NonNull Long idUser, @NonNull String name) throws BusinessException {
+        var user = userRepository.getReferenceById(idUser);
+        user.setName(name);
+        userRepository.save(user);
+    }
+
+    public void updateRoles(@NonNull Long idUser, @NonNull UserType userType) throws BusinessException {
+        var user = userRepository.getReferenceById(idUser);
+        user.setType(userType);
+        user.setRoles(this.getRolesByUserType(userType));
+        userRepository.save(user);
+    }
+
+    private List<Role> getRolesByUserType(@NonNull UserType userType) {
+        List<Role> roles = new ArrayList<>();
+        switch (userType) {
+            case ADMIN -> roles = roleRepository.getRolesByAdminIsTrue();
+            case SUPERVISOR -> roles = roleRepository.getRolesBySupervisorIsTrue();
+            case PROFESSOR -> roles = roleRepository.getRolesByProfessorIsTrue();
+            case ALUNO -> roles = roleRepository.getRolesByAlunoIsTrue();
+        }
+        return roles;
     }
 
     private void validate(User user) throws BusinessException {
@@ -83,16 +112,19 @@ public class UserService implements UserDetailsService {
             errors.add("Senha deve conter no mínimo 8 caracteres, com pelo menos uma letra e um número");
         }
 
+        if (user.getType() == null) {
+            errors.add("Tipo do usuário não informado");
+        }
+
         if (!errors.isEmpty()) {
             throw new BusinessException(errors);
         }
     }
 
-    private User saveUser(User user) throws BusinessException {
+    private User saveCryptUser(User user) throws BusinessException {
         validate(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
-
 
 }

@@ -1,9 +1,9 @@
 package com.controletcc.facade;
 
-import com.controletcc.dto.enums.UserType;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.UserDTO;
 import com.controletcc.model.entity.User;
+import com.controletcc.model.enums.UserType;
 import com.controletcc.service.UserService;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserFacade {
     private final UserService userService;
 
+    public UserDTO getById(Long id) {
+        var user = userService.getById(id);
+        var userDTO = ModelMapperUtil.map(user, UserDTO.class);
+        userDTO.setPassword(null);
+        return userDTO;
+    }
+
     public UserDTO insertAdmin(UserDTO userDTO) throws BusinessException {
         var user = ModelMapperUtil.map(userDTO, User.class);
         user = userService.insert(user, UserType.ADMIN);
@@ -28,6 +35,8 @@ public class UserFacade {
     public UserDTO update(UserDTO userDTO) throws BusinessException {
         var user = ModelMapperUtil.map(userDTO, User.class);
         user = userService.update(user.getId(), user);
-        return ModelMapperUtil.map(user, UserDTO.class);
+        userDTO = ModelMapperUtil.map(user, UserDTO.class);
+        userDTO.setPassword(null);
+        return userDTO;
     }
 }
