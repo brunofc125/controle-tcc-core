@@ -15,22 +15,22 @@ import java.time.LocalDate;
 @MappedSuperclass
 public class Pessoa extends BaseEntity {
     @Column(name = "nome", nullable = false)
-    private String nome;
+    protected String nome;
 
     @Column(name = "cpf", nullable = false, unique = true)
-    private String cpf;
+    protected String cpf;
 
     @Column(name = "rg")
-    private String rg;
+    protected String rg;
 
     @Column(name = "email", nullable = false)
-    private String email;
+    protected String email;
 
     @Column(name = "sexo", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Sexo sexo;
+    protected Sexo sexo;
 
     @Column(name = "data_nascimento", nullable = false)
-    private LocalDate dataNascimento;
+    protected LocalDate dataNascimento;
 
 }

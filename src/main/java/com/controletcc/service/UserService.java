@@ -1,12 +1,16 @@
 package com.controletcc.service;
 
 import com.controletcc.config.security.CustomUserDetails;
+import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.enums.OrderByDirection;
+import com.controletcc.dto.options.UserGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Role;
 import com.controletcc.model.entity.User;
 import com.controletcc.model.enums.UserType;
 import com.controletcc.repository.RoleRepository;
 import com.controletcc.repository.UserRepository;
+import com.controletcc.repository.projection.UserProjection;
 import com.controletcc.util.StringUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +28,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(rollbackFor = BusinessException.class)
 @Slf4j
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(rollbackFor = BusinessException.class)
     @Override
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUsername(username);
@@ -41,8 +45,21 @@ public class UserService implements UserDetailsService {
         return new CustomUserDetails(user, authorities);
     }
 
-    public User getById(@NonNull Long id) {
-        return userRepository.getReferenceById(id);
+    public void detach(User user) {
+        userRepository.detach(user);
+    }
+
+    public ListResponse<UserProjection> search(UserGridOptions options) {
+        if (StringUtil.isNullOrBlank(options.getOrderByField())) {
+            options.setOrderByField("id");
+            options.setOrderByDirection(OrderByDirection.ASC);
+        }
+        var page = userRepository.search(options.getId(), options.getType(), options.getName(), options.getUsername(), options.isEnabled(), options.getPageable());
+        return new ListResponse<>(page.getContent(), page.getTotalElements());
+    }
+
+    public User getById(@NonNull Long id) throws BusinessException {
+        return userRepository.findById(id).orElseThrow(() -> new BusinessException("Usuário não encontrado"));
     }
 
     public boolean existsByUsername(String username) {
@@ -59,25 +76,23 @@ public class UserService implements UserDetailsService {
         return this.saveCryptUser(user);
     }
 
-    public User update(@NonNull Long idUser, @NonNull User user) throws BusinessException {
-        var userEntity = userRepository.getReferenceById(idUser);
-        userEntity.setUsername(user.getUsername());
-        userEntity.setPassword(user.getPassword());
-        userEntity.setEnabled(user.isEnabled());
-        return this.saveCryptUser(userEntity);
-    }
-
     public void updateName(@NonNull Long idUser, @NonNull String name) throws BusinessException {
-        var user = userRepository.getReferenceById(idUser);
+        var user = getById(idUser);
         user.setName(name);
         userRepository.save(user);
     }
 
     public void updateRoles(@NonNull Long idUser, @NonNull UserType userType) throws BusinessException {
-        var user = userRepository.getReferenceById(idUser);
+        var user = getById(idUser);
         user.setType(userType);
         user.setRoles(this.getRolesByUserType(userType));
         userRepository.save(user);
+    }
+
+    public User updateEnable(@NonNull Long idUser, boolean enable) throws BusinessException {
+        var user = getById(idUser);
+        user.setEnabled(enable);
+        return userRepository.save(user);
     }
 
     private List<Role> getRolesByUserType(@NonNull UserType userType) {
@@ -91,7 +106,7 @@ public class UserService implements UserDetailsService {
         return roles;
     }
 
-    private void validate(User user) throws BusinessException {
+    private void validate(@NonNull User user) throws BusinessException {
         var errors = new ArrayList<String>();
 
         if (StringUtil.isNullOrBlank(user.getUsername())) {
@@ -121,7 +136,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    private User saveCryptUser(User user) throws BusinessException {
+    public User saveCryptUser(User user) throws BusinessException {
         validate(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);

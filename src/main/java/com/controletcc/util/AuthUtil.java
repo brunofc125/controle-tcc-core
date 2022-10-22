@@ -8,19 +8,19 @@ public class AuthUtil {
     private AuthUtil() {
         throw new IllegalStateException("Utility class");
     }
-    
+
     public static Long getUserIdLogged() {
-        var principal = AuthUtil.getPrincipal();
+        var principal = getPrincipal();
         return principal != null ? principal.getId() : 0L;
     }
 
     public static UserType getUserTypeLogged() {
-        var principal = AuthUtil.getPrincipal();
+        var principal = getPrincipal();
         return principal != null ? principal.getType() : null;
     }
 
     public static String getUsernameLogged() {
-        var principal = AuthUtil.getPrincipal();
+        var principal = getPrincipal();
         return principal != null ? principal.getName() : "SISTEMA";
     }
 

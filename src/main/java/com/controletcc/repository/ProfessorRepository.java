@@ -16,8 +16,11 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
                 p.nome as nome,
                 p.cpf as cpf,
                 p.email as email,
-                p.supervisorTcc as supervisorTcc
+                p.supervisorTcc as supervisorTcc,
+                u.id as idUser,
+                u.enabled as userEnabled
             FROM Professor p
+            JOIN p.usuario u
                 where (:id is null or p.id = :id)
                 and (:nome is null or lower(p.nome) like concat('%', trim(lower(:nome)),'%') )
                 and (:cpf is null or lower(p.cpf) like concat('%', trim(lower(:cpf)),'%') )

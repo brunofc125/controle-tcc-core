@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class PessoaDTO extends BaseDTO {
-    private String nome;
-    private String cpf;
-    private String rg;
-    private String email;
-    private Sexo sexo;
-    private LocalDate dataNascimento;
+    protected String nome;
+    protected String cpf;
+    protected String rg;
+    protected String email;
+    protected Sexo sexo;
+    protected LocalDate dataNascimento;
 }

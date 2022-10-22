@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ListResponseModel<T> {
+public class ListResponse<T> {
     private List<T> list;
     private Long total;
 }

@@ -10,4 +10,8 @@ public interface ProfessorProjection {
     String getEmail();
 
     boolean isSupervisorTcc();
+
+    Long getIdUser();
+
+    boolean isUserEnabled();
 }

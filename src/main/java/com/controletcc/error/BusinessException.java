@@ -1,8 +1,13 @@
 package com.controletcc.error;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class BusinessException extends Exception {
 
     private final List<String> errors;

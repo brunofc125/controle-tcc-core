@@ -1,6 +1,6 @@
 package com.controletcc.service;
 
-import com.controletcc.dto.base.ListResponseModel;
+import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Professor;
@@ -30,9 +30,9 @@ public class ProfessorService {
         return professorRepository.getReferenceById(id);
     }
 
-    public ListResponseModel<ProfessorProjection> search(ProfessorGridOptions options) {
+    public ListResponse<ProfessorProjection> search(ProfessorGridOptions options) {
         var page = professorRepository.search(options.getId(), options.getNome(), options.getCpf(), options.getRg(), options.getEmail(), options.isCategoriaSupervisor(), options.getPageable());
-        return new ListResponseModel<>(page.getContent(), page.getTotalElements());
+        return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 
     public Professor insert(@NonNull Professor professor) throws BusinessException {

@@ -1,5 +1,6 @@
 package com.controletcc.model.dto;
 
+import com.controletcc.dto.csv.ProfessorImportCsvDTO;
 import com.controletcc.model.dto.base.BaseDTO;
 import com.controletcc.model.enums.UserType;
 import lombok.AllArgsConstructor;
@@ -18,4 +19,12 @@ public class UserDTO extends BaseDTO {
     private String username;
     private String password;
     private boolean enabled;
+
+    public UserDTO(ProfessorImportCsvDTO csv) {
+        this.type = csv.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR;
+        this.name = csv.getNome();
+        this.username = csv.getUsername();
+        this.password = csv.getPassword();
+        this.enabled = true;
+    }
 }
