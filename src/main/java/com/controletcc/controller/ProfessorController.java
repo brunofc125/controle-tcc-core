@@ -14,9 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 @RestController
 @RequestMapping("api/professores")
 @RequiredArgsConstructor
@@ -52,12 +49,8 @@ public class ProfessorController {
 
     @PreAuthorize("hasAuthority('professor.import')")
     @GetMapping("modelo-importacao")
-    public void getModeloImportacao(HttpServletResponse response) throws BusinessException, IOException {
-        response.setContentType("text/csv");
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=professor_modelo_importacao.csv";
-        response.setHeader(headerKey, headerValue);
-        professorImportFacade.getModeloImportacao(response.getWriter());
+    public ReturnImportCsvDTO getModelCsv() throws Exception {
+        return professorImportFacade.getModelCsv();
     }
 
     @PreAuthorize("hasAuthority('professor.import')")

@@ -2,8 +2,10 @@ package com.controletcc.service;
 
 import com.controletcc.annotation.CsvColumn;
 import com.controletcc.dto.csv.BaseImportCsvDTO;
+import com.controletcc.dto.csv.ReturnImportCsvDTO;
 import com.controletcc.error.BusinessException;
 import com.controletcc.error.CsvErrorException;
+import com.controletcc.util.FileAppUtil;
 import com.controletcc.util.LocalDateUtil;
 import com.controletcc.util.StringUtil;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,8 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -32,15 +36,50 @@ public class CsvService {
 
     public static final String COLUMN_NAME_ERROR = "Erros";
 
-    public <T extends BaseImportCsvDTO> void getCSVPrinter(Writer writer, Class<T> clazz) throws BusinessException {
+    public <T extends BaseImportCsvDTO> ReturnImportCsvDTO getModelCsv(String fileName, Class<T> clazz) throws Exception {
+        var returnImportCsv = new ReturnImportCsvDTO();
+        returnImportCsv.setQtdRecords(0);
+        returnImportCsv.setQtdRecordsError(0);
+
+        var fileCsv = File.createTempFile(fileName, ".csv");
+        try (var writer = new FileWriter(fileCsv)) {
+            getCSVPrinter(writer, clazz);
+            returnImportCsv.setBase64(FileAppUtil.fileToBase64(fileCsv, StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("Erro na geração do arquivo de modelo.", e);
+        }
+        fileCsv.deleteOnExit();
+
+        return returnImportCsv;
+    }
+
+    private <T extends BaseImportCsvDTO> void getCSVPrinter(Writer writer, Class<T> clazz) throws BusinessException {
         try (var printer = new CSVPrinter(writer, CSVFormat.Builder.create().setHeader(this.getHeader(clazz, false)).build())) {
             printer.flush();
         } catch (Exception ex) {
-            this.error(ex, "Erro ao gerar o arquivo.");
+            this.error(ex, "Erro na geração do arquivo de modelo.");
         }
     }
 
-    public <T extends BaseImportCsvDTO> void getCSVPrinterError(Writer writer, Class<T> clazz, List<T> recordsError) throws BusinessException {
+    public <T extends BaseImportCsvDTO> ReturnImportCsvDTO getImportedCsv(String fileName, List<T> records, Class<T> clazz) throws Exception {
+        var recordsWithError = records.stream().filter(r -> !r.isValid()).toList();
+        var returnImportCsv = new ReturnImportCsvDTO();
+        returnImportCsv.setQtdRecords(records.size());
+        returnImportCsv.setQtdRecordsError(recordsWithError.size());
+        if (recordsWithError.size() > 0) {
+            var fileCsv = File.createTempFile(fileName, ".csv");
+            try (var writer = new FileWriter(fileCsv)) {
+                getCSVPrinterError(writer, clazz, recordsWithError);
+                returnImportCsv.setBase64(FileAppUtil.fileToBase64(fileCsv, StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                log.error("Erro ao gerar o arquivo de erros de importação.", e);
+            }
+            fileCsv.deleteOnExit();
+        }
+        return returnImportCsv;
+    }
+
+    private <T extends BaseImportCsvDTO> void getCSVPrinterError(Writer writer, Class<T> clazz, List<T> recordsError) throws BusinessException {
         try (var printer = new CSVPrinter(writer, CSVFormat.Builder.create().setHeader(this.getHeader(clazz, true)).build())) {
             printer.printRecords(getValueRecords(clazz, recordsError, true));
             printer.flush();
@@ -49,7 +88,7 @@ public class CsvService {
         }
     }
 
-    public <T extends BaseImportCsvDTO> CSVParser getCSVParser(MultipartFile file, Class<T> clazz) throws BusinessException {
+    private <T extends BaseImportCsvDTO> CSVParser getCSVParser(MultipartFile file, Class<T> clazz) throws BusinessException {
         try {
             return CSVParser.parse(file.getInputStream(), StandardCharsets.US_ASCII,
                     CSVFormat.Builder.create()
@@ -64,13 +103,18 @@ public class CsvService {
     }
 
     public <T extends BaseImportCsvDTO> List<T> getRecords(MultipartFile file, Class<T> clazz) throws BusinessException {
-        var csvParser = this.getCSVParser(file, clazz);
+        if (file.getOriginalFilename() != null && !file.getOriginalFilename().endsWith(".csv")) {
+            throw new BusinessException("Arquivo inválido, apenas CSV é suportado");
+        }
         var list = new ArrayList<T>();
         try {
-            for (var csvRecord : csvParser) {
-                var record = clazz.getDeclaredConstructor().newInstance();
-                buildRecord(csvRecord, record);
-                list.add(record);
+            var csvParser = this.getCSVParser(file, clazz);
+            if (csvParser != null) {
+                for (var csvRecord : csvParser) {
+                    var record = clazz.getDeclaredConstructor().newInstance();
+                    buildRecord(csvRecord, record);
+                    list.add(record);
+                }
             }
         } catch (Exception ex) {
             this.error(ex, "Erro ao gerar os registros do arquivo.");
@@ -218,4 +262,5 @@ public class CsvService {
         }
         return csvColumn.enumClass().cast(field.get(record)).name();
     }
+
 }
