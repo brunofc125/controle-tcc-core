@@ -6,6 +6,7 @@ import com.controletcc.dto.csv.ReturnImportCsvDTO;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.facade.ProfessorFacade;
+import com.controletcc.facade.ProfessorImportFacade;
 import com.controletcc.model.dto.ProfessorDTO;
 import com.controletcc.repository.projection.ProfessorProjection;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.io.IOException;
 public class ProfessorController {
 
     private final ProfessorFacade professorFacade;
+    private final ProfessorImportFacade professorImportFacade;
 
     @PreAuthorize("hasAuthority('professor.read')")
     @GetMapping("{id}")
@@ -55,13 +57,13 @@ public class ProfessorController {
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=professor_modelo_importacao.csv";
         response.setHeader(headerKey, headerValue);
-        professorFacade.getModeloImportacao(response.getWriter());
+        professorImportFacade.getModeloImportacao(response.getWriter());
     }
 
     @PreAuthorize("hasAuthority('professor.import')")
     @PostMapping("import")
     public ReturnImportCsvDTO importFile(@RequestParam("file") MultipartFile file) throws Exception {
-        return professorFacade.importFile(file);
+        return professorImportFacade.importFile(file);
     }
 
 }

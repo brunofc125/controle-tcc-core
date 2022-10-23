@@ -12,5 +12,5 @@ import lombok.Setter;
 public class ReturnImportCsvDTO {
     private int qtdRecords;
     private int qtdRecordsError;
-    private byte[] file;
+    private String base64;
 }
