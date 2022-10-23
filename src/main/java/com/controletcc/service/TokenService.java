@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.controletcc.config.security.CustomUserDetails;
 import com.controletcc.config.security.SecurityConstants;
 import com.controletcc.config.security.filter.CustomAuthorizationFilter;
+import com.controletcc.error.BusinessException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +15,10 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(rollbackFor = BusinessException.class)
 @Slf4j
 public class TokenService {
 
@@ -65,7 +66,7 @@ public class TokenService {
                 .sign(algorithm);
         var newRefreshToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.REFRESH_EXPIRATION_TIME))
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
         var tokenMap = new HashMap<String, String>();
