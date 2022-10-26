@@ -28,6 +28,9 @@ public class ProfessorImportFacade {
 
     public ReturnImportCsvDTO importFile(MultipartFile file) throws Exception {
         var records = this.csvService.getRecords(file, ProfessorImportCsvDTO.class);
+        if (records.isEmpty()) {
+            throw new BusinessException("Não há registros nesta planilha");
+        }
         for (var record : records) {
             if (record.isValid()) {
                 var userDTO = new UserDTO(record);

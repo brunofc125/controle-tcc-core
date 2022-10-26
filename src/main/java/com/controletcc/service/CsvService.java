@@ -44,7 +44,7 @@ public class CsvService {
         var fileCsv = File.createTempFile(fileName, ".csv");
         try (var writer = new FileWriter(fileCsv)) {
             getCSVPrinter(writer, clazz);
-            returnImportCsv.setBase64(FileAppUtil.fileToBase64(fileCsv, StandardCharsets.UTF_8));
+            returnImportCsv.setBase64(FileAppUtil.fileToBase64(fileCsv));
         } catch (Exception e) {
             log.error("Erro na geração do arquivo de modelo.", e);
         }
@@ -70,7 +70,7 @@ public class CsvService {
             var fileCsv = File.createTempFile(fileName, ".csv");
             try (var writer = new FileWriter(fileCsv)) {
                 getCSVPrinterError(writer, clazz, recordsWithError);
-                returnImportCsv.setBase64(FileAppUtil.fileToBase64(fileCsv, StandardCharsets.UTF_8));
+                returnImportCsv.setBase64(FileAppUtil.fileToBase64(fileCsv));
             } catch (Exception e) {
                 log.error("Erro ao gerar o arquivo de erros de importação.", e);
             }

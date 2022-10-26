@@ -10,7 +10,6 @@ import com.controletcc.model.entity.Professor;
 import com.controletcc.model.entity.User;
 import com.controletcc.model.enums.UserType;
 import com.controletcc.repository.projection.ProfessorProjection;
-import com.controletcc.service.CsvService;
 import com.controletcc.service.ProfessorService;
 import com.controletcc.service.UserService;
 import com.controletcc.util.ModelMapperUtil;
@@ -29,8 +28,6 @@ public class ProfessorFacade {
     private final ProfessorService professorService;
 
     private final UserService userService;
-
-    private final CsvService csvService;
 
     public ProfessorDTO getById(Long id) {
         var professor = professorService.getById(id);

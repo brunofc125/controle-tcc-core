@@ -4,7 +4,7 @@ import org.aspectj.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class FileAppUtil {
@@ -13,14 +13,18 @@ public class FileAppUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    public static String fileToBase64(File file, Charset charset) throws IOException {
+    public static String fileToBase64(File file) throws IOException {
         var bytes = FileUtil.readAsByteArray(file);
-        return byteToBase64(bytes, charset);
+        return byteToBase64(bytes);
     }
 
-    public static String byteToBase64(byte[] bytes, Charset charset) throws IOException {
+    public static String byteToBase64(byte[] bytes) throws IOException {
         var base64 = Base64.getEncoder().encode(bytes);
-        return new String(base64, charset);
+        return new String(base64, StandardCharsets.UTF_8);
+    }
+
+    public static byte[] base64toByte(String base64) throws IOException {
+        return Base64.getDecoder().decode(base64);
     }
 
 }

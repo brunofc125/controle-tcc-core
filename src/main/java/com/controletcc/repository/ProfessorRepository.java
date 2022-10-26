@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
@@ -27,14 +26,13 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
                 and (:rg is null or lower(p.rg) like concat('%', trim(lower(:rg)),'%') )
                 and (:email is null or lower(p.email) like concat('%', trim(lower(:email)),'%') )
                 and (:supervisor is null or p.supervisorTcc = :supervisor)"""
-
     )
-    Page<ProfessorProjection> search(@Param("id") Long id,
-                                     @Param("nome") String nome,
-                                     @Param("cpf") String cpf,
-                                     @Param("rg") String rg,
-                                     @Param("email") String email,
-                                     @Param("supervisor") Boolean supervisor,
+    Page<ProfessorProjection> search(Long id,
+                                     String nome,
+                                     String cpf,
+                                     String rg,
+                                     String email,
+                                     Boolean supervisor,
                                      Pageable pageable);
 
     boolean existsByCpf(String cpf);
@@ -42,4 +40,3 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     boolean existsByCpfAndIdNot(String cpf, Long id);
 
 }
-/**/
