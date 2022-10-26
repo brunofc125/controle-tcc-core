@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class BaseDTO implements Serializable {
+    private Long idUserInclusao;
     private LocalDateTime dataInclusao;
+    private Long idUserUltimaAlteracao;
     private LocalDateTime dataUltimaAlteracao;
 }
