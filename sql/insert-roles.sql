@@ -1,3 +1,24 @@
+-- atualizar o user_roles
+insert into user_role (id_user, id_role)
+select u.id,
+       r.id
+from "user" u
+         join "role" r on
+        (u."type" = 'ADMIN'
+            and r."admin" = true)
+        or (u."type" = 'SUPERVISOR'
+        and r.supervisor = true)
+        or (u."type" = 'PROFESSOR'
+        and r.professor = true)
+        or (u."type" = 'ALUNO'
+        and r.aluno = true)
+         left join user_role ur on
+            ur.id_user = u.id
+        and ur.id_role = r.id
+where ur is null
+order by 2, 1;
+
+-- roles
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('usuario.create', true, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
@@ -12,3 +33,7 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('modelo-documento.create', false, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('modelo-documento.read', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('area-tcc.create', false, true, false, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('area-tcc.read', false, true, true, false);
