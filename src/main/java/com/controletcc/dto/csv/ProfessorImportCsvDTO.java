@@ -1,6 +1,7 @@
 package com.controletcc.dto.csv;
 
 import com.controletcc.annotation.CsvColumn;
+import com.controletcc.dto.csv.type.LongType;
 import com.controletcc.dto.enums.CsvType;
 import com.controletcc.model.enums.Sexo;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,6 +37,9 @@ public class ProfessorImportCsvDTO extends BaseImportCsvDTO {
 
     @CsvColumn(name = "Supervisor de TCC", type = CsvType.BOOLEAN)
     private boolean supervisorTcc;
+
+    @CsvColumn(name = "ID's Áreas de TCC", type = CsvType.LIST, listClass = LongType.class)
+    private List<Long> idAreasTcc;
 
     @CsvColumn(name = "Usuário", type = CsvType.STRING)
     private String username;

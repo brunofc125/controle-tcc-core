@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 @Transactional(rollbackFor = BusinessException.class)
@@ -39,6 +41,10 @@ public class ProfessorImportFacade {
                     professorFacade.insertTransactional(professorDTO, userDTO);
                 } catch (BusinessException be) {
                     record.setError(String.join("\n", be.getErrors()));
+                } catch (Exception ex) {
+                    var uuid = UUID.randomUUID();
+                    log.error("ERRO: " + uuid + " - " + ex.getMessage() + " - " + ex.getCause(), ex);
+                    record.setError("Erro na importação deste registro. Código do erro: " + uuid);
                 }
             }
         }

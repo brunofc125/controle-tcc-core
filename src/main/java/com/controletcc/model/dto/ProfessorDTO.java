@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -16,6 +18,7 @@ public class ProfessorDTO extends PessoaDTO {
     private Long id;
     private boolean supervisorTcc;
     private Long idUsuario;
+    private List<Long> idAreaList;
 
     public ProfessorDTO(ProfessorImportCsvDTO csv) {
         this.cpf = StringUtil.getOnlyNumbers(csv.getCpf());
@@ -25,5 +28,6 @@ public class ProfessorDTO extends PessoaDTO {
         this.sexo = csv.getSexo();
         this.dataNascimento = csv.getDataNascimento();
         this.supervisorTcc = csv.isSupervisorTcc();
+        this.idAreaList = csv.getIdAreasTcc();
     }
 }
