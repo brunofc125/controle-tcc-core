@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Transactional(rollbackFor = BusinessException.class)
@@ -24,6 +26,10 @@ public class AreaTccFacade {
     public AreaTccDTO getById(Long id) {
         var areaTcc = areaTccService.getById(id);
         return ModelMapperUtil.map(areaTcc, AreaTccDTO.class);
+    }
+
+    public List<AreaTccDTO> getAll() {
+        return ModelMapperUtil.mapAll(areaTccService.getAll(), AreaTccDTO.class);
     }
 
     public ListResponse<AreaTccProjection> search(AreaTccGridOptions options) {

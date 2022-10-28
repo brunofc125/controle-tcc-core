@@ -23,10 +23,7 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +32,7 @@ import java.util.stream.Collectors;
 public class CsvService {
 
     public static final String COLUMN_NAME_ERROR = "Erros";
+    public static final String COLUMN_LIST_DELIMITER = "-";
 
     public <T extends BaseImportCsvDTO> ReturnImportCsvDTO getModelCsv(String fileName, Class<T> clazz) throws Exception {
         var returnImportCsv = new ReturnImportCsvDTO();
@@ -134,6 +132,7 @@ public class CsvService {
                         case BOOLEAN -> setBooleanField(field, record, csvColumn, value);
                         case LOCAL_DATE -> setLocalDateField(field, record, csvColumn, value);
                         case ENUM -> setEnumField(field, record, csvColumn, value);
+                        case LIST -> setListField(field, record, csvColumn, value);
                     }
                 } catch (CsvErrorException e) {
                     record.addError(e.getMessage());
@@ -186,6 +185,23 @@ public class CsvService {
         }
     }
 
+    private <T extends BaseImportCsvDTO> void setListField(Field field, T record, CsvColumn csvColumn, String value) throws CsvErrorException {
+        if (StringUtil.isNullOrBlank(value)) {
+            return;
+        }
+        String typeName = null;
+        try {
+            var typeCast = csvColumn.listClass().getDeclaredConstructor().newInstance();
+            typeName = typeCast.typeName();
+            var values = Arrays.stream(value.split(COLUMN_LIST_DELIMITER)).map(typeCast::cast).toList();
+            field.set(record, values);
+        } catch (Exception e) {
+            var msgError = "Erro na coluna " + csvColumn.name() + ": Valor inválido, deveria ser uma lista separada por \"" + COLUMN_LIST_DELIMITER + "\"" + (typeName != null ? " do tipo " + typeName : "");
+            log.error(msgError, e);
+            throw new CsvErrorException(msgError);
+        }
+    }
+
     private void error(Exception ex, String msgError) throws BusinessException {
         var tag = UUID.randomUUID();
         msgError = msgError.concat(" Código do erro: " + tag.toString());
@@ -222,6 +238,7 @@ public class CsvService {
                         case BOOLEAN -> line.add(getBooleanField(field, record));
                         case LOCAL_DATE -> line.add(getLocalDateField(field, record));
                         case ENUM -> line.add(getEnumField(field, record, csvColumn));
+                        case LIST -> line.add(getListField(field, record, csvColumn));
                     }
                 }
             }
@@ -261,6 +278,16 @@ public class CsvService {
             return null;
         }
         return csvColumn.enumClass().cast(field.get(record)).name();
+    }
+
+    private <T extends BaseImportCsvDTO> String getListField(Field field, T record, CsvColumn csvColumn) throws Exception {
+        if (field.get(record) == null) {
+            return null;
+        }
+        var typeCast = csvColumn.listClass().getDeclaredConstructor().newInstance();
+        var valuesObj = (List<?>) field.get(record);
+        List<String> values = valuesObj != null ? valuesObj.stream().map(typeCast::toString).toList() : Collections.emptyList();
+        return !values.isEmpty() ? String.join(COLUMN_LIST_DELIMITER, values) : "";
     }
 
 }

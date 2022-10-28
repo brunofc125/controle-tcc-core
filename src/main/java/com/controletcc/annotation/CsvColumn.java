@@ -1,5 +1,7 @@
 package com.controletcc.annotation;
 
+import com.controletcc.dto.csv.type.BaseType;
+import com.controletcc.dto.csv.type.StringType;
 import com.controletcc.dto.enums.CsvType;
 
 import java.lang.annotation.ElementType;
@@ -16,5 +18,7 @@ public @interface CsvColumn {
     public CsvType type();
 
     public Class<? extends Enum> enumClass() default Enum.class;
+
+    public Class<? extends BaseType<?>> listClass() default StringType.class;
 
 }

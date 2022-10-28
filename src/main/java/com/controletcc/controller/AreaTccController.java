@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/areas-tcc")
 @RequiredArgsConstructor
@@ -21,6 +23,12 @@ public class AreaTccController {
     @GetMapping("{id}")
     public AreaTccDTO getById(@PathVariable Long id) {
         return areaTccFacade.getById(id);
+    }
+
+    @PreAuthorize("hasAuthority('area-tcc.read')")
+    @GetMapping
+    public List<AreaTccDTO> getAll() {
+        return areaTccFacade.getAll();
     }
 
     @PreAuthorize("hasAuthority('area-tcc.read')")

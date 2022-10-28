@@ -10,10 +10,12 @@ import com.controletcc.util.StringUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,10 @@ public class AreaTccService {
 
     public AreaTcc getById(@NonNull Long id) {
         return areaTccRepository.getReferenceById(id);
+    }
+
+    public List<AreaTcc> getAll() {
+        return areaTccRepository.findAll(Sort.by("id"));
     }
 
     public ListResponse<AreaTccProjection> search(AreaTccGridOptions options) {
