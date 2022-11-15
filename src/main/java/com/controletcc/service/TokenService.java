@@ -63,6 +63,7 @@ public class TokenService {
                 .withClaim(SecurityConstants.CLAIM_NAME, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .withClaim("id_user", user.getId())
                 .withClaim("user_name", user.getName())
+                .withClaim("user_type", user.getType().name())
                 .sign(algorithm);
         var newRefreshToken = JWT.create()
                 .withSubject(user.getUsername())

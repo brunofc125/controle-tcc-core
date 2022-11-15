@@ -129,6 +129,7 @@ public class CsvService {
                 try {
                     switch (csvColumn.type()) {
                         case STRING -> setStringField(field, record, csvColumn, value);
+                        case LONG -> setLongField(field, record, csvColumn, value);
                         case BOOLEAN -> setBooleanField(field, record, csvColumn, value);
                         case LOCAL_DATE -> setLocalDateField(field, record, csvColumn, value);
                         case ENUM -> setEnumField(field, record, csvColumn, value);
@@ -144,6 +145,16 @@ public class CsvService {
     private <T extends BaseImportCsvDTO> void setStringField(Field field, T record, CsvColumn csvColumn, String value) throws CsvErrorException {
         try {
             field.set(record, value);
+        } catch (Exception e) {
+            var msgError = "Erro na coluna " + csvColumn.name() + ": Valor inválido";
+            log.error(msgError, e);
+            throw new CsvErrorException(msgError);
+        }
+    }
+
+    private <T extends BaseImportCsvDTO> void setLongField(Field field, T record, CsvColumn csvColumn, String value) throws CsvErrorException {
+        try {
+            field.set(record, StringUtil.isNullOrBlank(value) ? null : Long.parseLong(value));
         } catch (Exception e) {
             var msgError = "Erro na coluna " + csvColumn.name() + ": Valor inválido";
             log.error(msgError, e);
@@ -235,6 +246,7 @@ public class CsvService {
                     var csvColumn = field.getAnnotation(CsvColumn.class);
                     switch (csvColumn.type()) {
                         case STRING -> line.add(getStringField(field, record));
+                        case LONG -> line.add(getLongField(field, record));
                         case BOOLEAN -> line.add(getBooleanField(field, record));
                         case LOCAL_DATE -> line.add(getLocalDateField(field, record));
                         case ENUM -> line.add(getEnumField(field, record, csvColumn));
@@ -256,6 +268,13 @@ public class CsvService {
             return null;
         }
         return (String) field.get(record);
+    }
+
+    private <T extends BaseImportCsvDTO> String getLongField(Field field, T record) throws Exception {
+        if (field.get(record) == null) {
+            return null;
+        }
+        return field.get(record).toString();
     }
 
     private <T extends BaseImportCsvDTO> String getBooleanField(Field field, T record) throws Exception {

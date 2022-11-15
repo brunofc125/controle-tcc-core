@@ -6,7 +6,6 @@ import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Professor;
 import com.controletcc.repository.ProfessorRepository;
 import com.controletcc.repository.projection.ProfessorProjection;
-import com.controletcc.util.LocalDateUtil;
 import com.controletcc.util.StringUtil;
 import com.controletcc.util.ValidatorUtil;
 import lombok.NonNull;
@@ -15,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Service
@@ -68,21 +66,7 @@ public class ProfessorService {
             }
         }
 
-        if (StringUtil.isNullOrBlank(professor.getEmail())) {
-            errors.add("E-mail não informado");
-        } else if (!ValidatorUtil.isValidEmail(professor.getEmail())) {
-            errors.add("E-mail inválido");
-        }
-
-        if (professor.getSexo() == null) {
-            errors.add("Sexo não informado");
-        }
-
-        if (professor.getDataNascimento() == null) {
-            errors.add("Data de nascimento não informada");
-        } else if (LocalDateUtil.compare(professor.getDataNascimento(), LocalDate.now()) > 0) {
-            errors.add("Data de nascimento não pode ser uma data futura");
-        }
+        errors.addAll(professor.getPessoaErrors());
 
         if (professor.getUsuario() == null) {
             errors.add("Professor sem usuário informado");

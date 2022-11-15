@@ -7,29 +7,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Collections;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Professor extends Pessoa {
+public class Aluno extends Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "supervisor_tcc")
-    private boolean supervisorTcc;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false, unique = true)
     private User usuario;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "professor_area_tcc", joinColumns = @JoinColumn(name = "id_professor"), inverseJoinColumns = @JoinColumn(name = "id_area_tcc"))
-    private List<AreaTcc> areas;
+    @Column(name = "matricula", nullable = false, unique = true)
+    private String matricula;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_area_tcc", nullable = false)
+    private AreaTcc areaTcc;
 
     public Long getIdUsuario() {
         return this.usuario != null ? this.usuario.getId() : null;
@@ -46,19 +44,19 @@ public class Professor extends Pessoa {
         }
     }
 
-    public List<Long> getIdAreaList() {
-        return areas != null && !areas.isEmpty() ? areas.stream().map(AreaTcc::getId).toList() : Collections.emptyList();
+    public Long getIdAreaTcc() {
+        return this.areaTcc != null ? this.areaTcc.getId() : null;
     }
 
-    public void setIdAreaList(List<Long> idAreaList) {
-        if (idAreaList != null && !idAreaList.isEmpty()) {
-            this.areas = idAreaList.stream().map(id -> {
-                var area = new AreaTcc();
-                area.setId(id);
-                return area;
-            }).toList();
+    public void setIdAreaTcc(Long idAreaTcc) {
+        if (idAreaTcc != null) {
+            if (this.areaTcc == null) {
+                this.areaTcc = new AreaTcc();
+            }
+            this.areaTcc.setId(idAreaTcc);
         } else {
-            this.areas = Collections.emptyList();
+            this.areaTcc = null;
         }
     }
+
 }
