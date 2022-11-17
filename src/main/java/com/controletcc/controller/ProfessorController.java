@@ -22,7 +22,7 @@ public class ProfessorController {
     private final ProfessorFacade professorFacade;
     private final ProfessorImportFacade professorImportFacade;
 
-    @PreAuthorize("hasAuthority('professor.read')")
+    @PreAuthorize("hasAnyAuthority('professor.read', 'professor.perfil')")
     @GetMapping("{id}")
     public ProfessorDTO getById(@PathVariable Long id) {
         return professorFacade.getById(id);
@@ -40,7 +40,7 @@ public class ProfessorController {
         return professorFacade.insert(saveProfessor);
     }
 
-    @PreAuthorize("hasAuthority('professor.create')")
+    @PreAuthorize("hasAnyAuthority('professor.create', 'professor.perfil')")
     @PutMapping("{id}")
     public ProfessorDTO update(@PathVariable Long id, @RequestBody ProfessorDTO professor) throws BusinessException {
         professor.setId(id);

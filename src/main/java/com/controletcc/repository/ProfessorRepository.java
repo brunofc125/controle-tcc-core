@@ -39,4 +39,6 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
     boolean existsByCpfAndIdNot(String cpf, Long id);
 
+    Professor getProfessorByUsuarioId(Long idUsuario);
+
 }

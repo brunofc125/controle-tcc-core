@@ -17,7 +17,7 @@ public class UserController {
 
     private final UserFacade userFacade;
 
-    @PreAuthorize("hasAuthority('usuario.read')")
+    @PreAuthorize("hasAnyAuthority('usuario.read', 'professor.perfil', 'aluno.perfil')")
     @GetMapping("{id}")
     public UserDTO getById(@PathVariable Long id) throws BusinessException {
         return userFacade.getById(id);
@@ -35,7 +35,7 @@ public class UserController {
         return userFacade.insertAdmin(user);
     }
 
-    @PreAuthorize("hasAuthority('usuario.create')")
+    @PreAuthorize("hasAnyAuthority('usuario.create', 'professor.perfil', 'aluno.perfil')")
     @PutMapping("{id}")
     public UserDTO update(@PathVariable Long id, @RequestBody UserDTO user) throws BusinessException {
         return userFacade.update(id, user);

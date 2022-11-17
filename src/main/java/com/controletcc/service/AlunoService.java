@@ -100,5 +100,8 @@ public class AlunoService {
         }
     }
 
+    public Aluno getAlunoByUsuarioId(Long idUsuario) {
+        return alunoRepository.getAlunoByUsuarioId(idUsuario);
+    }
 
 }
