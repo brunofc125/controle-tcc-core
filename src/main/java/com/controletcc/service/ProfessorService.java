@@ -84,4 +84,8 @@ public class ProfessorService {
         }
     }
 
+    public Professor getProfessorByUsuarioId(Long idUsuario) {
+        return professorRepository.getProfessorByUsuarioId(idUsuario);
+    }
+
 }

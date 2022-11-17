@@ -25,7 +25,7 @@ public class AreaTccController {
         return areaTccFacade.getById(id);
     }
 
-    @PreAuthorize("hasAuthority('area-tcc.read')")
+    @PreAuthorize("hasAnyAuthority('area-tcc.read', 'professor.perfil', 'aluno.perfil')")
     @GetMapping
     public List<AreaTccDTO> getAll() {
         return areaTccFacade.getAll();

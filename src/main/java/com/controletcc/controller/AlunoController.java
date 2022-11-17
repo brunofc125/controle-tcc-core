@@ -22,7 +22,7 @@ public class AlunoController {
     private final AlunoFacade alunoFacade;
     private final AlunoImportFacade alunoImportFacade;
 
-    @PreAuthorize("hasAuthority('aluno.read')")
+    @PreAuthorize("hasAnyAuthority('aluno.read', 'aluno.perfil')")
     @GetMapping("{id}")
     public AlunoDTO getById(@PathVariable Long id) {
         return alunoFacade.getById(id);
@@ -40,7 +40,7 @@ public class AlunoController {
         return alunoFacade.insert(saveAluno);
     }
 
-    @PreAuthorize("hasAuthority('aluno.create')")
+    @PreAuthorize("hasAnyAuthority('aluno.create', 'aluno.perfil')")
     @PutMapping("{id}")
     public AlunoDTO update(@PathVariable Long id, @RequestBody AlunoDTO aluno) throws BusinessException {
         aluno.setId(id);

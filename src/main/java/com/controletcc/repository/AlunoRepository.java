@@ -47,4 +47,6 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     boolean existsByMatriculaAndIdNot(String matricula, Long id);
 
+    Aluno getAlunoByUsuarioId(Long idUsuario);
+
 }
