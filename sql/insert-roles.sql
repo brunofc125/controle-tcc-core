@@ -47,3 +47,7 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('area-tcc.create', false, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('area-tcc.read', true, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc.read', false, true, true, true);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc.create', false, true, true, false);
