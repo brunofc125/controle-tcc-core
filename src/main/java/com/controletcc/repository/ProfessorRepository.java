@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ProfessorRepository extends JpaRepository<Professor, Long> {
 
     @Query(value = """  
@@ -40,5 +42,16 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     boolean existsByCpfAndIdNot(String cpf, Long id);
 
     Professor getProfessorByUsuarioId(Long idUsuario);
+
+    @Query(value = """
+            SELECT p
+            FROM Professor p
+            JOIN p.areas at
+            WHERE at.id = :idAreaTcc
+              AND p.supervisorTcc = true
+            ORDER BY p.nome
+            """
+    )
+    List<Professor> getSupervisoresByIdAreaTcc(Long idAreaTcc);
 
 }

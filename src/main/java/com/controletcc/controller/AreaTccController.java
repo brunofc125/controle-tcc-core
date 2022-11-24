@@ -25,6 +25,12 @@ public class AreaTccController {
         return areaTccFacade.getById(id);
     }
 
+    @PreAuthorize("hasAnyAuthority('area-tcc.read', 'projeto-tcc.read')")
+    @GetMapping("professor/{idProfessor}")
+    public List<AreaTccDTO> getAllByIdProfessor(@PathVariable Long idProfessor) {
+        return areaTccFacade.getAllByIdProfessor(idProfessor);
+    }
+
     @PreAuthorize("hasAnyAuthority('area-tcc.read', 'professor.perfil', 'aluno.perfil')")
     @GetMapping
     public List<AreaTccDTO> getAll() {

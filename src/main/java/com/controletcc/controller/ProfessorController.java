@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/professores")
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class ProfessorController {
     @GetMapping("{id}")
     public ProfessorDTO getById(@PathVariable Long id) {
         return professorFacade.getById(id);
+    }
+
+    @PreAuthorize("hasAnyAuthority('professor.read', 'projeto-tcc.read')")
+    @GetMapping("supervisor-by-area-tcc/{idAreaTcc}")
+    public List<ProfessorDTO> getSupervisoresByIdAreaTcc(@PathVariable Long idAreaTcc) {
+        return professorFacade.getSupervisoresByIdAreaTcc(idAreaTcc);
     }
 
     @PreAuthorize("hasAuthority('professor.read')")

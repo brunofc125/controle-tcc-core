@@ -80,4 +80,8 @@ public class AreaTccService {
         }
     }
 
+    public List<AreaTcc> getAllByIdProfessor(Long idProfessor) {
+        return areaTccRepository.getAllByIdProfessor(idProfessor);
+    }
+
 }

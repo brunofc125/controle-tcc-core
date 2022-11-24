@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +87,10 @@ public class ProfessorService {
 
     public Professor getProfessorByUsuarioId(Long idUsuario) {
         return professorRepository.getProfessorByUsuarioId(idUsuario);
+    }
+
+    public List<Professor> getSupervisoresByIdAreaTcc(Long idAreaTcc) {
+        return professorRepository.getSupervisoresByIdAreaTcc(idAreaTcc);
     }
 
 }

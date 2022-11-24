@@ -1,6 +1,8 @@
 package com.controletcc.model.entity;
 
 import com.controletcc.model.entity.base.BaseEntity;
+import com.controletcc.model.enums.SituacaoTcc;
+import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +34,7 @@ public class ProjetoTcc extends BaseEntity {
     private AreaTcc areaTcc;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_situacao_atual", nullable = false)
+    @JoinColumn(name = "id_situacao_atual")
     private ProjetoTccSituacao situacaoAtual;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -109,6 +111,14 @@ public class ProjetoTcc extends BaseEntity {
         } else {
             this.alunos = Collections.emptyList();
         }
+    }
+
+    public SituacaoTcc getSituacaoTcc() {
+        return situacaoAtual != null ? situacaoAtual.getSituacaoTcc() : null;
+    }
+
+    public TipoTcc getTipoTcc() {
+        return situacaoAtual != null ? situacaoAtual.getTipoTcc() : null;
     }
 
 }
