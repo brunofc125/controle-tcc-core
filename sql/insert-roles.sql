@@ -47,3 +47,13 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('area-tcc.create', false, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('area-tcc.read', true, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc.read', false, true, true, true);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc.create', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('anexo-geral.create', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('anexo-geral.delete', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('anexo-geral.read', false, true, true, true);

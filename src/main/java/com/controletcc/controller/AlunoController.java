@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/alunos")
 @RequiredArgsConstructor
@@ -26,6 +28,12 @@ public class AlunoController {
     @GetMapping("{id}")
     public AlunoDTO getById(@PathVariable Long id) {
         return alunoFacade.getById(id);
+    }
+
+    @PreAuthorize("hasAnyAuthority('aluno.read', 'projeto-tcc.read')")
+    @GetMapping("area-tcc/{idAreaTcc}")
+    public List<AlunoDTO> getAllByIdAreaTcc(@PathVariable Long idAreaTcc) {
+        return alunoFacade.getAllByIdAreaTcc(idAreaTcc);
     }
 
     @PreAuthorize("hasAuthority('aluno.read')")

@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -25,8 +27,13 @@ public class ModeloDocumento extends Arquivo {
     @Column(name = "nome", nullable = false, unique = true)
     private String nome;
 
-    @Column(name = "tipo_tcc", nullable = false)
+    @ElementCollection(targetClass = TipoTcc.class)
+    @CollectionTable(name = "modelo_documento_tipo_tcc", joinColumns = @JoinColumn(name = "id_modelo_tcc"))
     @Enumerated(EnumType.STRING)
-    private TipoTcc tipoTcc;
+    @Column(name = "tipo_tcc", nullable = false)
+    private Set<TipoTcc> tipoTccs;
+
+    @Formula("(select string_agg(mdtt.tipo_tcc, ', ') from modelo_documento_tipo_tcc mdtt where mdtt.id_modelo_tcc = id)")
+    private String tipoTccsNome;
 
 }

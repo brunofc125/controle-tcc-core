@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface AreaTccRepository extends JpaRepository<AreaTcc, Long> {
 
     @Query(value = """  
@@ -27,5 +29,14 @@ public interface AreaTccRepository extends JpaRepository<AreaTcc, Long> {
     boolean existsByFaculdadeAndCurso(String faculdade, String curso);
 
     boolean existsByFaculdadeAndCursoAndIdNot(String faculdade, String curso, Long id);
+
+    @Query(value = """
+            SELECT at
+            FROM Professor p
+            JOIN p.areas at
+            WHERE p.id = :idProfessor
+            ORDER BY at.faculdade, at.curso"""
+    )
+    List<AreaTcc> getAllByIdProfessor(Long idProfessor);
 
 }

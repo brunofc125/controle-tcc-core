@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Transactional(rollbackFor = BusinessException.class)
@@ -68,6 +70,10 @@ public class ProfessorFacade {
         usuario = userService.insert(usuario, professor.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR);
         professor.setUsuario(usuario);
         professorService.insert(professor);
+    }
+
+    public List<ProfessorDTO> getSupervisoresByIdAreaTcc(Long idAreaTcc) {
+        return ModelMapperUtil.mapAll(professorService.getSupervisoresByIdAreaTcc(idAreaTcc), ProfessorDTO.class);
     }
 
 }

@@ -48,5 +48,9 @@ public class AreaTccFacade {
         return ModelMapperUtil.map(areaTcc, AreaTccDTO.class);
     }
 
+    public List<AreaTccDTO> getAllByIdProfessor(Long idProfessor) {
+        return ModelMapperUtil.mapAll(areaTccService.getAllByIdProfessor(idProfessor), AreaTccDTO.class);
+    }
+
 }
 

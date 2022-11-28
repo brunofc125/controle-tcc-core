@@ -11,16 +11,17 @@ import org.springframework.data.jpa.repository.Query;
 public interface ModeloDocumentoRepository extends JpaRepository<ModeloDocumento, Long> {
 
     @Query(value = """  
-            SELECT
+            SELECT distinct
                 md.id as id,
                 md.nome as nome,
                 md.descricao as descricao,
-                md.tipoTcc as tipoTcc
+                md.tipoTccsNome as tipoTccsNome
             FROM ModeloDocumento md
+            join md.tipoTccs tc
                 where (:id is null or md.id = :id)
                 and (:nome is null or lower(md.nome) like concat('%', trim(lower(:nome)),'%') )
                 and (:descricao is null or lower(md.descricao) like concat('%', trim(lower(:descricao)),'%') )
-                and (:tipoTcc is null or md.tipoTcc = :tipoTcc)"""
+                and (:tipoTcc is null or tc = :tipoTcc)"""
     )
     Page<ModeloDocumentoProjection> search(Long id,
                                            String nome,

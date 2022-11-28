@@ -1,11 +1,13 @@
 package com.controletcc.repository.projection;
 
-public interface ModeloDocumentoProjection {
+public interface AnexoGeralProjection {
     Long getId();
-
-    String getNome();
 
     String getDescricao();
 
     String getTipoTccsNome();
+
+    String getModelo();
+
+    String getProfessor();
 }
