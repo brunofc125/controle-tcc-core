@@ -57,3 +57,7 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('anexo-geral.delete', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('anexo-geral.read', false, true, true, true);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('versao-tcc.create', false, true, true, true);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('versao-tcc.read', false, true, true, true);

@@ -1,6 +1,7 @@
 package com.controletcc.service;
 
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.enums.OrderByDirection;
 import com.controletcc.dto.options.AnexoGeralGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.AnexoGeral;
@@ -29,6 +30,10 @@ public class AnexoGeralService {
     }
 
     public ListResponse<AnexoGeralProjection> search(@NonNull Long idProjetoTcc, AnexoGeralGridOptions options) {
+        if (StringUtil.isNullOrBlank(options.getOrderByField())) {
+            options.setOrderByField("id");
+            options.setOrderByDirection(OrderByDirection.DESC);
+        }
         var page = anexoGeralRepository.search(options.getId(), options.getDescricao(), options.getTipoTcc(), idProjetoTcc, options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }

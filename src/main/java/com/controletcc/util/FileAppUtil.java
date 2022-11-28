@@ -27,4 +27,8 @@ public class FileAppUtil {
         return Base64.getDecoder().decode(base64);
     }
 
+    public static String getExtension(String fileName) {
+        return !StringUtil.isNullOrBlank(fileName) ? fileName.substring(fileName.lastIndexOf('.') + 1) : "";
+    }
+
 }
