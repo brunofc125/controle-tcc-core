@@ -32,8 +32,8 @@ public class AnexoGeralController {
 
     @PreAuthorize("hasAuthority('anexo-geral.create')")
     @PostMapping
-    public AnexoGeralDTO insert(@RequestBody AnexoGeralDTO modeloDocumento) throws Exception {
-        return anexoGeralFacade.insert(modeloDocumento);
+    public AnexoGeralDTO insert(@RequestBody AnexoGeralDTO anexoGeralDTO) throws Exception {
+        return anexoGeralFacade.insert(anexoGeralDTO);
     }
 
     @PreAuthorize("hasAuthority('anexo-geral.delete')")

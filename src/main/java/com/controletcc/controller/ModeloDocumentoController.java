@@ -20,7 +20,7 @@ public class ModeloDocumentoController {
 
     private final ModeloDocumentoFacade modeloDocumentoFacade;
 
-    @PreAuthorize("hasAuthority('modelo-documento.read')")
+    @PreAuthorize("hasAnyAuthority('modelo-documento.read', 'projeto-tcc.read')")
     @GetMapping
     public List<ModeloDocumentoDTO> getAll() {
         return modeloDocumentoFacade.getAll();

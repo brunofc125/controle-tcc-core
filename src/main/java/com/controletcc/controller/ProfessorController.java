@@ -24,7 +24,7 @@ public class ProfessorController {
     private final ProfessorFacade professorFacade;
     private final ProfessorImportFacade professorImportFacade;
 
-    @PreAuthorize("hasAnyAuthority('professor.read', 'professor.perfil')")
+    @PreAuthorize("hasAnyAuthority('professor.read', 'professor.perfil', 'projeto-tcc.read')")
     @GetMapping("{id}")
     public ProfessorDTO getById(@PathVariable Long id) {
         return professorFacade.getById(id);
