@@ -64,7 +64,10 @@ public class ProjetoTccFacade {
     }
 
     public ProjetoTccDTO update(ProjetoTccDTO projetoTccDTO) throws BusinessException {
-        return null;
+        var projetoTcc = projetoTccService.getById(projetoTccDTO.getId());
+        projetoTcc.setTema(projetoTcc.getTema());
+        projetoTcc = projetoTccService.update(projetoTcc.getId(), projetoTcc);
+        return ModelMapperUtil.map(projetoTccService.update(projetoTcc.getId(), projetoTcc), ProjetoTccDTO.class);
     }
 
 }

@@ -11,12 +11,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/modelo-documentos")
 @RequiredArgsConstructor
 public class ModeloDocumentoController {
 
     private final ModeloDocumentoFacade modeloDocumentoFacade;
+
+    @PreAuthorize("hasAuthority('modelo-documento.read')")
+    @GetMapping
+    public List<ModeloDocumentoDTO> getAll() {
+        return modeloDocumentoFacade.getAll();
+    }
 
     @PreAuthorize("hasAuthority('modelo-documento.read')")
     @GetMapping("{id}")

@@ -36,6 +36,9 @@ public class ProjetoTccSituacao extends BaseEntity {
     @JoinColumn(name = "id_projeto_tcc", nullable = false)
     private ProjetoTcc projetoTcc;
 
+    @Column(name = "motivo")
+    private String motivo;
+
     public Long getIdProjetoTcc() {
         return this.projetoTcc != null ? this.projetoTcc.getId() : null;
     }

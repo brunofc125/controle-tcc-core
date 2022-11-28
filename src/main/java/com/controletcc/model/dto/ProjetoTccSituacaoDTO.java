@@ -20,4 +20,5 @@ public class ProjetoTccSituacaoDTO extends BaseDTO {
     private SituacaoTcc situacaoTcc;
     private LocalDateTime dataConclusao;
     private Long idProjetoTcc;
+    private String motivo;
 }

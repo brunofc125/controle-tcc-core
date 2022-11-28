@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 @Transactional(rollbackFor = BusinessException.class)
@@ -22,6 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ModeloDocumentoFacade {
 
     private final ModeloDocumentoService modeloDocumentoService;
+
+    public List<ModeloDocumentoDTO> getAll() {
+        var modeloDocumentoList = modeloDocumentoService.getAll();
+        return ModelMapperUtil.mapAll(modeloDocumentoList, ModeloDocumentoDTO.class);
+    }
 
     public ModeloDocumentoDTO getById(Long id) {
         var modeloDocumento = modeloDocumentoService.getById(id);

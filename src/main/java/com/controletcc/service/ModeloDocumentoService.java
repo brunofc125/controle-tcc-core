@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,10 @@ import java.util.ArrayList;
 public class ModeloDocumentoService {
 
     private final ModeloDocumentoRepository modeloDocumentoRepository;
+
+    public List<ModeloDocumento> getAll() {
+        return modeloDocumentoRepository.findAll();
+    }
 
     public ModeloDocumento getById(@NonNull Long id) {
         return modeloDocumentoRepository.getReferenceById(id);
@@ -63,7 +68,7 @@ public class ModeloDocumentoService {
             errors.add("Descrição do modelo não informado");
         }
 
-        if (modeloDocumento.getTipoTcc() == null) {
+        if (modeloDocumento.getTipoTccs() == null || modeloDocumento.getTipoTccs().isEmpty()) {
             errors.add("Tipo de TCC não informado");
         }
 
