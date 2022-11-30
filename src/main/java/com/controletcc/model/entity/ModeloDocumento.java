@@ -16,6 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "modelo_documento")
 public class ModeloDocumento extends Arquivo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

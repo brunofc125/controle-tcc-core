@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "professor")
 public class Professor extends Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

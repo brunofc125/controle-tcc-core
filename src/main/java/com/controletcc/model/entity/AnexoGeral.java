@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "anexo_geral")
 public class AnexoGeral extends Arquivo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

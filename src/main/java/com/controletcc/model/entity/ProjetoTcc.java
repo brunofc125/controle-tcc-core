@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "projeto_tcc")
 public class ProjetoTcc extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

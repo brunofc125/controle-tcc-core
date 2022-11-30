@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"versao", "id_projeto_tcc"})})
+@Table(name = "versao_tcc", uniqueConstraints = {@UniqueConstraint(columnNames = {"versao", "id_projeto_tcc"})})
 public class VersaoTcc extends Arquivo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
