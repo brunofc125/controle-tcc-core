@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "projeto_tcc_situacao")
 public class ProjetoTccSituacao extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

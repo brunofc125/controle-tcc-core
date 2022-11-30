@@ -4,7 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum SituacaoTcc {
-    EM_ANDAMENTO("Em andamento", false), A_DEFENDER("Á defender", false), APROVADO("Aprovado", true), REPROVADO("Reprovado", true), CANCELADO("Cancelado", true);
+    EM_ANDAMENTO("Em andamento", false),
+    A_DEFENDER("Á defender", false),
+    APROVADO("Aprovado", true),
+    REPROVADO("Reprovado", true),
+    CANCELADO("Cancelado", true);
 
     private SituacaoTcc(String descricao, boolean situacaoFinal) {
         this.descricao = descricao;

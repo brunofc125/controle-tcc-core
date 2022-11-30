@@ -13,24 +13,26 @@ import java.io.IOException;
 @Getter
 @Setter
 @MappedSuperclass
-public class Arquivo extends BaseEntity {
-    
+public class ArquivoOpcional extends BaseEntity {
+
     @Lob
-    @Column(name = "conteudo", nullable = false)
+    @Column(name = "conteudo")
     protected byte[] conteudo;
 
-    @Column(name = "nome_arquivo", nullable = false)
+    @Column(name = "nome_arquivo")
     protected String nomeArquivo;
 
-    @Column(name = "media_type", nullable = false)
+    @Column(name = "media_type")
     protected String mediaType;
 
     public String getBase64Conteudo() throws IOException {
-        return FileAppUtil.byteToBase64(this.conteudo);
+        return this.conteudo != null && this.conteudo.length > 0 ? FileAppUtil.byteToBase64(this.conteudo) : null;
     }
 
     public void setBase64Conteudo(String base64Conteudo) throws IOException {
-        this.conteudo = FileAppUtil.base64toByte(base64Conteudo);
+        if (!StringUtil.isNullOrBlank(base64Conteudo)) {
+            this.conteudo = FileAppUtil.base64toByte(base64Conteudo);
+        }
     }
 
     public boolean isFileValid() {

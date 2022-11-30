@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"faculdade", "curso"})})
+@Table(name = "area_tcc", uniqueConstraints = {@UniqueConstraint(columnNames = {"faculdade", "curso"})})
 public class AreaTcc extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
