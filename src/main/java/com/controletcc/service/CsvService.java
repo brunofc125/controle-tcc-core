@@ -5,6 +5,7 @@ import com.controletcc.dto.csv.BaseImportCsvDTO;
 import com.controletcc.dto.csv.ReturnImportCsvDTO;
 import com.controletcc.error.BusinessException;
 import com.controletcc.error.CsvErrorException;
+import com.controletcc.util.ErrorUtil;
 import com.controletcc.util.FileAppUtil;
 import com.controletcc.util.LocalDateUtil;
 import com.controletcc.util.StringUtil;
@@ -23,7 +24,10 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,7 +59,7 @@ public class CsvService {
         try (var printer = new CSVPrinter(writer, CSVFormat.Builder.create().setHeader(this.getHeader(clazz, false)).build())) {
             printer.flush();
         } catch (Exception ex) {
-            this.error(ex, "Erro na geração do arquivo de modelo.");
+            ErrorUtil.error(log, ex, "Erro na geração do arquivo de modelo.");
         }
     }
 
@@ -82,7 +86,7 @@ public class CsvService {
             printer.printRecords(getValueRecords(clazz, recordsError, true));
             printer.flush();
         } catch (Exception ex) {
-            this.error(ex, "Erro ao gerar o arquivo de erros de importação.");
+            ErrorUtil.error(log, ex, "Erro ao gerar o arquivo de erros de importação.");
         }
     }
 
@@ -95,7 +99,7 @@ public class CsvService {
                             .setIgnoreEmptyLines(true)
                             .build());
         } catch (Exception ex) {
-            this.error(ex, "Erro ao importar o arquivo.");
+            ErrorUtil.error(log, ex, "Erro ao importar o arquivo.");
         }
         return null;
     }
@@ -115,7 +119,7 @@ public class CsvService {
                 }
             }
         } catch (Exception ex) {
-            this.error(ex, "Erro ao gerar os registros do arquivo.");
+            ErrorUtil.error(log, ex, "Erro ao gerar os registros do arquivo.");
         }
         return list;
     }
@@ -211,13 +215,6 @@ public class CsvService {
             log.error(msgError, e);
             throw new CsvErrorException(msgError);
         }
-    }
-
-    private void error(Exception ex, String msgError) throws BusinessException {
-        var tag = UUID.randomUUID();
-        msgError = msgError.concat(" Código do erro: " + tag.toString());
-        log.error(msgError, ex);
-        throw new BusinessException(msgError);
     }
 
     private <T extends BaseImportCsvDTO> String[] getHeader(Class<T> clazz, boolean addError) {

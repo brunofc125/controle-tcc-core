@@ -67,4 +67,10 @@ public class ProfessorController {
         return professorImportFacade.importFile(file);
     }
 
+    @PreAuthorize("hasAnyAuthority('professor.read', 'membro-banca.read')")
+    @GetMapping("candidato-banca/{idProjetoTcc}")
+    public List<ProfessorDTO> getCandidatosBanca(@PathVariable Long idProjetoTcc) throws BusinessException {
+        return professorFacade.getCandidatosBanca(idProjetoTcc);
+    }
+
 }

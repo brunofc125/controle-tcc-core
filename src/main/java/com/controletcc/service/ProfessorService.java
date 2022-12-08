@@ -93,4 +93,8 @@ public class ProfessorService {
         return professorRepository.getSupervisoresByIdAreaTcc(idAreaTcc);
     }
 
+    public List<Professor> getAllByAreaTccAndNotProfessores(Long idAreaTcc, List<Long> idProfessores) {
+        return professorRepository.getAllByAreaTccAndNotProfessores(idAreaTcc, idProfessores);
+    }
+
 }
