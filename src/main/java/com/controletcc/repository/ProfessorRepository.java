@@ -54,4 +54,15 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     )
     List<Professor> getSupervisoresByIdAreaTcc(Long idAreaTcc);
 
+    @Query(value = """
+            SELECT p
+            FROM Professor p
+            JOIN p.areas at
+            WHERE at.id = :idAreaTcc
+              AND p.id not in :idProfessores
+            ORDER BY p.nome
+            """
+    )
+    List<Professor> getAllByAreaTccAndNotProfessores(Long idAreaTcc, List<Long> idProfessores);
+
 }

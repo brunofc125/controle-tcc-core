@@ -69,4 +69,7 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('agenda-apresentacao.create', false, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('agenda-apresentacao.read', false, true, true, false);
-
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('membro-banca.create', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('membro-banca.read', false, true, true, true);

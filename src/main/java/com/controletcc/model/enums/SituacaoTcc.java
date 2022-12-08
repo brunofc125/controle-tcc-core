@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum SituacaoTcc {
     EM_ANDAMENTO("Em andamento", false),
-    A_DEFENDER("Á defender", false),
+    A_APRESENTAR("Á apresentar", false),
     APROVADO("Aprovado", true),
     REPROVADO("Reprovado", true),
     CANCELADO("Cancelado", true);
