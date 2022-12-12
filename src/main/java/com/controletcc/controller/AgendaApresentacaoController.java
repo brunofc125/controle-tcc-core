@@ -1,5 +1,6 @@
 package com.controletcc.controller;
 
+import com.controletcc.dto.AgendaParaApresentacaoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
@@ -9,6 +10,8 @@ import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/agendas-apresentacoes")
@@ -42,4 +45,15 @@ public class AgendaApresentacaoController {
         return agendaApresentacaoFacade.update(agendaApresentacao);
     }
 
+    @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read')")
+    @GetMapping("ativas-by-projeto-tcc/{idProjetoTcc}")
+    public List<AgendaApresentacaoDTO> getAgendasAtivasByIdProjetoTcc(@PathVariable Long idProjetoTcc) {
+        return agendaApresentacaoFacade.getAgendasAtivasByIdProjetoTcc(idProjetoTcc);
+    }
+
+    @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read')")
+    @GetMapping("agenda-para-apresentacao/{idAgendaApresentacao}/{idProjetoTcc}")
+    public AgendaParaApresentacaoDTO getAgendaParaApresentacao(@PathVariable Long idAgendaApresentacao, @PathVariable Long idProjetoTcc) {
+        return agendaApresentacaoFacade.getAgendaParaApresentacao(idAgendaApresentacao, idProjetoTcc);
+    }
 }

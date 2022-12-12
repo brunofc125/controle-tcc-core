@@ -1,5 +1,6 @@
 package com.controletcc.facade;
 
+import com.controletcc.dto.AgendaParaApresentacaoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
@@ -7,9 +8,7 @@ import com.controletcc.model.dto.AgendaApresentacaoDTO;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
-import com.controletcc.service.AgendaApresentacaoRestricaoService;
-import com.controletcc.service.AgendaApresentacaoService;
-import com.controletcc.service.ProfessorService;
+import com.controletcc.service.*;
 import com.controletcc.util.AuthUtil;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,10 @@ public class AgendaApresentacaoFacade {
     private final AgendaApresentacaoRestricaoService agendaApresentacaoRestricaoService;
 
     private final ProfessorService professorService;
+
+    private final ProjetoTccService projetoTccService;
+
+    private final ApresentacaoService apresentacaoService;
 
     public AgendaApresentacaoDTO getById(Long id) {
         var agendaApresentacao = agendaApresentacaoService.getById(id);
@@ -66,5 +69,21 @@ public class AgendaApresentacaoFacade {
         }
         return agendaApresentacaoRestricaoService.saveAll(agendaApresentacao.getId(), restricoes);
     }
+
+    public List<AgendaApresentacaoDTO> getAgendasAtivasByIdProjetoTcc(Long idProjetoTcc) {
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        return ModelMapperUtil.mapAll(agendaApresentacaoService.getAgendasAtivasByTipoTccAndAreaTcc(projetoTcc.getTipoTcc(), projetoTcc.getIdAreaTcc()), AgendaApresentacaoDTO.class);
+    }
+
+    public AgendaParaApresentacaoDTO getAgendaParaApresentacao(Long idAgendaApresentacao, Long idProjetoTcc) {
+        var agendaApresentacao = agendaApresentacaoService.getById(idAgendaApresentacao);
+        var agendaParaApresentacao = new AgendaParaApresentacaoDTO();
+        agendaParaApresentacao.setId(agendaApresentacao.getId());
+        agendaParaApresentacao.setDescricao(agendaApresentacao.getDescricao());
+        agendaParaApresentacao.setAgendaRestricoes(agendaApresentacao.getAgendaApresentacaoRestricoes());
+        agendaParaApresentacao.setOutrasApresentacoes(apresentacaoService.getAllByAgendaApresentacaoIdAndProjetoTccIdNot(idAgendaApresentacao, idProjetoTcc));
+        return agendaParaApresentacao;
+    }
+
 }
 
