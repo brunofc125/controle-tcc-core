@@ -53,4 +53,6 @@ public interface AgendaApresentacaoRepository extends JpaRepository<AgendaAprese
     )
     boolean existsIntersect(Long id, Long idAreaTcc, TipoTcc tipoTcc, LocalDate dataInicial, LocalDate dataFinal);
 
+    List<AgendaApresentacao> getAllByTipoTccAndAreaTccIdAndDataFinalGreaterThanEqual(TipoTcc tipoTcc, Long idAreaTcc, LocalDate data);
+
 }

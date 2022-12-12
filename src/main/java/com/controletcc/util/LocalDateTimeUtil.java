@@ -40,4 +40,10 @@ public class LocalDateTimeUtil {
         return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(pattern));
     }
 
+    public static String getHoursTitle(@NonNull LocalDateTime start, @NonNull LocalDateTime end) {
+        var pattern = "HH:mm";
+        var startStr = localDateTimeToString(start, pattern);
+        var endStr = localDateTimeToString(end, pattern);
+        return startStr + " - " + endStr;
+    }
 }
