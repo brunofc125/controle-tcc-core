@@ -20,6 +20,7 @@ public class AgendaParaApresentacaoDTO implements Serializable {
     private String descricao;
     private List<EventoDTO> agendaRestricoes;
     private List<EventoDTO> outrasApresentacoes;
+    private List<EventoDTO> professorCompromisso;
 
     public void setAgendaRestricoes(List<AgendaApresentacaoRestricao> restricoes) {
         this.agendaRestricoes = restricoes != null && !restricoes.isEmpty() ? restricoes.stream().map(EventoDTO::new).toList() : Collections.emptyList();
@@ -28,4 +29,5 @@ public class AgendaParaApresentacaoDTO implements Serializable {
     public void setOutrasApresentacoes(List<Apresentacao> apresentacoes) {
         this.outrasApresentacoes = apresentacoes != null && !apresentacoes.isEmpty() ? apresentacoes.stream().map(EventoDTO::new).toList() : Collections.emptyList();
     }
+
 }

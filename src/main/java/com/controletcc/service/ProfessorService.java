@@ -6,6 +6,7 @@ import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Professor;
 import com.controletcc.repository.ProfessorRepository;
 import com.controletcc.repository.projection.ProfessorProjection;
+import com.controletcc.util.AuthUtil;
 import com.controletcc.util.StringUtil;
 import com.controletcc.util.ValidatorUtil;
 import lombok.NonNull;
@@ -16,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +99,19 @@ public class ProfessorService {
 
     public List<Professor> getAllByAreaTccAndNotProfessores(Long idAreaTcc, List<Long> idProfessores) {
         return professorRepository.getAllByAreaTccAndNotProfessores(idAreaTcc, idProfessores);
+    }
+
+    public Professor getProfessorLogado() throws BusinessException {
+        var professor = getProfessorByUsuarioId(AuthUtil.getUserIdLogged());
+        if (professor == null) {
+            throw new BusinessException("O usuário logado não é um professor");
+        }
+        return professor;
+    }
+
+    public Map<Long, String> getNomeMappedByIds(List<Long> idList) {
+        var professores = professorRepository.getAllByIdIn(idList);
+        return professores.stream().collect(toMap(Professor::getId, Professor::getNome));
     }
 
 }

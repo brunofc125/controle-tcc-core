@@ -51,6 +51,12 @@ public class AgendaApresentacaoController {
         return agendaApresentacaoFacade.getAgendasAtivasByIdProjetoTcc(idProjetoTcc);
     }
 
+    @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read', 'professor-compromisso.read')")
+    @GetMapping("ativas-by-professor-logado")
+    public List<AgendaApresentacaoDTO> getAgendasAtivasByProfessorLogado() throws BusinessException {
+        return agendaApresentacaoFacade.getAgendasAtivasByProfessorLogado();
+    }
+
     @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read')")
     @GetMapping("agenda-para-apresentacao/{idAgendaApresentacao}/{idProjetoTcc}")
     public AgendaParaApresentacaoDTO getAgendaParaApresentacao(@PathVariable Long idAgendaApresentacao, @PathVariable Long idProjetoTcc) {

@@ -65,4 +65,6 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     )
     List<Professor> getAllByAreaTccAndNotProfessores(Long idAreaTcc, List<Long> idProfessores);
 
+    List<Professor> getAllByIdIn(List<Long> idList);
+
 }

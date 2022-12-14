@@ -23,6 +23,8 @@ public interface MembroBancaRepository extends JpaRepository<MembroBanca, Long> 
     )
     List<MembroBancaProjection> getAllByIdProjetoTcc(Long idProjetoTcc);
 
+    List<MembroBanca> getAllByProjetoTccIdAndDataConfirmacaoIsNotNull(Long idProjetoTcc);
+
     boolean existsByProjetoTccIdAndProfessorId(Long idProjetoTcc, Long idProfessor);
 
 }

@@ -2,6 +2,8 @@ package com.controletcc.dto;
 
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.model.entity.Apresentacao;
+import com.controletcc.model.enums.TipoCompromisso;
+import com.controletcc.repository.projection.ProfessorCompromissoProjection;
 import com.controletcc.util.LocalDateTimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,5 +35,18 @@ public class EventoDTO implements Serializable {
         this.descricao = LocalDateTimeUtil.getHoursTitle(apresentacao.getDataInicial(), apresentacao.getDataFinal()) + ": Outra Apresentação";
         this.start = apresentacao.getDataInicial();
         this.end = apresentacao.getDataFinal();
+    }
+
+    public EventoDTO(ProfessorCompromissoProjection compromisso) {
+        this.id = compromisso.getId();
+        var descricao = LocalDateTimeUtil.getHoursTitle(compromisso.getDataInicial(), compromisso.getDataFinal());
+        if (TipoCompromisso.APRESENTACAO.equals(compromisso.getTipoCompromisso())) {
+            descricao += ": " + compromisso.getAlunosNome();
+        } else {
+            descricao += ": " + compromisso.getDescricao();
+        }
+        this.descricao = descricao;
+        this.start = compromisso.getDataInicial();
+        this.end = compromisso.getDataFinal();
     }
 }
