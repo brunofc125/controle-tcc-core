@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
 
     @Query(value = """  
@@ -48,5 +50,19 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
                                       Long idAluno,
                                       String nomeAluno,
                                       Pageable pageable);
+
+    @Query(value = """  
+            SELECT count(distinct pt.id) > 0
+            FROM ProjetoTcc pt
+            join pt.situacaoAtual s
+            join pt.alunos a
+                where a.id = :idAluno
+                and (
+                    (s.tipoTcc = 'QUALIFICACAO' and s.situacaoTcc in :situacaoTccsAtivosQualificacao)
+                    or (s.tipoTcc = 'DEFESA' and s.situacaoTcc in :situacaoTccsAtivosDefesa)
+                )
+               """
+    )
+    boolean existsAtivoByIdAluno(Long idAluno, List<SituacaoTcc> situacaoTccsAtivosQualificacao, List<SituacaoTcc> situacaoTccsAtivosDefesa);
 
 }

@@ -102,4 +102,8 @@ public class AgendaApresentacaoService {
         return agendaApresentacaoRepository.getAllByTipoTccAndAreaTccIdAndDataFinalGreaterThanEqual(tipoTcc, idAreaTcc, LocalDate.now());
     }
 
+    public List<AgendaApresentacao> getAgendasAtivasByAreaTccIdIn(List<Long> idAreaTccList) {
+        return agendaApresentacaoRepository.getAllByAreaTccIdInAndDataFinalGreaterThanEqual(idAreaTccList, LocalDate.now());
+    }
+
 }

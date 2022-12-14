@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -61,6 +62,14 @@ public class AgendaApresentacao extends BaseEntity {
         } else {
             this.areaTcc = null;
         }
+    }
+
+    public LocalDateTime getDataHoraInicial() {
+        return this.dataInicial.atTime(this.horaInicial, 0);
+    }
+
+    public LocalDateTime getDataHoraFinal() {
+        return this.dataFinal.atTime(this.horaFinal, 0);
     }
 
 }

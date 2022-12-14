@@ -29,7 +29,7 @@ public interface AgendaApresentacaoRepository extends JpaRepository<AgendaAprese
                 and (:tipoTcc is null or aa.tipoTcc = :tipoTcc)
                 and (:idAreaTcc is null or at.id = :idAreaTcc)
                 and (cast( :dataInicial as date ) is null or aa.dataInicial >= cast( :dataInicial as date ) )
-                and (cast( :dataFinal as date ) is null or aa.dataFinal >= cast( :dataFinal as date ) )"""
+                and (cast( :dataFinal as date ) is null or aa.dataFinal <= cast( :dataFinal as date ) )"""
     )
     Page<AgendaApresentacaoProjection> search(Long id,
                                               List<Long> idAreaTccList,
@@ -54,5 +54,7 @@ public interface AgendaApresentacaoRepository extends JpaRepository<AgendaAprese
     boolean existsIntersect(Long id, Long idAreaTcc, TipoTcc tipoTcc, LocalDate dataInicial, LocalDate dataFinal);
 
     List<AgendaApresentacao> getAllByTipoTccAndAreaTccIdAndDataFinalGreaterThanEqual(TipoTcc tipoTcc, Long idAreaTcc, LocalDate data);
+
+    List<AgendaApresentacao> getAllByAreaTccIdInAndDataFinalGreaterThanEqual(List<Long> idAreaTccList, LocalDate data);
 
 }

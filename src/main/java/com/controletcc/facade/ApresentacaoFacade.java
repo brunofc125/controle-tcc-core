@@ -3,6 +3,7 @@ package com.controletcc.facade;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ApresentacaoDTO;
 import com.controletcc.model.entity.Apresentacao;
+import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.service.AgendaApresentacaoService;
 import com.controletcc.service.ApresentacaoService;
 import com.controletcc.service.ProjetoTccService;
@@ -25,6 +26,8 @@ public class ApresentacaoFacade {
 
     private final AgendaApresentacaoService agendaApresentacaoService;
 
+    private final ProjetoTccSituacaoFacade projetoTccSituacaoFacade;
+
     public ApresentacaoDTO getByProjetoTcc(@NonNull Long idProjetoTcc) {
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var apresentacao = apresentacaoService.getFirstByProjetoTccIdAndTipoTcc(idProjetoTcc, projetoTcc.getTipoTcc());
@@ -34,6 +37,7 @@ public class ApresentacaoFacade {
     public ApresentacaoDTO insert(ApresentacaoDTO apresentacaoDTO) throws BusinessException {
         var apresentacao = buildApresentacao(apresentacaoDTO);
         apresentacao = apresentacaoService.insert(apresentacao);
+        projetoTccSituacaoFacade.nextStep(apresentacao.getIdProjetoTcc(), SituacaoTcc.A_APRESENTAR);
         return ModelMapperUtil.map(apresentacao, ApresentacaoDTO.class);
     }
 

@@ -77,5 +77,9 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('apresentacao.create', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('apresentacao.read', false, true, true, true);
-
--- apresentacao.read
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('professor-compromisso.create', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('professor-compromisso.read', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('professor-compromisso.delete', false, true, true, true);

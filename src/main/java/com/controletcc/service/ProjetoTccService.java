@@ -4,8 +4,11 @@ import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.ProjetoTccGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.ProjetoTcc;
+import com.controletcc.model.entity.ProjetoTccSituacao;
+import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.repository.ProjetoTccRepository;
 import com.controletcc.repository.projection.ProjetoTccProjection;
+import com.controletcc.util.StringUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,8 +58,59 @@ public class ProjetoTccService {
         return projetoTccRepository.save(projetoTcc);
     }
 
+    public void updateSituacao(@NonNull Long idProjetoTcc, @NonNull ProjetoTccSituacao situacao) {
+        var projetoTcc = getById(idProjetoTcc);
+        projetoTcc.setSituacaoAtual(situacao);
+        projetoTccRepository.save(projetoTcc);
+    }
+
+    public boolean existsAtivoByIdAluno(@NonNull Long idAluno) {
+        return projetoTccRepository.existsAtivoByIdAluno(idAluno, Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR, SituacaoTcc.APROVADO), Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR));
+    }
+
     private void validate(ProjetoTcc projetoTcc) throws BusinessException {
         var errors = new ArrayList<String>();
+
+        if (StringUtil.isNullOrBlank(projetoTcc.getTema())) {
+            errors.add("Tema não informado");
+        }
+
+        if (StringUtil.isNullOrBlank(projetoTcc.getAnoPeriodo())) {
+            errors.add("Ano/Período não informado");
+        }
+
+        if (projetoTcc.getProfessorOrientador() == null) {
+            errors.add("Professor orientador não informado");
+        }
+
+        if (projetoTcc.getAreaTcc() == null) {
+            errors.add("Área de TCC não informada");
+        }
+
+        if (projetoTcc.getProfessorSupervisor() == null) {
+            errors.add("Professor supervisor não informado");
+        }
+
+        if (projetoTcc.getAlunos() == null || projetoTcc.getAlunos().isEmpty()) {
+            errors.add("Aluno(s) não informado(s)");
+        }
+
+        if (errors.isEmpty()) {
+            var idAlunoListError = new ArrayList<Long>();
+            for (var idAluno : projetoTcc.getIdAlunoList()) {
+                if (existsAtivoByIdAluno(idAluno)) {
+                    idAlunoListError.add(idAluno);
+                }
+            }
+            if (!idAlunoListError.isEmpty()) {
+                if (idAlunoListError.size() > 1) {
+                    var idAlunoListErrorStr = idAlunoListError.stream().map(Object::toString).collect(Collectors.joining(", "));
+                    errors.add("Existem outros projetos de TCC ativos para os alunos(as) de ID: " + idAlunoListErrorStr);
+                } else {
+                    errors.add("Existe outro projeto de TCC ativo para o aluno(a) de ID: " + idAlunoListError.get(0));
+                }
+            }
+        }
 
         if (!errors.isEmpty()) {
             throw new BusinessException(errors);

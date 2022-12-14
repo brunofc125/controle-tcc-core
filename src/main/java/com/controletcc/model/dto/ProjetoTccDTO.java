@@ -1,8 +1,8 @@
 package com.controletcc.model.dto;
 
 import com.controletcc.model.dto.base.BaseDTO;
-import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoTcc;
+import com.controletcc.model.enums.SituacaoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

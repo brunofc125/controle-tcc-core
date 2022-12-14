@@ -1,22 +1,31 @@
 package com.controletcc.facade;
 
 import com.controletcc.dto.AgendaParaApresentacaoDTO;
+import com.controletcc.dto.EventoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.AgendaApresentacaoDTO;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
+import com.controletcc.model.entity.MembroBanca;
+import com.controletcc.model.enums.TipoCompromisso;
+import com.controletcc.model.view.VwProfessorCompromisso;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import com.controletcc.service.*;
-import com.controletcc.util.AuthUtil;
+import com.controletcc.util.LocalDateTimeUtil;
 import com.controletcc.util.ModelMapperUtil;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 @Component
 @RequiredArgsConstructor
@@ -34,16 +43,17 @@ public class AgendaApresentacaoFacade {
 
     private final ApresentacaoService apresentacaoService;
 
+    private final VwProfessorCompromissoService vwProfessorCompromissoService;
+
+    private final MembroBancaService membroBancaService;
+
     public AgendaApresentacaoDTO getById(Long id) {
         var agendaApresentacao = agendaApresentacaoService.getById(id);
         return ModelMapperUtil.map(agendaApresentacao, AgendaApresentacaoDTO.class);
     }
 
     public ListResponse<AgendaApresentacaoProjection> search(AgendaApresentacaoGridOptions options) throws BusinessException {
-        var professor = professorService.getProfessorByUsuarioId(AuthUtil.getUserIdLogged());
-        if (professor == null) {
-            throw new BusinessException("O usuário logado não é um professor, apenas professores podem visualizar a agenda de apresentações");
-        }
+        var professor = professorService.getProfessorLogado();
         return agendaApresentacaoService.search(professor.getIdAreaList(), options);
     }
 
@@ -75,13 +85,59 @@ public class AgendaApresentacaoFacade {
         return ModelMapperUtil.mapAll(agendaApresentacaoService.getAgendasAtivasByTipoTccAndAreaTcc(projetoTcc.getTipoTcc(), projetoTcc.getIdAreaTcc()), AgendaApresentacaoDTO.class);
     }
 
-    public AgendaParaApresentacaoDTO getAgendaParaApresentacao(Long idAgendaApresentacao, Long idProjetoTcc) {
+    public List<AgendaApresentacaoDTO> getAgendasAtivasByProfessorLogado() throws BusinessException {
+        var professorLogado = professorService.getProfessorLogado();
+        return ModelMapperUtil.mapAll(agendaApresentacaoService.getAgendasAtivasByAreaTccIdIn(professorLogado.getIdAreaList()), AgendaApresentacaoDTO.class);
+    }
+
+    public AgendaParaApresentacaoDTO getAgendaParaApresentacao(@NonNull Long idAgendaApresentacao, @NonNull Long idProjetoTcc) {
         var agendaApresentacao = agendaApresentacaoService.getById(idAgendaApresentacao);
         var agendaParaApresentacao = new AgendaParaApresentacaoDTO();
         agendaParaApresentacao.setId(agendaApresentacao.getId());
         agendaParaApresentacao.setDescricao(agendaApresentacao.getDescricao());
         agendaParaApresentacao.setAgendaRestricoes(agendaApresentacao.getAgendaApresentacaoRestricoes());
         agendaParaApresentacao.setOutrasApresentacoes(apresentacaoService.getAllByAgendaApresentacaoIdAndProjetoTccIdNot(idAgendaApresentacao, idProjetoTcc));
+
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        var idProfessorList = new ArrayList<>(Stream.of(projetoTcc.getIdProfessorSupervisor(), projetoTcc.getIdProfessorOrientador()).distinct().toList());
+        var membrosBanca = membroBancaService.getConfirmadosByIdProjetoTcc(idProjetoTcc);
+        var idProfessorBancaList = membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList();
+        idProfessorList.addAll(idProfessorBancaList);
+        var nomeProfessorMap = professorService.getNomeMappedByIds(idProfessorList);
+
+        var compromissos = vwProfessorCompromissoService.getByProfessoresAndDataAndNotAgenda(idProfessorList, agendaApresentacao.getDataHoraInicial(), agendaApresentacao.getDataHoraFinal(), idAgendaApresentacao);
+        var compromissosMap = compromissos.stream().collect(
+                groupingBy(
+                        c -> new VwProfessorCompromisso.Compromisso(c.getTipoCompromisso(), c.getTipoTcc(), c.getId(), c.getIdProfessor(), c.getIdProfessorSupervisor(), c.getIdProfessorOrientador(), c.getDataInicial(), c.getDataFinal()),
+                        mapping(VwProfessorCompromisso::getIdProfessorBanca, toList())
+                )
+        );
+
+        var eventos = new ArrayList<EventoDTO>();
+        for (var compromissoSet : compromissosMap.entrySet()) {
+            var compromisso = compromissoSet.getKey();
+            StringBuilder descricao = new StringBuilder(LocalDateTimeUtil.getHoursTitle(compromisso.dataInicial(), compromisso.dataFinal()));
+            if (TipoCompromisso.COMPROMISSO_PESSOAL.equals(compromisso.tipoCompromisso())) {
+                descricao.append(": Professor Ocupado");
+                descricao.append("<p>").append(nomeProfessorMap.get(compromisso.idProfessor())).append("</p>");
+            } else {
+                descricao.append(": Outra Apresentação");
+                if (nomeProfessorMap.containsKey(compromisso.idProfessorSupervisor())) {
+                    descricao.append("<p>Supervisor: ").append(nomeProfessorMap.get(compromisso.idProfessorSupervisor())).append("</p>");
+                }
+                if (nomeProfessorMap.containsKey(compromisso.idProfessorOrientador())) {
+                    descricao.append("<p>Orientador: ").append(nomeProfessorMap.get(compromisso.idProfessorOrientador())).append("</p>");
+                }
+                var nomeProfessoresBanca = compromissoSet.getValue().stream().filter(nomeProfessorMap::containsKey).map(c -> "<p>" + nomeProfessorMap.get(c) + "</p>").collect(joining());
+                if (!nomeProfessoresBanca.isBlank()) {
+                    descricao.append("<p>Membro da Banca:</p>").append(nomeProfessoresBanca);
+                }
+            }
+            var evento = new EventoDTO(compromisso.id(), descricao.toString(), compromisso.dataInicial(), compromisso.dataFinal());
+            eventos.add(evento);
+        }
+        agendaParaApresentacao.setProfessorCompromisso(eventos);
+
         return agendaParaApresentacao;
     }
 
