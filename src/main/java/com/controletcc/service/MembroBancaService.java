@@ -71,7 +71,6 @@ public class MembroBancaService {
     }
 
     public void delete(Long id) {
-        // TODO: Validar antes de deletar
         membroBancaRepository.deleteById(id);
     }
 
