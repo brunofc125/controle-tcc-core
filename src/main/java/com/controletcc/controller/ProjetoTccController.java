@@ -42,4 +42,16 @@ public class ProjetoTccController {
         return projetoTccFacade.update(projetoTcc);
     }
 
+    @PreAuthorize("hasAuthority('projeto-tcc.cancel')")
+    @PatchMapping("cancelar/{id}")
+    public void cancelar(@PathVariable Long id, @RequestBody String motivo) throws BusinessException {
+        projetoTccFacade.cancelar(id, motivo);
+    }
+
+    @PreAuthorize("hasAuthority('projeto-tcc.reprove')")
+    @PatchMapping("reprovar/{id}")
+    public void reprovar(@PathVariable Long id, @RequestBody String motivo) throws BusinessException {
+        projetoTccFacade.reprovar(id, motivo);
+    }
+
 }

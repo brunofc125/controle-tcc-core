@@ -29,7 +29,7 @@ public class ProjetoTccSituacaoService {
         return projetoTccSituacaoRepository.save(projetoTccSituacao);
     }
 
-    public ProjetoTccSituacao nextStep(@NonNull Long idProjetoTcc, @NonNull SituacaoTcc situacaoTcc) throws BusinessException {
+    public ProjetoTccSituacao nextStep(@NonNull Long idProjetoTcc, @NonNull SituacaoTcc situacaoTcc, String motivo) throws BusinessException {
         var situacaoAtual = projetoTccSituacaoRepository.getSituacaoAtualByIdProjetoTcc(idProjetoTcc);
         if (situacaoAtual.getSituacaoTcc().equals(situacaoTcc)) {
             throw new BusinessException("O TCC já está na situação " + situacaoTcc.getDescricao());
@@ -46,6 +46,7 @@ public class ProjetoTccSituacaoService {
         projetoTccSituacao.setIdProjetoTcc(idProjetoTcc);
         projetoTccSituacao.setTipoTcc(situacaoAtual.getTipoTcc());
         projetoTccSituacao.setSituacaoTcc(situacaoTcc);
+        projetoTccSituacao.setMotivo(motivo);
         if (situacaoTcc.isSituacaoFinal()) {
             projetoTccSituacao.setDataConclusao(LocalDateTime.now());
         }
