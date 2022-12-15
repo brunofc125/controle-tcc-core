@@ -31,18 +31,23 @@ public class ProjetoTccService {
         return projetoTccRepository.getReferenceById(id);
     }
 
-    public ListResponse<ProjetoTccProjection> searchByProfessorOrientador(@NonNull Long idProfessorOrientador, @NonNull ProjetoTccGridOptions options) {
-        var page = projetoTccRepository.search(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), idProfessorOrientador, null, null, null, options.getNomeAluno(), options.getPageable());
+    public ListResponse<ProjetoTccProjection> searchSupervisor(@NonNull Long idProfessorSupervisor, @NonNull ProjetoTccGridOptions options) {
+        var page = projetoTccRepository.searchSupervisor(idProfessorSupervisor, options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno(), options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 
-    public ListResponse<ProjetoTccProjection> searchByProfessorSupervisor(@NonNull Long idProfessorSupervisor, @NonNull ProjetoTccGridOptions options) {
-        var page = projetoTccRepository.search(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), null, options.getNomeProfessorOrientador(), idProfessorSupervisor, null, options.getNomeAluno(), options.getPageable());
+    public ListResponse<ProjetoTccProjection> searchOrientador(@NonNull Long idProfessorOrientador, @NonNull ProjetoTccGridOptions options) {
+        var page = projetoTccRepository.searchOrientador(idProfessorOrientador, options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeAluno(), options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 
-    public ListResponse<ProjetoTccProjection> searchByAluno(@NonNull Long idAluno, @NonNull ProjetoTccGridOptions options) {
-        var page = projetoTccRepository.search(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), null, null, null, idAluno, null, options.getPageable());
+    public ListResponse<ProjetoTccProjection> searchMembroBanca(@NonNull Long idProfessorBanca, @NonNull ProjetoTccGridOptions options) {
+        var page = projetoTccRepository.searchMembroBanca(idProfessorBanca, options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno(), options.getSituacaoSolicitacaoBancaName(), options.getPageable());
+        return new ListResponse<>(page.getContent(), page.getTotalElements());
+    }
+
+    public ListResponse<ProjetoTccProjection> searchAluno(@NonNull Long idAluno, @NonNull ProjetoTccGridOptions options) {
+        var page = projetoTccRepository.searchAluno(idAluno, options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 

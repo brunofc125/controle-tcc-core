@@ -3,6 +3,8 @@ package com.controletcc.repository.projection;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoTcc;
 
+import java.time.LocalDateTime;
+
 public interface ProjetoTccProjection {
     Long getId();
 
@@ -18,6 +20,9 @@ public interface ProjetoTccProjection {
 
     TipoTcc getTipoTcc();
 
-    SituacaoTcc getSituacaoTcc();
+    LocalDateTime getDataSolicitacaoBanca();
 
+    LocalDateTime getDataConfirmacaoBanca();
+
+    SituacaoTcc getSituacaoTcc();
 }

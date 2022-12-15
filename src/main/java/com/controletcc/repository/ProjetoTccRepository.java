@@ -28,28 +28,126 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
             join pt.alunos a
             join pt.professorOrientador po
             join pt.professorSupervisor ps
-                where (:id is null or pt.id = :id)
+                where ps.id = :idProfessorSupervisor
+                and (:id is null or pt.id = :id)
                 and (:tema is null or lower(pt.tema) like concat('%', trim(lower(:tema)),'%') )
                 and (:anoPeriodo is null or lower(pt.anoPeriodo) like concat('%', trim(lower(:anoPeriodo)),'%') )
                 and (:tipoTcc is null or s.tipoTcc = :tipoTcc)
                 and (:situacaoTcc is null or s.situacaoTcc = :situacaoTcc)
-                and (:idProfessorOrientador is null or po.id = :idProfessorOrientador)
                 and (:nomeProfessorOrientador is null or lower(po.nome) like concat('%', trim(lower(:nomeProfessorOrientador)),'%') )
-                and (:idProfessorSupervisor is null or ps.id = :idProfessorSupervisor or po.id = :idProfessorSupervisor)
-                and (:idAluno is null or a.id = :idAluno)
                 and (:nomeAluno is null or lower(a.nome) like concat('%', trim(lower(:nomeAluno)),'%') )"""
     )
-    Page<ProjetoTccProjection> search(Long id,
-                                      String tema,
-                                      String anoPeriodo,
-                                      TipoTcc tipoTcc,
-                                      SituacaoTcc situacaoTcc,
-                                      Long idProfessorOrientador,
-                                      String nomeProfessorOrientador,
-                                      Long idProfessorSupervisor,
-                                      Long idAluno,
-                                      String nomeAluno,
-                                      Pageable pageable);
+    Page<ProjetoTccProjection> searchSupervisor(Long idProfessorSupervisor,
+                                                Long id,
+                                                String tema,
+                                                String anoPeriodo,
+                                                TipoTcc tipoTcc,
+                                                SituacaoTcc situacaoTcc,
+                                                String nomeProfessorOrientador,
+                                                String nomeAluno,
+                                                Pageable pageable);
+
+    @Query(value = """  
+            SELECT distinct
+                pt.id as id,
+                pt.tema as tema,
+                pt.alunosNome as alunos,
+                po.nome as professorOrientador,
+                ps.nome as professorSupervisor,
+                pt.anoPeriodo as anoPeriodo,
+                s.tipoTcc as tipoTcc,
+                s.situacaoTcc as situacaoTcc
+            FROM ProjetoTcc pt
+            join pt.situacaoAtual s
+            join pt.alunos a
+            join pt.professorOrientador po
+            join pt.professorSupervisor ps
+                where po.id = :idProfessorOrientador
+                and (:id is null or pt.id = :id)
+                and (:tema is null or lower(pt.tema) like concat('%', trim(lower(:tema)),'%') )
+                and (:anoPeriodo is null or lower(pt.anoPeriodo) like concat('%', trim(lower(:anoPeriodo)),'%') )
+                and (:tipoTcc is null or s.tipoTcc = :tipoTcc)
+                and (:situacaoTcc is null or s.situacaoTcc = :situacaoTcc)
+                and (:nomeAluno is null or lower(a.nome) like concat('%', trim(lower(:nomeAluno)),'%') )"""
+    )
+    Page<ProjetoTccProjection> searchOrientador(Long idProfessorOrientador,
+                                                Long id,
+                                                String tema,
+                                                String anoPeriodo,
+                                                TipoTcc tipoTcc,
+                                                SituacaoTcc situacaoTcc,
+                                                String nomeAluno,
+                                                Pageable pageable);
+
+    @Query(value = """  
+            SELECT distinct
+                pt.id as id,
+                pt.tema as tema,
+                pt.alunosNome as alunos,
+                po.nome as professorOrientador,
+                ps.nome as professorSupervisor,
+                pt.anoPeriodo as anoPeriodo,
+                s.tipoTcc as tipoTcc,
+                mb.dataSolicitacao as dataSolicitacaoBanca,
+                mb.dataConfirmacao as dataConfirmacaoBanca,
+                s.situacaoTcc as situacaoTcc
+            FROM ProjetoTcc pt
+            join pt.situacaoAtual s
+            join pt.alunos a
+            join pt.professorOrientador po
+            join pt.professorSupervisor ps
+            join MembroBanca mb on mb.projetoTcc.id = pt.id
+            join mb.professor pmb
+                where pmb.id = :idProfessorMembroBanca
+                and (:id is null or pt.id = :id)
+                and (:tema is null or lower(pt.tema) like concat('%', trim(lower(:tema)),'%') )
+                and (:anoPeriodo is null or lower(pt.anoPeriodo) like concat('%', trim(lower(:anoPeriodo)),'%') )
+                and (:tipoTcc is null or s.tipoTcc = :tipoTcc)
+                and (:situacaoTcc is null or s.situacaoTcc = :situacaoTcc)
+                and (:nomeProfessorOrientador is null or lower(po.nome) like concat('%', trim(lower(:nomeProfessorOrientador)),'%') )
+                and (:nomeAluno is null or lower(a.nome) like concat('%', trim(lower(:nomeAluno)),'%') )
+                and (:situacaoSolicitacaoBanca is null or (:situacaoSolicitacaoBanca = 'CONFIRMADO' and mb.dataConfirmacao is not null) or (:situacaoSolicitacaoBanca = 'NAO_CONFIRMADO' and mb.dataConfirmacao is null))"""
+    )
+    Page<ProjetoTccProjection> searchMembroBanca(Long idProfessorMembroBanca,
+                                                 Long id,
+                                                 String tema,
+                                                 String anoPeriodo,
+                                                 TipoTcc tipoTcc,
+                                                 SituacaoTcc situacaoTcc,
+                                                 String nomeProfessorOrientador,
+                                                 String nomeAluno,
+                                                 String situacaoSolicitacaoBanca,
+                                                 Pageable pageable);
+
+    @Query(value = """  
+            SELECT distinct
+                pt.id as id,
+                pt.tema as tema,
+                pt.alunosNome as alunos,
+                po.nome as professorOrientador,
+                ps.nome as professorSupervisor,
+                pt.anoPeriodo as anoPeriodo,
+                s.tipoTcc as tipoTcc,
+                s.situacaoTcc as situacaoTcc
+            FROM ProjetoTcc pt
+            join pt.situacaoAtual s
+            join pt.alunos a
+            join pt.professorOrientador po
+            join pt.professorSupervisor ps
+                where a.id = :idAluno
+                and (:id is null or pt.id = :id)
+                and (:tema is null or lower(pt.tema) like concat('%', trim(lower(:tema)),'%') )
+                and (:anoPeriodo is null or lower(pt.anoPeriodo) like concat('%', trim(lower(:anoPeriodo)),'%') )
+                and (:tipoTcc is null or s.tipoTcc = :tipoTcc)
+                and (:situacaoTcc is null or s.situacaoTcc = :situacaoTcc)"""
+    )
+    Page<ProjetoTccProjection> searchAluno(Long idAluno,
+                                           Long id,
+                                           String tema,
+                                           String anoPeriodo,
+                                           TipoTcc tipoTcc,
+                                           SituacaoTcc situacaoTcc,
+                                           Pageable pageable);
 
     @Query(value = """  
             SELECT count(distinct pt.id) > 0

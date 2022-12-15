@@ -68,5 +68,15 @@ public class MembroBancaFacade {
         emailService.sendSolicitacaoMembroBancaRemovida(membroBanca.getProfessor(), membroBanca.getProjetoTcc());
         membroBancaService.delete(id);
     }
+
+    public void confirmar(Long idProjetoTcc) throws BusinessException {
+        var professorLogado = professorService.getProfessorLogado();
+        membroBancaService.confirmar(idProjetoTcc, professorLogado);
+    }
+
+    public void desconfirmar(Long idProjetoTcc) throws BusinessException {
+        var professorLogado = professorService.getProfessorLogado();
+        membroBancaService.desconfirmar(idProjetoTcc, professorLogado);
+    }
 }
 

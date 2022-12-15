@@ -27,4 +27,6 @@ public interface MembroBancaRepository extends JpaRepository<MembroBanca, Long> 
 
     boolean existsByProjetoTccIdAndProfessorId(Long idProjetoTcc, Long idProfessor);
 
+    MembroBanca getByProjetoTccIdAndProfessorId(Long idProjetoTcc, Long idProfessor);
+
 }
