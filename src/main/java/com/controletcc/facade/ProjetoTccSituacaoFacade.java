@@ -15,13 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ProjetoTccSituacaoFacade {
 
-
     private final ProjetoTccSituacaoService projetoTccSituacaoService;
 
     private final ProjetoTccService projetoTccService;
 
     public void nextStep(Long idProjetoTcc, SituacaoTcc situacaoTcc) throws BusinessException {
-        var situacao = projetoTccSituacaoService.nextStep(idProjetoTcc, situacaoTcc);
+        nextStep(idProjetoTcc, situacaoTcc, null);
+    }
+
+    public void nextStep(Long idProjetoTcc, SituacaoTcc situacaoTcc, String motivo) throws BusinessException {
+        var situacao = projetoTccSituacaoService.nextStep(idProjetoTcc, situacaoTcc, motivo);
         projetoTccService.updateSituacao(idProjetoTcc, situacao);
     }
 

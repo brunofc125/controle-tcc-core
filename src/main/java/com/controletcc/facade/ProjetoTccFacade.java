@@ -5,6 +5,7 @@ import com.controletcc.dto.options.ProjetoTccGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccDTO;
 import com.controletcc.model.entity.ProjetoTcc;
+import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.repository.projection.ProjetoTccProjection;
 import com.controletcc.service.AlunoService;
 import com.controletcc.service.ProfessorService;
@@ -32,6 +33,8 @@ public class ProjetoTccFacade {
     private final AlunoService alunoService;
 
     private final ProfessorService professorService;
+
+    private final ProjetoTccSituacaoFacade projetoTccSituacaoFacade;
 
     public ProjetoTccDTO getById(Long id) {
         return ModelMapperUtil.map(projetoTccService.getById(id), ProjetoTccDTO.class);
@@ -68,6 +71,14 @@ public class ProjetoTccFacade {
         projetoTcc.setTema(projetoTcc.getTema());
         projetoTcc = projetoTccService.update(projetoTcc.getId(), projetoTcc);
         return ModelMapperUtil.map(projetoTccService.update(projetoTcc.getId(), projetoTcc), ProjetoTccDTO.class);
+    }
+
+    public void cancelar(Long id, String motivo) throws BusinessException {
+        projetoTccSituacaoFacade.nextStep(id, SituacaoTcc.CANCELADO, motivo);
+    }
+
+    public void reprovar(Long id, String motivo) throws BusinessException {
+        projetoTccSituacaoFacade.nextStep(id, SituacaoTcc.REPROVADO, motivo);
     }
 
 }
