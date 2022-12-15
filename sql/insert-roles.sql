@@ -86,4 +86,4 @@ VALUES ('professor-compromisso.create', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('professor-compromisso.read', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
-VALUES ('professor-compromisso.delete', false, true, true, true);
+VALUES ('professor-compromisso.delete', false, true, true, false);

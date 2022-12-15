@@ -1,5 +1,6 @@
 package com.controletcc.dto.options;
 
+import com.controletcc.dto.enums.SituacaoSolicitacaoBanca;
 import com.controletcc.dto.options.base.BaseGridOptions;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoTcc;
@@ -21,5 +22,10 @@ public class ProjetoTccGridOptions extends BaseGridOptions {
     private SituacaoTcc situacaoTcc;
     private String nomeProfessorOrientador;
     private String nomeAluno;
+    private SituacaoSolicitacaoBanca situacaoSolicitacaoBanca;
+
+    public String getSituacaoSolicitacaoBancaName() {
+        return situacaoSolicitacaoBanca != null ? situacaoSolicitacaoBanca.name() : null;
+    }
 
 }

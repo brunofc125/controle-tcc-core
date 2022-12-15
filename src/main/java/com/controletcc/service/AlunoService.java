@@ -6,6 +6,7 @@ import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Aluno;
 import com.controletcc.repository.AlunoRepository;
 import com.controletcc.repository.projection.AlunoProjection;
+import com.controletcc.util.AuthUtil;
 import com.controletcc.util.StringUtil;
 import com.controletcc.util.ValidatorUtil;
 import lombok.NonNull;
@@ -99,6 +100,14 @@ public class AlunoService {
         if (!errors.isEmpty()) {
             throw new BusinessException(errors);
         }
+    }
+
+    public Aluno getAlunoLogado() throws BusinessException {
+        var aluno = getAlunoByUsuarioId(AuthUtil.getUserIdLogged());
+        if (aluno == null) {
+            throw new BusinessException("O usuário logado não é um aluno");
+        }
+        return aluno;
     }
 
     public Aluno getAlunoByUsuarioId(Long idUsuario) {

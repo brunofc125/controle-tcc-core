@@ -1,6 +1,7 @@
 package com.controletcc.controller;
 
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.dto.options.ProjetoTccGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.facade.ProjetoTccFacade;
@@ -24,9 +25,9 @@ public class ProjetoTccController {
     }
 
     @PreAuthorize("hasAuthority('projeto-tcc.read')")
-    @PostMapping("search")
-    public ListResponse<ProjetoTccProjection> search(@RequestBody ProjetoTccGridOptions options) throws BusinessException {
-        return projetoTccFacade.search(options);
+    @PostMapping("search/{tccRoute}")
+    public ListResponse<ProjetoTccProjection> search(@PathVariable TccRoute tccRoute, @RequestBody ProjetoTccGridOptions options) throws BusinessException {
+        return projetoTccFacade.search(tccRoute, options);
     }
 
     @PreAuthorize("hasAuthority('projeto-tcc.create')")

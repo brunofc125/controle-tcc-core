@@ -1,6 +1,7 @@
 package com.controletcc.facade;
 
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.dto.options.ProjetoTccGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccDTO;
@@ -13,12 +14,11 @@ import com.controletcc.service.ProjetoTccService;
 import com.controletcc.service.ProjetoTccSituacaoService;
 import com.controletcc.util.AuthUtil;
 import com.controletcc.util.ModelMapperUtil;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -40,20 +40,27 @@ public class ProjetoTccFacade {
         return ModelMapperUtil.map(projetoTccService.getById(id), ProjetoTccDTO.class);
     }
 
-    public ListResponse<ProjetoTccProjection> search(ProjetoTccGridOptions options) throws BusinessException {
-        var idUser = AuthUtil.getUserIdLogged();
-        switch (Objects.requireNonNull(AuthUtil.getUserTypeLogged())) {
-            case PROFESSOR -> {
-                var professor = professorService.getProfessorByUsuarioId(idUser);
-                return projetoTccService.searchByProfessorOrientador(professor.getId(), options);
-            }
+    public ListResponse<ProjetoTccProjection> search(@NonNull TccRoute tccRoute, @NonNull ProjetoTccGridOptions options) throws BusinessException {
+        var userType = AuthUtil.getUserTypeLogged();
+        if (userType == null || !tccRoute.userTypeMatches(userType)) {
+            throw new BusinessException("Tipo de usuário inválido");
+        }
+        switch (tccRoute) {
             case SUPERVISOR -> {
-                var professor = professorService.getProfessorByUsuarioId(idUser);
-                return projetoTccService.searchByProfessorSupervisor(professor.getId(), options);
+                var professor = professorService.getProfessorLogado();
+                return projetoTccService.searchSupervisor(professor.getId(), options);
+            }
+            case ORIENTADOR -> {
+                var professor = professorService.getProfessorLogado();
+                return projetoTccService.searchOrientador(professor.getId(), options);
+            }
+            case MEMBRO_BANCA -> {
+                var professor = professorService.getProfessorLogado();
+                return projetoTccService.searchMembroBanca(professor.getId(), options);
             }
             case ALUNO -> {
-                var aluno = alunoService.getAlunoByUsuarioId(idUser);
-                return projetoTccService.searchByAluno(aluno.getId(), options);
+                var aluno = alunoService.getAlunoLogado();
+                return projetoTccService.searchAluno(aluno.getId(), options);
             }
         }
         throw new BusinessException("Tipo de usuário inválido para acessar esta consulta");

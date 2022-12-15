@@ -40,4 +40,16 @@ public class MembroBancaController {
         membroBancaFacade.delete(id);
     }
 
+    @PreAuthorize("hasAuthority('membro-banca.create')")
+    @PatchMapping("confirmar/{idProjetoTcc}")
+    public void confirmar(@PathVariable Long idProjetoTcc) throws BusinessException {
+        membroBancaFacade.confirmar(idProjetoTcc);
+    }
+
+    @PreAuthorize("hasAuthority('membro-banca.create')")
+    @PatchMapping("desconfirmar/{idProjetoTcc}")
+    public void desconfirmar(@PathVariable Long idProjetoTcc) throws BusinessException {
+        membroBancaFacade.desconfirmar(idProjetoTcc);
+    }
+
 }
