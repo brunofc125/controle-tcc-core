@@ -15,6 +15,7 @@ import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import com.controletcc.service.*;
 import com.controletcc.util.LocalDateTimeUtil;
 import com.controletcc.util.ModelMapperUtil;
+import com.controletcc.util.StringUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -52,6 +54,16 @@ public class AgendaApresentacaoFacade {
         return ModelMapperUtil.map(agendaApresentacao, AgendaApresentacaoDTO.class);
     }
 
+    public List<AgendaApresentacaoDTO> getAllByAnoPeriodo(String anoPeriodo) {
+        if (StringUtil.isNullOrBlank(anoPeriodo) || !anoPeriodo.matches("\\d{4}-\\d")) {
+            return Collections.emptyList();
+        }
+        var ano = Integer.valueOf(anoPeriodo.substring(0, 4));
+        var periodo = Integer.valueOf(anoPeriodo.substring(5));
+        var agendas = agendaApresentacaoService.getAllByAnoPeriodo(ano, periodo);
+        return ModelMapperUtil.mapAll(agendas, AgendaApresentacaoDTO.class);
+    }
+
     public ListResponse<AgendaApresentacaoProjection> search(AgendaApresentacaoGridOptions options) throws BusinessException {
         var professor = professorService.getProfessorLogado();
         return agendaApresentacaoService.search(professor.getIdAreaList(), options);
@@ -73,11 +85,11 @@ public class AgendaApresentacaoFacade {
         return ModelMapperUtil.map(agendaApresentacao, AgendaApresentacaoDTO.class);
     }
 
-    private List<AgendaApresentacaoRestricao> saveRestricoes(AgendaApresentacao agendaApresentacao, List<AgendaApresentacaoRestricao> restricoes) {
+    private List<AgendaApresentacaoRestricao> saveRestricoes(AgendaApresentacao agendaApresentacao, List<AgendaApresentacaoRestricao> restricoes) throws BusinessException {
         for (var restricao : restricoes) {
             restricao.setAgendaApresentacao(agendaApresentacao);
         }
-        return agendaApresentacaoRestricaoService.saveAll(agendaApresentacao.getId(), restricoes);
+        return agendaApresentacaoRestricaoService.saveAll(agendaApresentacao, restricoes);
     }
 
     public List<AgendaApresentacaoDTO> getAgendasAtivasByIdProjetoTcc(Long idProjetoTcc) {

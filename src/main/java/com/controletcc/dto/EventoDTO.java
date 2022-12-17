@@ -3,7 +3,7 @@ package com.controletcc.dto;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.model.entity.Apresentacao;
 import com.controletcc.model.enums.TipoCompromisso;
-import com.controletcc.repository.projection.ProfessorCompromissoProjection;
+import com.controletcc.repository.projection.ProfessorDisponibilidadeProjection;
 import com.controletcc.util.LocalDateTimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public class EventoDTO implements Serializable {
         this.end = apresentacao.getDataFinal();
     }
 
-    public EventoDTO(ProfessorCompromissoProjection compromisso) {
+    public EventoDTO(ProfessorDisponibilidadeProjection compromisso) {
         this.id = compromisso.getId();
         var descricao = LocalDateTimeUtil.getHoursTitle(compromisso.getDataInicial(), compromisso.getDataFinal());
         if (TipoCompromisso.APRESENTACAO.equals(compromisso.getTipoCompromisso())) {

@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProfessorCompromissoGridOptions extends BaseGridOptions {
+public class ProfessorDisponibilidadeGridOptions extends BaseGridOptions {
 
     private Long id;
     private String descricao;

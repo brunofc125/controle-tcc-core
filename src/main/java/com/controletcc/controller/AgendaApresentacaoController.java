@@ -27,6 +27,12 @@ public class AgendaApresentacaoController {
     }
 
     @PreAuthorize("hasAuthority('agenda-apresentacao.read')")
+    @GetMapping("ano-periodo/{anoPeriodo}")
+    public List<AgendaApresentacaoDTO> getAllByAnoPeriodo(@PathVariable String anoPeriodo) {
+        return agendaApresentacaoFacade.getAllByAnoPeriodo(anoPeriodo);
+    }
+
+    @PreAuthorize("hasAuthority('agenda-apresentacao.read')")
     @PostMapping("search")
     public ListResponse<AgendaApresentacaoProjection> search(@RequestBody AgendaApresentacaoGridOptions options) throws BusinessException {
         return agendaApresentacaoFacade.search(options);
@@ -51,7 +57,7 @@ public class AgendaApresentacaoController {
         return agendaApresentacaoFacade.getAgendasAtivasByIdProjetoTcc(idProjetoTcc);
     }
 
-    @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read', 'professor-compromisso.read')")
+    @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read', 'professor-disponibilidade.read')")
     @GetMapping("ativas-by-professor-logado")
     public List<AgendaApresentacaoDTO> getAgendasAtivasByProfessorLogado() throws BusinessException {
         return agendaApresentacaoFacade.getAgendasAtivasByProfessorLogado();

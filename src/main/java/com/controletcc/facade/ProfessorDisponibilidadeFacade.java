@@ -2,13 +2,13 @@ package com.controletcc.facade;
 
 import com.controletcc.dto.ProfessorCompromissosDTO;
 import com.controletcc.dto.base.ListResponse;
-import com.controletcc.dto.options.ProfessorCompromissoGridOptions;
+import com.controletcc.dto.options.ProfessorDisponibilidadeGridOptions;
 import com.controletcc.error.BusinessException;
-import com.controletcc.model.dto.ProfessorCompromissoDTO;
-import com.controletcc.model.entity.ProfessorCompromisso;
+import com.controletcc.model.dto.ProfessorDisponibilidadeDTO;
+import com.controletcc.model.entity.ProfessorDisponibilidade;
 import com.controletcc.model.enums.TipoCompromisso;
-import com.controletcc.repository.projection.ProfessorCompromissoProjection;
-import com.controletcc.service.ProfessorCompromissoService;
+import com.controletcc.repository.projection.ProfessorDisponibilidadeProjection;
+import com.controletcc.service.ProfessorDisponibilidadeService;
 import com.controletcc.service.ProfessorService;
 import com.controletcc.service.VwProfessorCompromissoService;
 import com.controletcc.util.ModelMapperUtil;
@@ -26,39 +26,39 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = BusinessException.class)
 @Slf4j
-public class ProfessorCompromissoFacade {
+public class ProfessorDisponibilidadeFacade {
 
-    private final ProfessorCompromissoService professorCompromissoService;
+    private final ProfessorDisponibilidadeService professorDisponibilidadeService;
 
     private final VwProfessorCompromissoService vwProfessorCompromissoService;
 
     private final ProfessorService professorService;
 
-    public ProfessorCompromissoDTO getById(Long id) {
-        return ModelMapperUtil.map(professorCompromissoService.getById(id), ProfessorCompromissoDTO.class);
+    public ProfessorDisponibilidadeDTO getById(Long id) {
+        return ModelMapperUtil.map(professorDisponibilidadeService.getById(id), ProfessorDisponibilidadeDTO.class);
     }
 
-    public ListResponse<ProfessorCompromissoProjection> search(ProfessorCompromissoGridOptions options) throws BusinessException {
+    public ListResponse<ProfessorDisponibilidadeProjection> search(ProfessorDisponibilidadeGridOptions options) throws BusinessException {
         var professor = professorService.getProfessorLogado();
         return vwProfessorCompromissoService.search(professor.getId(), options);
     }
 
-    public List<ProfessorCompromissoDTO> save(List<ProfessorCompromissoDTO> professorCompromissoDTOs) throws BusinessException {
-        if (professorCompromissoDTOs == null || professorCompromissoDTOs.isEmpty()) {
+    public List<ProfessorDisponibilidadeDTO> save(List<ProfessorDisponibilidadeDTO> professorDisponibilidadeDTOS) throws BusinessException {
+        if (professorDisponibilidadeDTOS == null || professorDisponibilidadeDTOS.isEmpty()) {
             return Collections.emptyList();
         }
-        var professorCompromissos = ModelMapperUtil.mapAll(professorCompromissoDTOs, ProfessorCompromisso.class);
+        var professorCompromissos = ModelMapperUtil.mapAll(professorDisponibilidadeDTOS, ProfessorDisponibilidade.class);
         var professor = professorService.getProfessorLogado();
-        var professorCompromissosSaved = new ArrayList<ProfessorCompromisso>();
+        var professorCompromissosSaved = new ArrayList<ProfessorDisponibilidade>();
         for (var professorCompromisso : professorCompromissos) {
             professorCompromisso.setProfessor(professor);
-            professorCompromissosSaved.add(professorCompromissoService.save(professorCompromisso));
+            professorCompromissosSaved.add(professorDisponibilidadeService.save(professorCompromisso));
         }
-        return ModelMapperUtil.mapAll(professorCompromissosSaved, ProfessorCompromissoDTO.class);
+        return ModelMapperUtil.mapAll(professorCompromissosSaved, ProfessorDisponibilidadeDTO.class);
     }
 
     public void delete(Long id) {
-        professorCompromissoService.delete(id);
+        professorDisponibilidadeService.delete(id);
     }
 
     public ProfessorCompromissosDTO getCompromissosByProfessorLogadoAndData(LocalDate dataInicial) throws BusinessException {

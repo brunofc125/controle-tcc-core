@@ -19,6 +19,7 @@ public interface AgendaApresentacaoRepository extends JpaRepository<AgendaAprese
                 aa.descricao as descricao,
                 aa.tipoTcc as tipoTcc,
                 concat(at.faculdade, ' - ', at.curso) as descricaoAreaTcc,
+                concat(aa.ano, '/', aa.periodo) as anoPeriodo,
                 aa.dataInicial as dataInicial,
                 aa.dataFinal as dataFinal
             FROM AgendaApresentacao aa
@@ -28,6 +29,7 @@ public interface AgendaApresentacaoRepository extends JpaRepository<AgendaAprese
                 and (:descricao is null or lower(aa.descricao) like concat('%', trim(lower(:descricao)),'%') )
                 and (:tipoTcc is null or aa.tipoTcc = :tipoTcc)
                 and (:idAreaTcc is null or at.id = :idAreaTcc)
+                and (:anoPeriodo is null or concat(aa.ano, '/', aa.periodo) like concat('%', trim(lower(:anoPeriodo)),'%') )
                 and (cast( :dataInicial as date ) is null or aa.dataInicial >= cast( :dataInicial as date ) )
                 and (cast( :dataFinal as date ) is null or aa.dataFinal <= cast( :dataFinal as date ) )"""
     )
@@ -36,25 +38,19 @@ public interface AgendaApresentacaoRepository extends JpaRepository<AgendaAprese
                                               String descricao,
                                               TipoTcc tipoTcc,
                                               Long idAreaTcc,
+                                              String anoPeriodo,
                                               LocalDate dataInicial,
                                               LocalDate dataFinal,
                                               Pageable pageable);
 
-    @Query(value = """
-            SELECT count(aa.id) > 0
-            FROM AgendaApresentacao aa
-            WHERE aa.areaTcc.id = :idAreaTcc
-            AND aa.tipoTcc = :tipoTcc
-            AND (:id is null OR aa.id <> :id)
-            AND (
-                (:dataInicial >= aa.dataInicial AND :dataInicial <= aa.dataFinal) OR (aa.dataInicial >= :dataInicial AND aa.dataInicial <= :dataFinal)
-                OR (:dataFinal >= aa.dataInicial AND :dataFinal <= aa.dataFinal) OR (aa.dataFinal >= :dataInicial AND aa.dataFinal <= :dataFinal)
-            )"""
-    )
-    boolean existsIntersect(Long id, Long idAreaTcc, TipoTcc tipoTcc, LocalDate dataInicial, LocalDate dataFinal);
+    boolean existsByAreaTccIdAndTipoTccAndAnoAndPeriodo(Long idAreaTcc, TipoTcc tipoTcc, Integer ano, Integer periodo);
+
+    boolean existsByAreaTccIdAndTipoTccAndAnoAndPeriodoAndIdNot(Long idAreaTcc, TipoTcc tipoTcc, Integer ano, Integer periodo, Long id);
 
     List<AgendaApresentacao> getAllByTipoTccAndAreaTccIdAndDataFinalGreaterThanEqual(TipoTcc tipoTcc, Long idAreaTcc, LocalDate data);
 
     List<AgendaApresentacao> getAllByAreaTccIdInAndDataFinalGreaterThanEqual(List<Long> idAreaTccList, LocalDate data);
+
+    List<AgendaApresentacao> getAllByAnoAndPeriodo(Integer ano, Integer periodo);
 
 }

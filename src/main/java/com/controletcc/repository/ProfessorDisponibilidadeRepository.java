@@ -1,12 +1,12 @@
 package com.controletcc.repository;
 
-import com.controletcc.model.entity.ProfessorCompromisso;
+import com.controletcc.model.entity.ProfessorDisponibilidade;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 
-public interface ProfessorCompromissoRepository extends JpaRepository<ProfessorCompromisso, Long> {
+public interface ProfessorDisponibilidadeRepository extends JpaRepository<ProfessorDisponibilidade, Long> {
 
     @Query(value = """
             SELECT count(vw_pc.identifier) > 0

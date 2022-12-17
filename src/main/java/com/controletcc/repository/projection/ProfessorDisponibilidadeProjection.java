@@ -5,7 +5,7 @@ import com.controletcc.model.enums.TipoTcc;
 
 import java.time.LocalDateTime;
 
-public interface ProfessorCompromissoProjection {
+public interface ProfessorDisponibilidadeProjection {
     Long getId();
 
     TipoCompromisso getTipoCompromisso();

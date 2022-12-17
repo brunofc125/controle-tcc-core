@@ -13,6 +13,8 @@ public interface AgendaApresentacaoProjection {
 
     String getDescricaoAreaTcc();
 
+    String getAnoPeriodo();
+
     LocalDate getDataInicial();
 
     LocalDate getDataFinal();

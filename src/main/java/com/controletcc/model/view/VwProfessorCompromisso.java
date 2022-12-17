@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Immutable
 @Table(name = "vw_professor_compromissos")
+@Subselect("select * from vw_professor_compromissos")
 public class VwProfessorCompromisso {
     @Id
     @Column(name = "identifier")

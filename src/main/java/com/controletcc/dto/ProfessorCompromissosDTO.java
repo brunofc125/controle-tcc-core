@@ -1,6 +1,6 @@
 package com.controletcc.dto;
 
-import com.controletcc.repository.projection.ProfessorCompromissoProjection;
+import com.controletcc.repository.projection.ProfessorDisponibilidadeProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,11 +18,11 @@ public class ProfessorCompromissosDTO implements Serializable {
     private List<EventoDTO> outrosCompromissos;
     private List<EventoDTO> apresentacoes;
 
-    public void setOutrosCompromissos(List<ProfessorCompromissoProjection> compromissos) {
+    public void setOutrosCompromissos(List<ProfessorDisponibilidadeProjection> compromissos) {
         this.outrosCompromissos = compromissos != null && !compromissos.isEmpty() ? compromissos.stream().map(EventoDTO::new).toList() : Collections.emptyList();
     }
 
-    public void setApresentacoes(List<ProfessorCompromissoProjection> apresentacoes) {
+    public void setApresentacoes(List<ProfessorDisponibilidadeProjection> apresentacoes) {
         this.apresentacoes = apresentacoes != null && !apresentacoes.isEmpty() ? apresentacoes.stream().map(EventoDTO::new).toList() : Collections.emptyList();
     }
 }

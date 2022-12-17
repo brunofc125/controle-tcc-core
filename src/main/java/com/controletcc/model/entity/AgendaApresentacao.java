@@ -2,6 +2,7 @@ package com.controletcc.model.entity;
 
 import com.controletcc.model.entity.base.BaseEntity;
 import com.controletcc.model.enums.TipoTcc;
+import com.controletcc.util.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "agenda_apresentacao")
+@Table(name = "agenda_apresentacao", uniqueConstraints = {@UniqueConstraint(columnNames = {"tipo_tcc", "id_area_tcc", "ano", "periodo"})})
 public class AgendaApresentacao extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +34,12 @@ public class AgendaApresentacao extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_area_tcc", nullable = false)
     private AreaTcc areaTcc;
+
+    @Column(name = "ano", nullable = false)
+    private Integer ano;
+
+    @Column(name = "periodo", nullable = false)
+    private Integer periodo;
 
     @Column(name = "data_inicial", nullable = false)
     private LocalDate dataInicial;
@@ -70,6 +77,22 @@ public class AgendaApresentacao extends BaseEntity {
 
     public LocalDateTime getDataHoraFinal() {
         return this.dataFinal.atTime(this.horaFinal, 0);
+    }
+
+    public String getAnoPeriodo() {
+        return ano != null && periodo != null ? ano + "/" + periodo : null;
+    }
+
+    public void setAnoPeriodo(String anoPeriodo) {
+        if (!StringUtil.isNullOrBlank(anoPeriodo) && anoPeriodo.matches("\\d{4}/\\d")) {
+            var ano = anoPeriodo.substring(0, 4);
+            var periodo = anoPeriodo.substring(5);
+            this.ano = Integer.valueOf(ano);
+            this.periodo = Integer.valueOf(periodo);
+        } else {
+            this.ano = null;
+            this.periodo = null;
+        }
     }
 
 }

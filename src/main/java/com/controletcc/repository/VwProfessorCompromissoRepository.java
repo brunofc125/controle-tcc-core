@@ -3,7 +3,7 @@ package com.controletcc.repository;
 import com.controletcc.model.enums.TipoCompromisso;
 import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.model.view.VwProfessorCompromisso;
-import com.controletcc.repository.projection.ProfessorCompromissoProjection;
+import com.controletcc.repository.projection.ProfessorDisponibilidadeProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,15 +44,15 @@ public interface VwProfessorCompromissoRepository extends JpaRepository<VwProfes
                 and (cast( :dataInicial as date ) is null or cast( vw_pc.dataInicial as date ) >= cast( :dataInicial as date ) )
                 and (cast( :dataFinal as date ) is null or cast( vw_pc.dataFinal as date ) <= cast( :dataFinal as date ) )"""
     )
-    Page<ProfessorCompromissoProjection> search(Long idProfessor,
-                                                Long id,
-                                                String descricao,
-                                                TipoCompromisso tipoCompromisso,
-                                                TipoTcc tipoTcc,
-                                                Long idAgenda,
-                                                LocalDate dataInicial,
-                                                LocalDate dataFinal,
-                                                Pageable pageable);
+    Page<ProfessorDisponibilidadeProjection> search(Long idProfessor,
+                                                    Long id,
+                                                    String descricao,
+                                                    TipoCompromisso tipoCompromisso,
+                                                    TipoTcc tipoTcc,
+                                                    Long idAgenda,
+                                                    LocalDate dataInicial,
+                                                    LocalDate dataFinal,
+                                                    Pageable pageable);
 
     @Query(value = """
             SELECT distinct
@@ -82,7 +82,7 @@ public interface VwProfessorCompromissoRepository extends JpaRepository<VwProfes
             and cast( vw_pc.dataInicial as date ) >= cast( :dataInicial as date )
                 and cast( vw_pc.dataFinal as date ) <= cast( :dataFinal as date )"""
     )
-    List<ProfessorCompromissoProjection> getByProfessorAndData(Long idProfessor, LocalDate dataInicial, LocalDate dataFinal);
+    List<ProfessorDisponibilidadeProjection> getByProfessorAndData(Long idProfessor, LocalDate dataInicial, LocalDate dataFinal);
 
     @Query(value = """
             SELECT vw_pc
