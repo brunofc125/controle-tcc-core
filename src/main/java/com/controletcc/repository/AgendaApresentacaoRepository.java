@@ -3,6 +3,7 @@ package com.controletcc.repository;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
+import com.controletcc.repository.projection.AgendaPeriodoProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -52,5 +53,22 @@ public interface AgendaApresentacaoRepository extends JpaRepository<AgendaAprese
     List<AgendaApresentacao> getAllByAreaTccIdInAndDataFinalGreaterThanEqual(List<Long> idAreaTccList, LocalDate data);
 
     List<AgendaApresentacao> getAllByAnoAndPeriodo(Integer ano, Integer periodo);
+
+
+    @Query(value = """
+            select
+                aa.ano as ano,
+                aa.periodo as periodo,
+                min(aa.dataInicial) as minDataInicial,
+                max(aa.dataFinal) as maxDataFinal,
+                min(aa.horaInicial) as minHoraInicial,
+                max(aa.horaFinal) as maxHoraFinal
+            from AgendaApresentacao aa
+            where aa.ano = :ano
+            and aa.periodo = :periodo
+            and aa.areaTcc.id in :idAreaTccList
+            group by aa.ano, aa.periodo"""
+    )
+    AgendaPeriodoProjection getAgendaByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<Long> idAreaTccList);
 
 }

@@ -7,6 +7,7 @@ import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.AgendaApresentacaoRepository;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
+import com.controletcc.repository.projection.AgendaPeriodoProjection;
 import com.controletcc.util.StringUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -116,6 +117,10 @@ public class AgendaApresentacaoService {
 
     public List<AgendaApresentacao> getAgendasAtivasByAreaTccIdIn(List<Long> idAreaTccList) {
         return agendaApresentacaoRepository.getAllByAreaTccIdInAndDataFinalGreaterThanEqual(idAreaTccList, LocalDate.now());
+    }
+
+    public AgendaPeriodoProjection getAgendaPeriodoByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<Long> idAreaTccList) {
+        return agendaApresentacaoRepository.getAgendaByAnoPeriodoAndAreasTcc(ano, periodo, idAreaTccList);
     }
 
 }

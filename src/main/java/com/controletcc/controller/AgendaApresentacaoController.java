@@ -1,6 +1,7 @@
 package com.controletcc.controller;
 
 import com.controletcc.dto.AgendaParaApresentacaoDTO;
+import com.controletcc.dto.AgendaPeriodoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
@@ -28,8 +29,8 @@ public class AgendaApresentacaoController {
 
     @PreAuthorize("hasAuthority('agenda-apresentacao.read')")
     @GetMapping("ano-periodo/{anoPeriodo}")
-    public List<AgendaApresentacaoDTO> getAllByAnoPeriodo(@PathVariable String anoPeriodo) {
-        return agendaApresentacaoFacade.getAllByAnoPeriodo(anoPeriodo);
+    public AgendaPeriodoDTO getAgendaPeriodo(@PathVariable String anoPeriodo) throws BusinessException {
+        return agendaApresentacaoFacade.getAgendaPeriodo(anoPeriodo);
     }
 
     @PreAuthorize("hasAuthority('agenda-apresentacao.read')")

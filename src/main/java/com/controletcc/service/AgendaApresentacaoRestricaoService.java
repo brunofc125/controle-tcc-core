@@ -74,4 +74,8 @@ public class AgendaApresentacaoRestricaoService {
         }
     }
 
+    public List<AgendaApresentacaoRestricao> getAllByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<Long> idAreaTccList) {
+        return agendaApresentacaoRestricaoRepository.getAllByAnoPeriodoAndAreasTcc(ano, periodo, idAreaTccList);
+    }
+
 }

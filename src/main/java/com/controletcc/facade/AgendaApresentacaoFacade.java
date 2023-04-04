@@ -1,11 +1,13 @@
 package com.controletcc.facade;
 
 import com.controletcc.dto.AgendaParaApresentacaoDTO;
+import com.controletcc.dto.AgendaPeriodoDTO;
 import com.controletcc.dto.EventoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.AgendaApresentacaoDTO;
+import com.controletcc.model.dto.AgendaApresentacaoRestricaoDTO;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.model.entity.MembroBanca;
@@ -151,6 +153,23 @@ public class AgendaApresentacaoFacade {
         agendaParaApresentacao.setProfessorCompromisso(eventos);
 
         return agendaParaApresentacao;
+    }
+
+    public AgendaPeriodoDTO getAgendaPeriodo(String anoPeriodo) throws BusinessException {
+        if (StringUtil.isNullOrBlank(anoPeriodo) || !anoPeriodo.matches("\\d{4}-\\d")) {
+            return null;
+        }
+        var ano = Integer.valueOf(anoPeriodo.substring(0, 4));
+        var periodo = Integer.valueOf(anoPeriodo.substring(5));
+        var professor = professorService.getProfessorLogado();
+        var agendaPeriodoProjection = agendaApresentacaoService.getAgendaPeriodoByAnoPeriodoAndAreasTcc(ano, periodo, professor.getIdAreaList());
+        if (agendaPeriodoProjection == null) {
+            return null;
+        }
+        var agendaPeriodo = new AgendaPeriodoDTO(agendaPeriodoProjection);
+        var restricoes = agendaApresentacaoRestricaoService.getAllByAnoPeriodoAndAreasTcc(ano, periodo, professor.getIdAreaList());
+        agendaPeriodo.setRestricoes(ModelMapperUtil.mapAll(restricoes, AgendaApresentacaoRestricaoDTO.class));
+        return agendaPeriodo;
     }
 
 }
