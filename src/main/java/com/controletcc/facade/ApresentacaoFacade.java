@@ -31,7 +31,7 @@ public class ApresentacaoFacade {
     public ApresentacaoDTO getByProjetoTcc(@NonNull Long idProjetoTcc) {
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var apresentacao = apresentacaoService.getFirstByProjetoTccIdAndTipoTcc(idProjetoTcc, projetoTcc.getTipoTcc());
-        return apresentacao != null ? ModelMapperUtil.map(apresentacaoService.getFirstByProjetoTccIdAndTipoTcc(idProjetoTcc, projetoTcc.getTipoTcc()), ApresentacaoDTO.class) : null;
+        return apresentacao != null ? ModelMapperUtil.map(apresentacao, ApresentacaoDTO.class) : null;
     }
 
     public ApresentacaoDTO insert(ApresentacaoDTO apresentacaoDTO) throws BusinessException {

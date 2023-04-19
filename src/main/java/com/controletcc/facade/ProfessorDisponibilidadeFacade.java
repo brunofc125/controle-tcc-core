@@ -47,14 +47,14 @@ public class ProfessorDisponibilidadeFacade {
         if (professorDisponibilidadeDTOS == null || professorDisponibilidadeDTOS.isEmpty()) {
             return Collections.emptyList();
         }
-        var professorCompromissos = ModelMapperUtil.mapAll(professorDisponibilidadeDTOS, ProfessorDisponibilidade.class);
+        var professorDisponibilidades = ModelMapperUtil.mapAll(professorDisponibilidadeDTOS, ProfessorDisponibilidade.class);
         var professor = professorService.getProfessorLogado();
-        var professorCompromissosSaved = new ArrayList<ProfessorDisponibilidade>();
-        for (var professorCompromisso : professorCompromissos) {
-            professorCompromisso.setProfessor(professor);
-            professorCompromissosSaved.add(professorDisponibilidadeService.save(professorCompromisso));
+        var professorDisponibilidadesSaved = new ArrayList<ProfessorDisponibilidade>();
+        for (var professorDisponibilidade : professorDisponibilidades) {
+            professorDisponibilidade.setProfessor(professor);
+            professorDisponibilidadesSaved.add(professorDisponibilidadeService.save(professorDisponibilidade));
         }
-        return ModelMapperUtil.mapAll(professorCompromissosSaved, ProfessorDisponibilidadeDTO.class);
+        return ModelMapperUtil.mapAll(professorDisponibilidadesSaved, ProfessorDisponibilidadeDTO.class);
     }
 
     public void delete(Long id) {
@@ -67,8 +67,8 @@ public class ProfessorDisponibilidadeFacade {
         var outrosCompromissos = compromissos.stream().filter(c -> TipoCompromisso.COMPROMISSO_PESSOAL.equals(c.getTipoCompromisso())).toList();
         var apresentacoes = compromissos.stream().filter(c -> TipoCompromisso.APRESENTACAO.equals(c.getTipoCompromisso())).toList();
         var compromissosDTO = new ProfessorCompromissosDTO();
-        compromissosDTO.setOutrosCompromissos(outrosCompromissos);
-        compromissosDTO.setApresentacoes(apresentacoes);
+//        compromissosDTO.setOutrosCompromissos(outrosCompromissos);
+//        compromissosDTO.setApresentacoes(apresentacoes);
         return compromissosDTO;
     }
 }

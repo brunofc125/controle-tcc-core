@@ -2,17 +2,16 @@ package com.controletcc.facade;
 
 import com.controletcc.dto.AgendaParaApresentacaoDTO;
 import com.controletcc.dto.AgendaPeriodoDTO;
-import com.controletcc.dto.EventoDTO;
+import com.controletcc.dto.ProfessorDisponibilidadeAgrupadaDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.AgendaApresentacaoDTO;
 import com.controletcc.model.dto.AgendaApresentacaoRestricaoDTO;
+import com.controletcc.model.dto.ProfessorDisponibilidadeDTO;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.model.entity.MembroBanca;
-import com.controletcc.model.enums.TipoCompromisso;
-import com.controletcc.model.view.VwProfessorCompromisso;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import com.controletcc.service.*;
 import com.controletcc.util.LocalDateTimeUtil;
@@ -27,9 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.*;
 
 @Component
 @RequiredArgsConstructor
@@ -46,6 +44,8 @@ public class AgendaApresentacaoFacade {
     private final ProjetoTccService projetoTccService;
 
     private final ApresentacaoService apresentacaoService;
+
+    private final ProfessorDisponibilidadeService professorDisponibilidadeService;
 
     private final VwProfessorCompromissoService vwProfessorCompromissoService;
 
@@ -109,7 +109,6 @@ public class AgendaApresentacaoFacade {
         var agendaParaApresentacao = new AgendaParaApresentacaoDTO();
         agendaParaApresentacao.setId(agendaApresentacao.getId());
         agendaParaApresentacao.setDescricao(agendaApresentacao.getDescricao());
-        agendaParaApresentacao.setAgendaRestricoes(agendaApresentacao.getAgendaApresentacaoRestricoes());
         agendaParaApresentacao.setOutrasApresentacoes(apresentacaoService.getAllByAgendaApresentacaoIdAndProjetoTccIdNot(idAgendaApresentacao, idProjetoTcc));
 
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
@@ -117,41 +116,29 @@ public class AgendaApresentacaoFacade {
         var membrosBanca = membroBancaService.getConfirmadosByIdProjetoTcc(idProjetoTcc);
         var idProfessorBancaList = membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList();
         idProfessorList.addAll(idProfessorBancaList);
-        var nomeProfessorMap = professorService.getNomeMappedByIds(idProfessorList);
 
-        var compromissos = vwProfessorCompromissoService.getByProfessoresAndDataAndNotAgenda(idProfessorList, agendaApresentacao.getDataHoraInicial(), agendaApresentacao.getDataHoraFinal(), idAgendaApresentacao);
-        var compromissosMap = compromissos.stream().collect(
-                groupingBy(
-                        c -> new VwProfessorCompromisso.Compromisso(c.getTipoCompromisso(), c.getTipoTcc(), c.getId(), c.getIdProfessor(), c.getIdProfessorSupervisor(), c.getIdProfessorOrientador(), c.getDataInicial(), c.getDataFinal()),
-                        mapping(VwProfessorCompromisso::getIdProfessorBanca, toList())
-                )
-        );
+        var professorDisponibilidades = professorDisponibilidadeService.getAllByAnoPeriodoAndProfessorList(agendaApresentacao.getAno(), agendaApresentacao.getPeriodo(), idProfessorList);
+        var qtdProfessor = idProfessorList.size();
+        var dataHoraInicial = agendaApresentacao.getDataHoraInicial();
+        var dataHoraFinal = agendaApresentacao.getDataHoraFinal();
+        var disponibilidadeAgrupadaList = new ArrayList<ProfessorDisponibilidadeAgrupadaDTO>();
 
-        var eventos = new ArrayList<EventoDTO>();
-        for (var compromissoSet : compromissosMap.entrySet()) {
-            var compromisso = compromissoSet.getKey();
-            StringBuilder descricao = new StringBuilder(LocalDateTimeUtil.getHoursTitle(compromisso.dataInicial(), compromisso.dataFinal()));
-            if (TipoCompromisso.COMPROMISSO_PESSOAL.equals(compromisso.tipoCompromisso())) {
-                descricao.append(": Professor Ocupado");
-                descricao.append("<p>").append(nomeProfessorMap.get(compromisso.idProfessor())).append("</p>");
-            } else {
-                descricao.append(": Outra Apresentação");
-                if (nomeProfessorMap.containsKey(compromisso.idProfessorSupervisor())) {
-                    descricao.append("<p>Supervisor: ").append(nomeProfessorMap.get(compromisso.idProfessorSupervisor())).append("</p>");
-                }
-                if (nomeProfessorMap.containsKey(compromisso.idProfessorOrientador())) {
-                    descricao.append("<p>Orientador: ").append(nomeProfessorMap.get(compromisso.idProfessorOrientador())).append("</p>");
-                }
-                var nomeProfessoresBanca = compromissoSet.getValue().stream().filter(nomeProfessorMap::containsKey).map(c -> "<p>" + nomeProfessorMap.get(c) + "</p>").collect(joining());
-                if (!nomeProfessoresBanca.isBlank()) {
-                    descricao.append("<p>Membro da Banca:</p>").append(nomeProfessoresBanca);
+        if (LocalDateTimeUtil.compare(dataHoraInicial, dataHoraFinal) < 0) {
+            for (var dataIni = dataHoraInicial; dataIni.isBefore(dataHoraFinal); dataIni = dataIni.plusHours(1)) {
+                var dataIniFilter = dataIni;
+                var nomeProfessorList = new ArrayList<>(professorDisponibilidades.stream().filter(pd -> pd.isEventOccurring(dataIniFilter)).map(pd -> pd.getProfessor().getNome()).distinct().toList());
+                if (!nomeProfessorList.isEmpty()) {
+                    var disponibilidadeAgrupada = new ProfessorDisponibilidadeAgrupadaDTO();
+                    disponibilidadeAgrupada.setDataHora(dataIni);
+                    disponibilidadeAgrupada.setTodosProfessoresDisponiveis(nomeProfessorList.size() == qtdProfessor);
+                    nomeProfessorList.sort(String::compareTo);
+                    disponibilidadeAgrupada.setDescricao(String.join("<br>", nomeProfessorList));
+                    disponibilidadeAgrupadaList.add(disponibilidadeAgrupada);
                 }
             }
-            var evento = new EventoDTO(compromisso.id(), descricao.toString(), compromisso.dataInicial(), compromisso.dataFinal());
-            eventos.add(evento);
         }
-        agendaParaApresentacao.setProfessorCompromisso(eventos);
 
+        agendaParaApresentacao.setDisponibilidades(disponibilidadeAgrupadaList.stream().collect(Collectors.toMap(ProfessorDisponibilidadeAgrupadaDTO::getDataHoraStr, d -> d)));
         return agendaParaApresentacao;
     }
 
@@ -169,6 +156,8 @@ public class AgendaApresentacaoFacade {
         var agendaPeriodo = new AgendaPeriodoDTO(agendaPeriodoProjection);
         var restricoes = agendaApresentacaoRestricaoService.getAllByAnoPeriodoAndAreasTcc(ano, periodo, professor.getIdAreaList());
         agendaPeriodo.setRestricoes(ModelMapperUtil.mapAll(restricoes, AgendaApresentacaoRestricaoDTO.class));
+        var disponibilidades = professorDisponibilidadeService.getAllByAnoPeriodoAndProfessor(ano, periodo, professor.getId());
+        agendaPeriodo.setDisponibilidades(ModelMapperUtil.mapAll(disponibilidades, ProfessorDisponibilidadeDTO.class));
         return agendaPeriodo;
     }
 

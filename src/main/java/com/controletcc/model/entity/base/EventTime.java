@@ -50,6 +50,10 @@ public class EventTime extends BaseEntity {
         return !isDataFinalEmpty() && LocalDateTimeUtil.date1HourInvalid(dataFinal);
     }
 
+    public boolean isEventOccurring(LocalDateTime occurringDate) {
+        return occurringDate != null && occurringDate.compareTo(dataInicial) >= 0 && occurringDate.compareTo(dataFinal) < 0;
+    }
+
     public boolean invalidInterval(LocalDate limitDateStart, LocalDate limitDateEnd, Integer limitHourStart, Integer limitHourEnd) {
         return !isEmpty() && !LocalDateTimeUtil.validInterval(dataInicial, dataFinal, limitDateStart, limitDateEnd, limitHourStart, limitHourEnd);
     }

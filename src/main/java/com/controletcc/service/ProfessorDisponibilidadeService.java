@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +25,21 @@ public class ProfessorDisponibilidadeService {
         return professorDisponibilidadeRepository.getReferenceById(id);
     }
 
+    public List<ProfessorDisponibilidade> getAllByAnoPeriodoAndProfessor(Integer ano, Integer periodo, Long idProfessor) {
+        return professorDisponibilidadeRepository.getAllByAnoAndPeriodoAndProfessorId(ano, periodo, idProfessor);
+    }
+
+    public List<ProfessorDisponibilidade> getAllByAnoPeriodoAndProfessorList(Integer ano, Integer periodo, List<Long> idProfessorList) {
+        return professorDisponibilidadeRepository.getAllByAnoAndPeriodoAndProfessorIdIn(ano, periodo, idProfessorList);
+    }
+
     public ProfessorDisponibilidade save(@NonNull ProfessorDisponibilidade professorDisponibilidade) throws BusinessException {
         validate(professorDisponibilidade);
         return professorDisponibilidadeRepository.save(professorDisponibilidade);
     }
 
-    public boolean existsIntersect(Long id, @NonNull Long idProfessor, @NonNull LocalDateTime dataInicial, @NonNull LocalDateTime dataFinal) {
-        return professorDisponibilidadeRepository.existsIntersect(id, idProfessor, dataInicial, dataFinal);
+    public boolean existsIntersect(Long id, @NonNull Long idProfessor, @NonNull LocalDateTime dataInicial, @NonNull LocalDateTime dataFinal, @NonNull Integer ano, @NonNull Integer periodo) {
+        return professorDisponibilidadeRepository.existsIntersect(id, idProfessor, dataInicial, dataFinal, ano, periodo);
     }
 
     private void validate(ProfessorDisponibilidade professorDisponibilidade) throws BusinessException {
@@ -59,8 +68,8 @@ public class ProfessorDisponibilidadeService {
             errors.add("Data final deve ser maior ou igual a data atual");
         }
 
-        if (errors.isEmpty() && existsIntersect(professorDisponibilidade.getId(), professorDisponibilidade.getIdProfessor(), professorDisponibilidade.getDataInicial(), professorDisponibilidade.getDataFinal())) {
-            errors.add("O compromisso está interpolando com outro compromisso");
+        if (errors.isEmpty() && existsIntersect(professorDisponibilidade.getId(), professorDisponibilidade.getIdProfessor(), professorDisponibilidade.getDataInicial(), professorDisponibilidade.getDataFinal(), professorDisponibilidade.getAno(), professorDisponibilidade.getPeriodo())) {
+            errors.add("Existem cadastros de disponibilidades se interpolando");
         }
 
         if (!errors.isEmpty()) {

@@ -72,11 +72,11 @@ public class AgendaApresentacao extends BaseEntity {
     }
 
     public LocalDateTime getDataHoraInicial() {
-        return this.dataInicial.atTime(this.horaInicial, 0);
+        return this.dataInicial.atTime(this.horaInicial, 0, 0, 0);
     }
 
     public LocalDateTime getDataHoraFinal() {
-        return this.dataFinal.atTime(this.horaFinal, 0);
+        return this.dataFinal.atTime(this.horaFinal, 0, 0, 0);
     }
 
     public String getAnoPeriodo() {

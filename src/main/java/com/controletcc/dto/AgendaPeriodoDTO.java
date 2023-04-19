@@ -1,6 +1,7 @@
 package com.controletcc.dto;
 
 import com.controletcc.model.dto.AgendaApresentacaoRestricaoDTO;
+import com.controletcc.model.dto.ProfessorDisponibilidadeDTO;
 import com.controletcc.repository.projection.AgendaPeriodoProjection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class AgendaPeriodoDTO implements Serializable {
     private Integer minHoraInicial;
     private Integer maxHoraFinal;
     private List<AgendaApresentacaoRestricaoDTO> restricoes;
+    private List<ProfessorDisponibilidadeDTO> disponibilidades;
 
     public AgendaPeriodoDTO(AgendaPeriodoProjection projection) {
         this.ano = projection.getAno();

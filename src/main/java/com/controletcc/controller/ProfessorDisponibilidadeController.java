@@ -35,8 +35,8 @@ public class ProfessorDisponibilidadeController {
 
     @PreAuthorize("hasAuthority('professor-disponibilidade.create')")
     @PostMapping
-    public List<ProfessorDisponibilidadeDTO> save(@RequestBody List<ProfessorDisponibilidadeDTO> professorCompromissos) throws BusinessException {
-        return professorDisponibilidadeFacade.save(professorCompromissos);
+    public List<ProfessorDisponibilidadeDTO> save(@RequestBody List<ProfessorDisponibilidadeDTO> professorDisponibilidades) throws BusinessException {
+        return professorDisponibilidadeFacade.save(professorDisponibilidades);
     }
 
     @PreAuthorize("hasAuthority('professor-disponibilidade.delete')")
