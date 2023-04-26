@@ -3,6 +3,7 @@ package com.controletcc.service;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.ProfessorDisponibilidade;
 import com.controletcc.repository.ProfessorDisponibilidadeRepository;
+import com.controletcc.repository.projection.ProfessorDisponibilidadeAgrupadaProjection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,6 +80,10 @@ public class ProfessorDisponibilidadeService {
 
     public void delete(Long id) {
         professorDisponibilidadeRepository.deleteById(id);
+    }
+
+    public List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, LocalDateTime dataInicio, LocalDateTime dataFim) {
+        return professorDisponibilidadeRepository.getDisponibilidades(idProfessores, idProjetoTcc, dataInicio, dataFim);
     }
 
 }

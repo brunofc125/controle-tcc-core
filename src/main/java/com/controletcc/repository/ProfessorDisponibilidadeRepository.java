@@ -1,6 +1,7 @@
 package com.controletcc.repository;
 
 import com.controletcc.model.entity.ProfessorDisponibilidade;
+import com.controletcc.repository.projection.ProfessorDisponibilidadeAgrupadaProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,7 +13,7 @@ public interface ProfessorDisponibilidadeRepository extends JpaRepository<Profes
     List<ProfessorDisponibilidade> getAllByAnoAndPeriodoAndProfessorId(Integer ano, Integer periodo, Long idProfessor);
 
     List<ProfessorDisponibilidade> getAllByAnoAndPeriodoAndProfessorIdIn(Integer ano, Integer periodo, List<Long> idProfessorList);
-    
+
     @Query(value = """
             SELECT count(pd.id) > 0
             FROM ProfessorDisponibilidade pd
@@ -43,5 +44,16 @@ public interface ProfessorDisponibilidadeRepository extends JpaRepository<Profes
             )"""
     )
     boolean existsIntersect(Long id, Long idProfessor, LocalDateTime dataInicial, LocalDateTime dataFinal);
+
+    @Query(value = """
+            select
+                date_event as dataHora,
+                nomes_professores as descricao,
+                qtd_professor as qtdProfessores
+            from get_disponibilidades(to_bigint_array(:idProfessores), :idProjetoTcc, :dataInicio, :dataFim)
+            """,
+            nativeQuery = true
+    )
+    List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, LocalDateTime dataInicio, LocalDateTime dataFim);
 
 }

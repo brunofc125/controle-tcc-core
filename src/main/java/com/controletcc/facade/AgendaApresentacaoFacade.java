@@ -14,7 +14,6 @@ import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.model.entity.MembroBanca;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import com.controletcc.service.*;
-import com.controletcc.util.LocalDateTimeUtil;
 import com.controletcc.util.ModelMapperUtil;
 import com.controletcc.util.StringUtil;
 import lombok.NonNull;
@@ -117,28 +116,36 @@ public class AgendaApresentacaoFacade {
         var idProfessorBancaList = membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList();
         idProfessorList.addAll(idProfessorBancaList);
 
-        var professorDisponibilidades = professorDisponibilidadeService.getAllByAnoPeriodoAndProfessorList(agendaApresentacao.getAno(), agendaApresentacao.getPeriodo(), idProfessorList);
+//        var professorDisponibilidades = professorDisponibilidadeService.getAllByAnoPeriodoAndProfessorList(agendaApresentacao.getAno(), agendaApresentacao.getPeriodo(), idProfessorList);
         var qtdProfessor = idProfessorList.size();
         var dataHoraInicial = agendaApresentacao.getDataHoraInicial();
         var dataHoraFinal = agendaApresentacao.getDataHoraFinal();
-        var disponibilidadeAgrupadaList = new ArrayList<ProfessorDisponibilidadeAgrupadaDTO>();
+//        var disponibilidadeAgrupadaList = new ArrayList<ProfessorDisponibilidadeAgrupadaDTO>();
+//
+//        var apresentacaoList = apresentacaoService.getAllByIdProfessorList(idProfessorList, dataHoraInicial, dataHoraFinal);
+//
+//        if (LocalDateTimeUtil.compare(dataHoraInicial, dataHoraFinal) < 0) {
+//            for (var dataIni = dataHoraInicial; dataIni.isBefore(dataHoraFinal); dataIni = dataIni.plusHours(1)) {
+//                var dataIniFilter = dataIni;
+//                var nomeProfessorList = new ArrayList<>(professorDisponibilidades.stream().filter(pd -> pd.isEventOccurring(dataIniFilter)).map(pd -> pd.getProfessor().getNome()).distinct().toList());
+//                if (!nomeProfessorList.isEmpty()) {
+//                    var disponibilidadeAgrupada = new ProfessorDisponibilidadeAgrupadaDTO();
+//                    disponibilidadeAgrupada.setDataHora(dataIni);
+//                    disponibilidadeAgrupada.setTodosProfessoresDisponiveis(nomeProfessorList.size() == qtdProfessor);
+//                    nomeProfessorList.sort(String::compareTo);
+//                    disponibilidadeAgrupada.setDescricao(String.join("<br>", nomeProfessorList));
+//                    disponibilidadeAgrupadaList.add(disponibilidadeAgrupada);
+//                }
+//            }
+//        }
 
-        if (LocalDateTimeUtil.compare(dataHoraInicial, dataHoraFinal) < 0) {
-            for (var dataIni = dataHoraInicial; dataIni.isBefore(dataHoraFinal); dataIni = dataIni.plusHours(1)) {
-                var dataIniFilter = dataIni;
-                var nomeProfessorList = new ArrayList<>(professorDisponibilidades.stream().filter(pd -> pd.isEventOccurring(dataIniFilter)).map(pd -> pd.getProfessor().getNome()).distinct().toList());
-                if (!nomeProfessorList.isEmpty()) {
-                    var disponibilidadeAgrupada = new ProfessorDisponibilidadeAgrupadaDTO();
-                    disponibilidadeAgrupada.setDataHora(dataIni);
-                    disponibilidadeAgrupada.setTodosProfessoresDisponiveis(nomeProfessorList.size() == qtdProfessor);
-                    nomeProfessorList.sort(String::compareTo);
-                    disponibilidadeAgrupada.setDescricao(String.join("<br>", nomeProfessorList));
-                    disponibilidadeAgrupadaList.add(disponibilidadeAgrupada);
-                }
-            }
-        }
+        var disponibilidadeAgrupadaList = professorDisponibilidadeService.getDisponibilidades(idProfessorList, idProjetoTcc, dataHoraInicial, dataHoraFinal);
 
-        agendaParaApresentacao.setDisponibilidades(disponibilidadeAgrupadaList.stream().collect(Collectors.toMap(ProfessorDisponibilidadeAgrupadaDTO::getDataHoraStr, d -> d)));
+        var disponibilidadeAgrupadaMap = disponibilidadeAgrupadaList.stream()
+                .map(d -> new ProfessorDisponibilidadeAgrupadaDTO(d, d.getQtdProfessores() != null && d.getQtdProfessores().intValue() == qtdProfessor))
+                .collect(Collectors.toMap(ProfessorDisponibilidadeAgrupadaDTO::getDataHoraStr, d -> d));
+
+        agendaParaApresentacao.setDisponibilidades(disponibilidadeAgrupadaMap);
         return agendaParaApresentacao;
     }
 
