@@ -67,8 +67,8 @@ public class MembroBancaService {
         }
     }
 
-    public List<MembroBanca> getConfirmadosByIdProjetoTcc(Long idProjetoTcc) {
-        return membroBancaRepository.getAllByProjetoTccIdAndDataConfirmacaoIsNotNull(idProjetoTcc);
+    public List<MembroBanca> getByIdProjetoTcc(Long idProjetoTcc) {
+        return membroBancaRepository.getAllByProjetoTccId(idProjetoTcc);
     }
 
     public void delete(Long id) {

@@ -12,8 +12,6 @@ public interface ProfessorDisponibilidadeRepository extends JpaRepository<Profes
 
     List<ProfessorDisponibilidade> getAllByAnoAndPeriodoAndProfessorId(Integer ano, Integer periodo, Long idProfessor);
 
-    List<ProfessorDisponibilidade> getAllByAnoAndPeriodoAndProfessorIdIn(Integer ano, Integer periodo, List<Long> idProfessorList);
-
     @Query(value = """
             SELECT count(pd.id) > 0
             FROM ProfessorDisponibilidade pd

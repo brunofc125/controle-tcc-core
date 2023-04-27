@@ -30,10 +30,6 @@ public class ProfessorDisponibilidadeService {
         return professorDisponibilidadeRepository.getAllByAnoAndPeriodoAndProfessorId(ano, periodo, idProfessor);
     }
 
-    public List<ProfessorDisponibilidade> getAllByAnoPeriodoAndProfessorList(Integer ano, Integer periodo, List<Long> idProfessorList) {
-        return professorDisponibilidadeRepository.getAllByAnoAndPeriodoAndProfessorIdIn(ano, periodo, idProfessorList);
-    }
-
     public ProfessorDisponibilidade save(@NonNull ProfessorDisponibilidade professorDisponibilidade) throws BusinessException {
         validate(professorDisponibilidade);
         return professorDisponibilidadeRepository.save(professorDisponibilidade);

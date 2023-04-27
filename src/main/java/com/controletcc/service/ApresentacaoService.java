@@ -4,6 +4,7 @@ import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Apresentacao;
 import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.ApresentacaoRepository;
+import com.controletcc.repository.projection.ApresentacaoProjection;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,6 +100,10 @@ public class ApresentacaoService {
 
     public List<Apresentacao> getAllByAgendaApresentacaoIdAndProjetoTccIdNot(Long idAgendaApresentacao, Long idProjetoTcc) {
         return apresentacaoRepository.getAllByAgendaApresentacaoIdAndProjetoTccIdNot(idAgendaApresentacao, idProjetoTcc);
+    }
+
+    public List<ApresentacaoProjection> getAllByProfessorAndAnoPeriodo(Long idProfessor, Integer ano, Integer periodo) {
+        return apresentacaoRepository.getAllByProfessorAndAnoPeriodo(idProfessor, ano, periodo);
     }
 
 }

@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,16 +52,6 @@ public class AgendaApresentacaoFacade {
     public AgendaApresentacaoDTO getById(Long id) {
         var agendaApresentacao = agendaApresentacaoService.getById(id);
         return ModelMapperUtil.map(agendaApresentacao, AgendaApresentacaoDTO.class);
-    }
-
-    public List<AgendaApresentacaoDTO> getAllByAnoPeriodo(String anoPeriodo) {
-        if (StringUtil.isNullOrBlank(anoPeriodo) || !anoPeriodo.matches("\\d{4}-\\d")) {
-            return Collections.emptyList();
-        }
-        var ano = Integer.valueOf(anoPeriodo.substring(0, 4));
-        var periodo = Integer.valueOf(anoPeriodo.substring(5));
-        var agendas = agendaApresentacaoService.getAllByAnoPeriodo(ano, periodo);
-        return ModelMapperUtil.mapAll(agendas, AgendaApresentacaoDTO.class);
     }
 
     public ListResponse<AgendaApresentacaoProjection> search(AgendaApresentacaoGridOptions options) throws BusinessException {
@@ -112,33 +101,13 @@ public class AgendaApresentacaoFacade {
 
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var idProfessorList = new ArrayList<>(Stream.of(projetoTcc.getIdProfessorSupervisor(), projetoTcc.getIdProfessorOrientador()).distinct().toList());
-        var membrosBanca = membroBancaService.getConfirmadosByIdProjetoTcc(idProjetoTcc);
+        var membrosBanca = membroBancaService.getByIdProjetoTcc(idProjetoTcc);
         var idProfessorBancaList = membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList();
         idProfessorList.addAll(idProfessorBancaList);
 
-//        var professorDisponibilidades = professorDisponibilidadeService.getAllByAnoPeriodoAndProfessorList(agendaApresentacao.getAno(), agendaApresentacao.getPeriodo(), idProfessorList);
         var qtdProfessor = idProfessorList.size();
         var dataHoraInicial = agendaApresentacao.getDataHoraInicial();
         var dataHoraFinal = agendaApresentacao.getDataHoraFinal();
-//        var disponibilidadeAgrupadaList = new ArrayList<ProfessorDisponibilidadeAgrupadaDTO>();
-//
-//        var apresentacaoList = apresentacaoService.getAllByIdProfessorList(idProfessorList, dataHoraInicial, dataHoraFinal);
-//
-//        if (LocalDateTimeUtil.compare(dataHoraInicial, dataHoraFinal) < 0) {
-//            for (var dataIni = dataHoraInicial; dataIni.isBefore(dataHoraFinal); dataIni = dataIni.plusHours(1)) {
-//                var dataIniFilter = dataIni;
-//                var nomeProfessorList = new ArrayList<>(professorDisponibilidades.stream().filter(pd -> pd.isEventOccurring(dataIniFilter)).map(pd -> pd.getProfessor().getNome()).distinct().toList());
-//                if (!nomeProfessorList.isEmpty()) {
-//                    var disponibilidadeAgrupada = new ProfessorDisponibilidadeAgrupadaDTO();
-//                    disponibilidadeAgrupada.setDataHora(dataIni);
-//                    disponibilidadeAgrupada.setTodosProfessoresDisponiveis(nomeProfessorList.size() == qtdProfessor);
-//                    nomeProfessorList.sort(String::compareTo);
-//                    disponibilidadeAgrupada.setDescricao(String.join("<br>", nomeProfessorList));
-//                    disponibilidadeAgrupadaList.add(disponibilidadeAgrupada);
-//                }
-//            }
-//        }
-
         var disponibilidadeAgrupadaList = professorDisponibilidadeService.getDisponibilidades(idProfessorList, idProjetoTcc, dataHoraInicial, dataHoraFinal);
 
         var disponibilidadeAgrupadaMap = disponibilidadeAgrupadaList.stream()
@@ -169,4 +138,3 @@ public class AgendaApresentacaoFacade {
     }
 
 }
-
