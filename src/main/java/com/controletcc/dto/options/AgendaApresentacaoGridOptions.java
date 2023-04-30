@@ -19,6 +19,7 @@ public class AgendaApresentacaoGridOptions extends BaseGridOptions {
     private String descricao;
     private TipoTcc tipoTcc;
     private Long idAreaTcc;
+    private String anoPeriodo;
     private LocalDate dataInicial;
     private LocalDate dataFinal;
 

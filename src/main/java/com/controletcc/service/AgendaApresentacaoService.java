@@ -7,6 +7,7 @@ import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.AgendaApresentacaoRepository;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
+import com.controletcc.repository.projection.AgendaPeriodoProjection;
 import com.controletcc.util.StringUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +31,12 @@ public class AgendaApresentacaoService {
         return agendaApresentacaoRepository.getReferenceById(id);
     }
 
+    public List<AgendaApresentacao> getAllByAnoPeriodo(Integer ano, Integer periodo) {
+        return agendaApresentacaoRepository.getAllByAnoAndPeriodo(ano, periodo);
+    }
+
     public ListResponse<AgendaApresentacaoProjection> search(@NonNull List<Long> idAreaTccList, AgendaApresentacaoGridOptions options) throws BusinessException {
-        var page = agendaApresentacaoRepository.search(options.getId(), idAreaTccList, options.getDescricao(), options.getTipoTcc(), options.getIdAreaTcc(), options.getDataInicial(), options.getDataFinal(), options.getPageable());
+        var page = agendaApresentacaoRepository.search(options.getId(), idAreaTccList, options.getDescricao(), options.getTipoTcc(), options.getIdAreaTcc(), options.getAnoPeriodo(), options.getDataInicial(), options.getDataFinal(), options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 
@@ -47,8 +52,10 @@ public class AgendaApresentacaoService {
         return agendaApresentacaoRepository.save(agendaApresentacao);
     }
 
-    public boolean existsIntersect(Long id, @NonNull Long idAreaTcc, @NonNull TipoTcc tipoTcc, @NonNull LocalDate dataInicial, @NonNull LocalDate dataFinal) {
-        return agendaApresentacaoRepository.existsIntersect(id, idAreaTcc, tipoTcc, dataInicial, dataFinal);
+    public boolean existsDuplicate(Long id, @NonNull Long idAreaTcc, @NonNull TipoTcc tipoTcc, @NonNull Integer ano, @NonNull Integer periodo) {
+        return id != null ?
+                agendaApresentacaoRepository.existsByAreaTccIdAndTipoTccAndAnoAndPeriodoAndIdNot(idAreaTcc, tipoTcc, ano, periodo, id)
+                : agendaApresentacaoRepository.existsByAreaTccIdAndTipoTccAndAnoAndPeriodo(idAreaTcc, tipoTcc, ano, periodo);
     }
 
     private void validate(AgendaApresentacao agendaApresentacao) throws BusinessException {
@@ -65,6 +72,12 @@ public class AgendaApresentacaoService {
 
         if (agendaApresentacao.getAreaTcc() == null) {
             errors.add("Área de TCC não informada");
+        }
+
+        if (agendaApresentacao.getAno() == null || agendaApresentacao.getPeriodo() == null) {
+            errors.add("Ano/Período não informado");
+        } else if (agendaApresentacao.getAno() != null && dataAtual.getYear() < agendaApresentacao.getAno()) {
+            errors.add("Ano/Período não pode ser futuro");
         }
 
         if (agendaApresentacao.getDataInicial() == null) {
@@ -89,8 +102,8 @@ public class AgendaApresentacaoService {
             errors.add("Hora final das apresentações não informada");
         }
 
-        if (errors.isEmpty() && existsIntersect(agendaApresentacao.getId(), agendaApresentacao.getIdAreaTcc(), agendaApresentacao.getTipoTcc(), agendaApresentacao.getDataInicial(), agendaApresentacao.getDataFinal())) {
-            errors.add("Já existe uma agenda que interpola com as datas informadas");
+        if (errors.isEmpty() && existsDuplicate(agendaApresentacao.getId(), agendaApresentacao.getIdAreaTcc(), agendaApresentacao.getTipoTcc(), agendaApresentacao.getAno(), agendaApresentacao.getPeriodo())) {
+            errors.add("Já existe uma agenda cadastrada neste ano/período");
         }
 
         if (!errors.isEmpty()) {
@@ -104,6 +117,10 @@ public class AgendaApresentacaoService {
 
     public List<AgendaApresentacao> getAgendasAtivasByAreaTccIdIn(List<Long> idAreaTccList) {
         return agendaApresentacaoRepository.getAllByAreaTccIdInAndDataFinalGreaterThanEqual(idAreaTccList, LocalDate.now());
+    }
+
+    public AgendaPeriodoProjection getAgendaPeriodoByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<Long> idAreaTccList) {
+        return agendaApresentacaoRepository.getAgendaByAnoPeriodoAndAreasTcc(ano, periodo, idAreaTccList);
     }
 
 }

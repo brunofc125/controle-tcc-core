@@ -41,4 +41,10 @@ public class LocalDateUtil {
         return LocalDate.parse(dateString, DateTimeFormatter.ofPattern(pattern));
     }
 
+    public static boolean intersectDate(@NonNull LocalDate newStart, @NonNull LocalDate newEnd, @NonNull LocalDate start, @NonNull LocalDate end) {
+        var startBetween = (compare(newStart, start) >= 0 && compare(newStart, end) < 0) || (compare(start, newStart) >= 0 && compare(start, newEnd) < 0);
+        var endBetween = (compare(newEnd, start) > 0 && compare(newEnd, end) <= 0) || (compare(end, newStart) > 0 && compare(end, newEnd) <= 0);
+        return startBetween || endBetween;
+    }
+
 }

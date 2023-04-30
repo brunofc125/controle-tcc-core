@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProfessorCompromissoDTO extends BaseDTO {
+public class ProfessorDisponibilidadeDTO extends BaseDTO {
     private Long id;
     private Long idProfessor;
-    private String descricao;
+    private String anoPeriodo;
     private LocalDateTime dataInicial;
     private LocalDateTime dataFinal;
 }

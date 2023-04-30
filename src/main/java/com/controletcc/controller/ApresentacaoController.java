@@ -1,5 +1,6 @@
 package com.controletcc.controller;
 
+import com.controletcc.dto.AgendaPeriodoDTO;
 import com.controletcc.error.BusinessException;
 import com.controletcc.facade.ApresentacaoFacade;
 import com.controletcc.model.dto.ApresentacaoDTO;
@@ -31,6 +32,12 @@ public class ApresentacaoController {
     public ApresentacaoDTO update(@PathVariable Long id, @RequestBody ApresentacaoDTO apresentacao) throws BusinessException {
         apresentacao.setId(id);
         return apresentacaoFacade.update(apresentacao);
+    }
+
+    @PreAuthorize("hasAuthority('apresentacao.read')")
+    @GetMapping("professor/anoPeriodo/{anoPeriodo}")
+    public AgendaPeriodoDTO getAgendaByProfessorLogadoAndAnoPeriodo(@PathVariable String anoPeriodo) throws BusinessException {
+        return apresentacaoFacade.getAllByProfessorLogadoAndAnoPeriodo(anoPeriodo);
     }
 
 }

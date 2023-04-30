@@ -1,6 +1,7 @@
 package com.controletcc.controller;
 
 import com.controletcc.dto.AgendaParaApresentacaoDTO;
+import com.controletcc.dto.AgendaPeriodoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
@@ -24,6 +25,12 @@ public class AgendaApresentacaoController {
     @GetMapping("{id}")
     public AgendaApresentacaoDTO getById(@PathVariable Long id) {
         return agendaApresentacaoFacade.getById(id);
+    }
+
+    @PreAuthorize("hasAuthority('agenda-apresentacao.read')")
+    @GetMapping("ano-periodo/{anoPeriodo}")
+    public AgendaPeriodoDTO getAgendaPeriodo(@PathVariable String anoPeriodo) throws BusinessException {
+        return agendaApresentacaoFacade.getAgendaPeriodo(anoPeriodo);
     }
 
     @PreAuthorize("hasAuthority('agenda-apresentacao.read')")
@@ -51,7 +58,7 @@ public class AgendaApresentacaoController {
         return agendaApresentacaoFacade.getAgendasAtivasByIdProjetoTcc(idProjetoTcc);
     }
 
-    @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read', 'professor-compromisso.read')")
+    @PreAuthorize("hasAnyAuthority('agenda-apresentacao.read', 'apresentacao.read', 'professor-disponibilidade.read')")
     @GetMapping("ativas-by-professor-logado")
     public List<AgendaApresentacaoDTO> getAgendasAtivasByProfessorLogado() throws BusinessException {
         return agendaApresentacaoFacade.getAgendasAtivasByProfessorLogado();

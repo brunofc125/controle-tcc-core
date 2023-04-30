@@ -1,24 +1,21 @@
 package com.controletcc.repository.projection;
 
-import com.controletcc.model.enums.TipoCompromisso;
 import com.controletcc.model.enums.TipoTcc;
 
 import java.time.LocalDateTime;
 
-public interface ProfessorCompromissoProjection {
+public interface ApresentacaoProjection {
     Long getId();
-
-    TipoCompromisso getTipoCompromisso();
-
-    TipoTcc getTipoTcc();
 
     String getDescricao();
 
-    String getAlunosNome();
+    Long getIdProjetoTcc();
+
+    TipoTcc getTipoTcc();
 
     LocalDateTime getDataInicial();
 
     LocalDateTime getDataFinal();
 
-    String getPapel();
+    String getParticipacao();
 }
