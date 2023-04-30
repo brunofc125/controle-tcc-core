@@ -1,7 +1,7 @@
 package com.controletcc.model.entity;
 
-import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.model.entity.base.Arquivo;
+import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
