@@ -16,4 +16,6 @@ public interface ApresentacaoProjection {
     LocalDateTime getDataInicial();
 
     LocalDateTime getDataFinal();
+
+    String getParticipacao();
 }

@@ -36,7 +36,10 @@ public interface ApresentacaoRepository extends JpaRepository<Apresentacao, Long
                 pt.id as idProjetoTcc,
                 a.tipoTcc as tipoTcc,
                 a.dataInicial as dataInicial,
-                a.dataFinal as dataFinal
+                a.dataFinal as dataFinal,
+                (case when po.id = :idProfessor then 'ORIENTADOR'
+                when pmb.id = :idProfessor then 'MEMBRO_BANCA'
+                else 'SUPERVISOR' end) as participacao
             FROM Apresentacao a
             JOIN a.agendaApresentacao aa
             JOIN a.projetoTcc pt

@@ -45,8 +45,6 @@ public class AgendaApresentacaoFacade {
 
     private final ProfessorDisponibilidadeService professorDisponibilidadeService;
 
-    private final VwProfessorCompromissoService vwProfessorCompromissoService;
-
     private final MembroBancaService membroBancaService;
 
     public AgendaApresentacaoDTO getById(Long id) {
