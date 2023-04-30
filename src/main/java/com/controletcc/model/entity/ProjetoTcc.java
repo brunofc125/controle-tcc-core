@@ -1,8 +1,8 @@
 package com.controletcc.model.entity;
 
 import com.controletcc.model.entity.base.BaseEntity;
-import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.model.enums.SituacaoTcc;
+import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
