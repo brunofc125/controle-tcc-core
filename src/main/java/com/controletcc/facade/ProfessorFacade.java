@@ -1,6 +1,5 @@
 package com.controletcc.facade;
 
-import com.controletcc.dto.SaveProfessorDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
@@ -10,6 +9,7 @@ import com.controletcc.model.entity.Professor;
 import com.controletcc.model.entity.User;
 import com.controletcc.model.enums.UserType;
 import com.controletcc.repository.projection.ProfessorProjection;
+import com.controletcc.service.EmailService;
 import com.controletcc.service.ProfessorService;
 import com.controletcc.service.ProjetoTccService;
 import com.controletcc.service.UserService;
@@ -35,6 +35,8 @@ public class ProfessorFacade {
 
     private final ProjetoTccService projetoTccService;
 
+    private final EmailService emailService;
+
     public ProfessorDTO getById(Long id) {
         var professor = professorService.getById(id);
         return ModelMapperUtil.map(professor, ProfessorDTO.class);
@@ -44,14 +46,14 @@ public class ProfessorFacade {
         return professorService.search(options);
     }
 
-    public ProfessorDTO insert(SaveProfessorDTO saveProfessor) throws BusinessException {
-        var professor = ModelMapperUtil.map(saveProfessor.getProfessor(), Professor.class);
-        var usuario = ModelMapperUtil.map(saveProfessor.getUser(), User.class);
-        usuario.setName(professor.getNome());
-        usuario = userService.insert(usuario, professor.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR);
+    public ProfessorDTO insert(ProfessorDTO professorDTO) throws BusinessException {
+        var professor = ModelMapperUtil.map(professorDTO, Professor.class);
+        var usuario = userService.insert(professor.getNome(), professor.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR);
         professor.setUsuario(usuario);
         professor = professorService.insert(professor);
-        return ModelMapperUtil.map(professor, ProfessorDTO.class);
+        professorDTO = ModelMapperUtil.map(professor, ProfessorDTO.class);
+        emailService.sendNewUser(usuario, professor.getEmail());
+        return professorDTO;
     }
 
     public ProfessorDTO update(ProfessorDTO professorDTO) throws BusinessException {

@@ -38,4 +38,7 @@ public interface UserRepository extends JpaRepository<User, Long>, RepositoryCus
     boolean existsByUsername(String username);
 
     boolean existsByUsernameAndIdNot(String username, Long id);
+
+    @Query(value = "SELECT get_new_user_name(:simpleName)", nativeQuery = true)
+    String getNewUsername(String simpleName);
 }

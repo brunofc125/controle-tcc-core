@@ -1,6 +1,5 @@
 package com.controletcc.controller;
 
-import com.controletcc.dto.SaveAlunoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.csv.ReturnImportCsvDTO;
 import com.controletcc.dto.options.AlunoGridOptions;
@@ -44,8 +43,8 @@ public class AlunoController {
 
     @PreAuthorize("hasAuthority('aluno.create')")
     @PostMapping
-    public AlunoDTO insert(@RequestBody SaveAlunoDTO saveAluno) throws BusinessException {
-        return alunoFacade.insert(saveAluno);
+    public AlunoDTO insert(@RequestBody AlunoDTO aluno) throws BusinessException {
+        return alunoFacade.insert(aluno);
     }
 
     @PreAuthorize("hasAnyAuthority('aluno.create', 'aluno.perfil')")

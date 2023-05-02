@@ -60,3 +60,34 @@ BEGIN
     RETURN resultado;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Função para criar novo nome de usuário
+DROP FUNCTION public.get_new_user_name;
+
+CREATE OR REPLACE FUNCTION get_new_user_name(first_name varchar) RETURNS TEXT AS
+$$
+DECLARE
+    new_username text;
+BEGIN
+    new_username := concat(first_name || '_', array_to_string(array(select case
+                                                                               when tb.letter
+                                                                                   then chr((random() * 25 + 97)::integer)
+                                                                               else chr((random() * 9 + 48)::integer) end
+                                                                    from (select *, ((random() * 9)::integer < 5) as letter
+                                                                          from generate_series(1, 6)) as tb),
+                                                              ''));
+    WHILE EXISTS(SELECT 1 FROM "user" u WHERE u.user_name = new_username)
+        LOOP
+            new_username := concat(first_name || '_', array_to_string(array(select case
+                                                                                       when tb.letter then
+                                                                                           chr((random() * 25 + 97)::integer)
+                                                                                       else
+                                                                                           chr((random() * 9 + 48)::integer)
+                                                                                       end
+                                                                            from (select *, ((random() * 9)::integer < 5) as letter
+                                                                                  from generate_series(1, 6)) as tb),
+                                                                      ''));
+        END LOOP;
+    return new_username;
+END;
+$$ LANGUAGE PLPGSQL;

@@ -1,6 +1,5 @@
 package com.controletcc.facade;
 
-import com.controletcc.dto.SaveAlunoDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AlunoGridOptions;
 import com.controletcc.error.BusinessException;
@@ -11,6 +10,7 @@ import com.controletcc.model.entity.User;
 import com.controletcc.model.enums.UserType;
 import com.controletcc.repository.projection.AlunoProjection;
 import com.controletcc.service.AlunoService;
+import com.controletcc.service.EmailService;
 import com.controletcc.service.UserService;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +31,8 @@ public class AlunoFacade {
 
     private final UserService userService;
 
+    private final EmailService emailService;
+
     public AlunoDTO getById(Long id) {
         var aluno = alunoService.getById(id);
         return ModelMapperUtil.map(aluno, AlunoDTO.class);
@@ -40,14 +42,14 @@ public class AlunoFacade {
         return alunoService.search(options);
     }
 
-    public AlunoDTO insert(SaveAlunoDTO saveAluno) throws BusinessException {
-        var aluno = ModelMapperUtil.map(saveAluno.getAluno(), Aluno.class);
-        var usuario = ModelMapperUtil.map(saveAluno.getUser(), User.class);
-        usuario.setName(aluno.getNome());
-        usuario = userService.insert(usuario, UserType.ALUNO);
+    public AlunoDTO insert(AlunoDTO alunoDTO) throws BusinessException {
+        var aluno = ModelMapperUtil.map(alunoDTO, Aluno.class);
+        var usuario = userService.insert(aluno.getNome(), UserType.ALUNO);
         aluno.setUsuario(usuario);
         aluno = alunoService.insert(aluno);
-        return ModelMapperUtil.map(aluno, AlunoDTO.class);
+        alunoDTO = ModelMapperUtil.map(aluno, AlunoDTO.class);
+        emailService.sendNewUser(usuario, aluno.getEmail());
+        return alunoDTO;
     }
 
     public AlunoDTO update(AlunoDTO alunoDTO) throws BusinessException {

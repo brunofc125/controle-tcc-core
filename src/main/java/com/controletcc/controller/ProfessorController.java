@@ -1,6 +1,5 @@
 package com.controletcc.controller;
 
-import com.controletcc.dto.SaveProfessorDTO;
 import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.csv.ReturnImportCsvDTO;
 import com.controletcc.dto.options.ProfessorGridOptions;
@@ -44,8 +43,8 @@ public class ProfessorController {
 
     @PreAuthorize("hasAuthority('professor.create')")
     @PostMapping
-    public ProfessorDTO insert(@RequestBody SaveProfessorDTO saveProfessor) throws BusinessException {
-        return professorFacade.insert(saveProfessor);
+    public ProfessorDTO insert(@RequestBody ProfessorDTO professor) throws BusinessException {
+        return professorFacade.insert(professor);
     }
 
     @PreAuthorize("hasAnyAuthority('professor.create', 'professor.perfil')")
