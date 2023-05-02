@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +75,22 @@ public class UserService implements UserDetailsService {
             user.setName("Administrador");
         }
         return this.saveCryptUser(user);
+    }
+
+    public User insert(@NonNull String fullName, @NonNull UserType userType) throws BusinessException {
+        var user = new User();
+        var password = generatePassword();
+        user.setRoles(getRolesByUserType(userType));
+        user.setType(userType);
+        user.setName(fullName.trim());
+        user.setUsername(generateUsername(StringUtil.getUsernameByFullName(fullName)));
+        user.setPassword(password);
+        user.setEnabled(true);
+        if (UserType.ADMIN.equals(userType)) {
+            user.setName("Administrador");
+        }
+        var savedUser = this.saveCryptUser(user);
+        return new User(savedUser, password);
     }
 
     public void updateName(@NonNull Long idUser, @NonNull String name) throws BusinessException {
@@ -141,5 +158,40 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
+    public String generateUsername(String simpleName) {
+        return userRepository.getNewUsername(simpleName);
+    }
+
+    public String generatePassword() {
+        var passBuilder = new StringBuilder();
+        var rand = new Random();
+        var containsLetter = false;
+        var containsNumber = false;
+        for (int i = 0; i < 7; i++) {
+            var addLetter = rand.nextBoolean();
+            if (addLetter) {
+                containsLetter = true;
+                passBuilder.append((char) rand.nextInt(97, 123));
+            } else {
+                containsNumber = true;
+                passBuilder.append((char) rand.nextInt(48, 58));
+            }
+        }
+        if (containsLetter && containsNumber) {
+            var addLetter = rand.nextBoolean();
+            if (addLetter) {
+                passBuilder.append((char) rand.nextInt(97, 123));
+            } else {
+                passBuilder.append((char) rand.nextInt(48, 58));
+            }
+        } else if (containsLetter) {
+            passBuilder.append((char) rand.nextInt(48, 58));
+        } else {
+            passBuilder.append((char) rand.nextInt(97, 123));
+        }
+        return passBuilder.toString();
+    }
+
 
 }

@@ -41,4 +41,15 @@ public class User extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "id_user"), inverseJoinColumns = @JoinColumn(name = "id_role"))
     private List<Role> roles = new ArrayList<>();
+
+    public User(User user, String password) {
+        this.id = user.getId();
+        this.type = user.getType();
+        this.name = user.getName();
+        this.username = user.getUsername();
+        this.enabled = user.isEnabled();
+        this.roles = user.getRoles();
+        this.password = password;
+    }
+
 }

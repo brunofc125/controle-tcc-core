@@ -3,6 +3,7 @@ package com.controletcc.service;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.Professor;
 import com.controletcc.model.entity.ProjetoTcc;
+import com.controletcc.model.entity.User;
 import com.controletcc.util.ErrorUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.concurrent.Executors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +63,26 @@ public class EmailService {
         sendMail(sendTo, subject, htmlTemplate);
     }
 
+    public void sendNewUser(@NonNull User user, @NonNull String email) throws BusinessException {
+        var subject = "Usuário Criado - Controle de TCC";
+        String htmlTemplate = """
+                <h3>Seja bem-vindo!</h3>
+                <p>Prezado(a) ${tipoUsuario}(a),</p>
+                <p>Segue seus dados para acesso ao sistema (Não perca ou compartilhe):</p>
+                <ul>
+                    <li>Usuário: ${username}</li>
+                    <li>Senha: ${senha}</li>
+                </ul>
+                <p>É possível alterar essas informações pelo sistema.</p>
+                <p style="color: rgba(0, 0, 0, 0.466);"><em>Este e-mail foi enviado pelo sistema, favor não responder.</em></p>
+                """;
+        htmlTemplate = htmlTemplate.replace("${tipoUsuario}", user.getType().getDescricao());
+        htmlTemplate = htmlTemplate.replace("${username}", user.getUsername());
+        htmlTemplate = htmlTemplate.replace("${senha}", user.getPassword());
+
+        sendMail(email, subject, htmlTemplate);
+    }
+
     public void sendMail(@NonNull String sendTo, @NonNull String subject, @NonNull String htmlTemplate) throws BusinessException {
         try {
             MimeMessage mail = mailSender.createMimeMessage();
@@ -69,7 +91,10 @@ public class EmailService {
             helper.setTo(sendTo);
             helper.setSubject(subject);
             helper.setText(htmlTemplate, true);
-            mailSender.send(mail);
+
+            Executors.newCachedThreadPool().submit(() -> {
+                mailSender.send(mail);
+            });
         } catch (MessagingException e) {
             ErrorUtil.error(log, e, "Erro ao enviar o e-mail.");
         }
