@@ -67,7 +67,7 @@ public class EmailService {
         var subject = "Usuário Criado - Controle de TCC";
         String htmlTemplate = """
                 <h3>Seja bem-vindo!</h3>
-                <p>Prezado(a) ${tipoUsuario}(a),</p>
+                <p>Prezado(a) ${tipoUsuario}(a) ${nomeUsuario},</p>
                 <p>Segue seus dados para acesso ao sistema (Não perca ou compartilhe):</p>
                 <ul>
                     <li>Usuário: ${username}</li>
@@ -77,6 +77,7 @@ public class EmailService {
                 <p style="color: rgba(0, 0, 0, 0.466);"><em>Este e-mail foi enviado pelo sistema, favor não responder.</em></p>
                 """;
         htmlTemplate = htmlTemplate.replace("${tipoUsuario}", user.getType().getDescricao());
+        htmlTemplate = htmlTemplate.replace("${nomeUsuario}", user.getName());
         htmlTemplate = htmlTemplate.replace("${username}", user.getUsername());
         htmlTemplate = htmlTemplate.replace("${senha}", user.getPassword());
 

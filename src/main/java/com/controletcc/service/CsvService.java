@@ -179,9 +179,9 @@ public class CsvService {
 
     private <T extends BaseImportCsvDTO> void setLocalDateField(Field field, T record, CsvColumn csvColumn, String value) throws CsvErrorException {
         try {
-            field.set(record, LocalDateUtil.stringToLocalDate(value, "dd/MM/yyyy"));
+            field.set(record, LocalDateUtil.converterData(value));
         } catch (Exception e) {
-            var msgError = "Erro na coluna " + csvColumn.name() + ": Valor inválido, deveria seguir o formato dd/MM/yyyy";
+            var msgError = "Erro na coluna " + csvColumn.name() + ": Valor inválido, deveria seguir o formato dd/MM/yyyy ou dd/MM/yy";
             log.error(msgError, e);
             throw new CsvErrorException(msgError);
         }

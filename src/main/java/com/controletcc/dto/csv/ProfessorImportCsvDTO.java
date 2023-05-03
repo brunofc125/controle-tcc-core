@@ -41,10 +41,4 @@ public class ProfessorImportCsvDTO extends BaseImportCsvDTO {
     @CsvColumn(name = "ID's Áreas de TCC", type = CsvType.LIST, listClass = LongType.class)
     private List<Long> idAreasTcc;
 
-    @CsvColumn(name = "Usuário", type = CsvType.STRING)
-    private String username;
-
-    @CsvColumn(name = "Senha", type = CsvType.STRING)
-    private String password;
-
 }
