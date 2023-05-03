@@ -4,9 +4,7 @@ import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.AlunoGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.AlunoDTO;
-import com.controletcc.model.dto.UserDTO;
 import com.controletcc.model.entity.Aluno;
-import com.controletcc.model.entity.User;
 import com.controletcc.model.enums.UserType;
 import com.controletcc.repository.projection.AlunoProjection;
 import com.controletcc.service.AlunoService;
@@ -43,13 +41,7 @@ public class AlunoFacade {
     }
 
     public AlunoDTO insert(AlunoDTO alunoDTO) throws BusinessException {
-        var aluno = ModelMapperUtil.map(alunoDTO, Aluno.class);
-        var usuario = userService.insert(aluno.getNome(), UserType.ALUNO);
-        aluno.setUsuario(usuario);
-        aluno = alunoService.insert(aluno);
-        alunoDTO = ModelMapperUtil.map(aluno, AlunoDTO.class);
-        emailService.sendNewUser(usuario, aluno.getEmail());
-        return alunoDTO;
+        return insertAluno(alunoDTO);
     }
 
     public AlunoDTO update(AlunoDTO alunoDTO) throws BusinessException {
@@ -61,13 +53,18 @@ public class AlunoFacade {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = BusinessException.class)
-    public void insertTransactional(AlunoDTO alunoDTO, UserDTO userDTO) throws BusinessException {
+    public void insertTransactional(AlunoDTO alunoDTO) throws BusinessException {
+        insertAluno(alunoDTO);
+    }
+
+    private AlunoDTO insertAluno(AlunoDTO alunoDTO) throws BusinessException {
         var aluno = ModelMapperUtil.map(alunoDTO, Aluno.class);
-        var usuario = ModelMapperUtil.map(userDTO, User.class);
-        usuario.setName(aluno.getNome());
-        usuario = userService.insert(usuario, UserType.ALUNO);
+        var usuario = userService.insert(aluno.getNome(), UserType.ALUNO);
         aluno.setUsuario(usuario);
-        alunoService.insert(aluno);
+        aluno = alunoService.insert(aluno);
+        alunoDTO = ModelMapperUtil.map(aluno, AlunoDTO.class);
+        emailService.sendNewUser(usuario, aluno.getEmail());
+        return alunoDTO;
     }
 
     public List<AlunoDTO> getAllByIdAreaTcc(Long idAreaTcc) {

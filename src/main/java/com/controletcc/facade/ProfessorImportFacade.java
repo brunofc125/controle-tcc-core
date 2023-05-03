@@ -4,7 +4,6 @@ import com.controletcc.dto.csv.ProfessorImportCsvDTO;
 import com.controletcc.dto.csv.ReturnImportCsvDTO;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProfessorDTO;
-import com.controletcc.model.dto.UserDTO;
 import com.controletcc.service.CsvService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,18 +33,15 @@ public class ProfessorImportFacade {
             throw new BusinessException("Não há registros nesta planilha");
         }
         for (var record : records) {
-            if (record.isValid()) {
-                var userDTO = new UserDTO(record);
-                var professorDTO = new ProfessorDTO(record);
-                try {
-                    professorFacade.insertTransactional(professorDTO, userDTO);
-                } catch (BusinessException be) {
-                    record.setError(String.join("\n", be.getErrors()));
-                } catch (Exception ex) {
-                    var uuid = UUID.randomUUID();
-                    log.error("ERRO: " + uuid + " - " + ex.getMessage() + " - " + ex.getCause(), ex);
-                    record.setError("Erro na importação deste registro. Código do erro: " + uuid);
-                }
+            var professorDTO = new ProfessorDTO(record);
+            try {
+                professorFacade.insertTransactional(professorDTO);
+            } catch (BusinessException be) {
+                record.addError(String.join("\n", be.getErrors()));
+            } catch (Exception ex) {
+                var uuid = UUID.randomUUID();
+                log.error("ERRO: " + uuid + " - " + ex.getMessage() + " - " + ex.getCause(), ex);
+                record.setError("Erro na importação deste registro. Código do erro: " + uuid);
             }
         }
         return csvService.getImportedCsv("professor_import_error", records, ProfessorImportCsvDTO.class);

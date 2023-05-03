@@ -4,9 +4,7 @@ import com.controletcc.dto.base.ListResponse;
 import com.controletcc.dto.options.ProfessorGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProfessorDTO;
-import com.controletcc.model.dto.UserDTO;
 import com.controletcc.model.entity.Professor;
-import com.controletcc.model.entity.User;
 import com.controletcc.model.enums.UserType;
 import com.controletcc.repository.projection.ProfessorProjection;
 import com.controletcc.service.EmailService;
@@ -47,13 +45,7 @@ public class ProfessorFacade {
     }
 
     public ProfessorDTO insert(ProfessorDTO professorDTO) throws BusinessException {
-        var professor = ModelMapperUtil.map(professorDTO, Professor.class);
-        var usuario = userService.insert(professor.getNome(), professor.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR);
-        professor.setUsuario(usuario);
-        professor = professorService.insert(professor);
-        professorDTO = ModelMapperUtil.map(professor, ProfessorDTO.class);
-        emailService.sendNewUser(usuario, professor.getEmail());
-        return professorDTO;
+        return insertProfessor(professorDTO);
     }
 
     public ProfessorDTO update(ProfessorDTO professorDTO) throws BusinessException {
@@ -69,13 +61,18 @@ public class ProfessorFacade {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = BusinessException.class)
-    public void insertTransactional(ProfessorDTO professorDTO, UserDTO userDTO) throws BusinessException {
+    public void insertTransactional(ProfessorDTO professorDTO) throws BusinessException {
+        insertProfessor(professorDTO);
+    }
+
+    private ProfessorDTO insertProfessor(ProfessorDTO professorDTO) throws BusinessException {
         var professor = ModelMapperUtil.map(professorDTO, Professor.class);
-        var usuario = ModelMapperUtil.map(userDTO, User.class);
-        usuario.setName(professor.getNome());
-        usuario = userService.insert(usuario, professor.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR);
+        var usuario = userService.insert(professor.getNome(), professor.isSupervisorTcc() ? UserType.SUPERVISOR : UserType.PROFESSOR);
         professor.setUsuario(usuario);
-        professorService.insert(professor);
+        professor = professorService.insert(professor);
+        professorDTO = ModelMapperUtil.map(professor, ProfessorDTO.class);
+        emailService.sendNewUser(usuario, professor.getEmail());
+        return professorDTO;
     }
 
     public List<ProfessorDTO> getSupervisoresByIdAreaTcc(Long idAreaTcc) {
