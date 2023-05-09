@@ -53,6 +53,9 @@ public class ProjetoTcc extends BaseEntity {
     @Formula("(select string_agg(a.nome, ', ') from aluno a join projeto_tcc_aluno pta on pta.id_aluno = a.id where pta.id_projeto_tcc = id)")
     private String alunosNome;
 
+    @Formula("(select string_agg(p.nome, ', ') from professor p join membro_banca mb on mb.id_professor = p.id where mb.id_projeto_tcc = id)")
+    private String membrosBancaNome;
+
     public Long getIdAreaTcc() {
         return this.areaTcc != null ? this.areaTcc.getId() : null;
     }

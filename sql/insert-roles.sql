@@ -59,6 +59,8 @@ VALUES ('projeto-tcc.cancel', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('projeto-tcc.reprove', false, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc.export', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('anexo-geral.create', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('anexo-geral.delete', false, true, true, false);
