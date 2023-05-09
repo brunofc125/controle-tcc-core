@@ -7,6 +7,7 @@ import com.controletcc.model.entity.ProjetoTcc;
 import com.controletcc.model.entity.ProjetoTccSituacao;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.repository.ProjetoTccRepository;
+import com.controletcc.repository.projection.ProjetoTccExportProjection;
 import com.controletcc.repository.projection.ProjetoTccProjection;
 import com.controletcc.util.StringUtil;
 import lombok.NonNull;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,4 +123,9 @@ public class ProjetoTccService {
             throw new BusinessException(errors);
         }
     }
+
+    public List<ProjetoTccExportProjection> export(@NonNull ProjetoTccGridOptions options) {
+        return projetoTccRepository.export(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno());
+    }
+
 }

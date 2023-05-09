@@ -2,6 +2,7 @@ package com.controletcc.service;
 
 import com.controletcc.annotation.CsvColumn;
 import com.controletcc.dto.csv.BaseImportCsvDTO;
+import com.controletcc.dto.csv.ReturnExportCsvDTO;
 import com.controletcc.dto.csv.ReturnImportCsvDTO;
 import com.controletcc.error.BusinessException;
 import com.controletcc.error.CsvErrorException;
@@ -79,6 +80,30 @@ public class CsvService {
             fileCsv.deleteOnExit();
         }
         return returnImportCsv;
+    }
+
+    public <T extends BaseImportCsvDTO> ReturnExportCsvDTO getExportedCsv(String fileName, List<T> records, Class<T> clazz) throws Exception {
+        var returnExportCsv = new ReturnExportCsvDTO();
+        returnExportCsv.setFileName(fileName);
+        returnExportCsv.setQtdRecords(records.size());
+        var fileCsv = File.createTempFile(fileName, ".csv");
+        try (var writer = new FileWriter(fileCsv)) {
+            getCSVPrinter(writer, clazz, records);
+            returnExportCsv.setBase64(FileAppUtil.fileToBase64(fileCsv));
+        } catch (Exception e) {
+            log.error("Erro ao gerar o arquivo exportação.", e);
+        }
+        fileCsv.deleteOnExit();
+        return returnExportCsv;
+    }
+
+    private <T extends BaseImportCsvDTO> void getCSVPrinter(Writer writer, Class<T> clazz, List<T> recordsError) throws BusinessException {
+        try (var printer = new CSVPrinter(writer, CSVFormat.Builder.create().setHeader(this.getHeader(clazz, false)).build())) {
+            printer.printRecords(getValueRecords(clazz, recordsError, false));
+            printer.flush();
+        } catch (Exception ex) {
+            ErrorUtil.error(log, ex, "Erro ao gerar o arquivo de erros de importação.");
+        }
     }
 
     private <T extends BaseImportCsvDTO> void getCSVPrinterError(Writer writer, Class<T> clazz, List<T> recordsError) throws BusinessException {

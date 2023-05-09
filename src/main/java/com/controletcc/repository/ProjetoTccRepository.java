@@ -3,6 +3,7 @@ package com.controletcc.repository;
 import com.controletcc.model.entity.ProjetoTcc;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoTcc;
+import com.controletcc.repository.projection.ProjetoTccExportProjection;
 import com.controletcc.repository.projection.ProjetoTccProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -148,6 +149,39 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
                                            TipoTcc tipoTcc,
                                            SituacaoTcc situacaoTcc,
                                            Pageable pageable);
+
+    @Query(value = """  
+            SELECT distinct
+                pt.id as id,
+                pt.tema as tema,
+                pt.alunosNome as alunos,
+                po.nome as professorOrientador,
+                ps.nome as professorSupervisor,
+                pt.membrosBancaNome as membrosBanca,
+                pt.anoPeriodo as anoPeriodo,
+                s.tipoTcc as tipoTcc,
+                s.situacaoTcc as situacaoTcc
+            FROM ProjetoTcc pt
+            join pt.situacaoAtual s
+            join pt.alunos a
+            join pt.professorOrientador po
+            join pt.professorSupervisor ps
+                where 1 = 1
+                and (:id is null or pt.id = :id)
+                and (:tema is null or lower(pt.tema) like concat('%', trim(lower(:tema)),'%') )
+                and (:anoPeriodo is null or lower(pt.anoPeriodo) like concat('%', trim(lower(:anoPeriodo)),'%') )
+                and (:tipoTcc is null or s.tipoTcc = :tipoTcc)
+                and (:situacaoTcc is null or s.situacaoTcc = :situacaoTcc)
+                and (:nomeProfessorOrientador is null or lower(po.nome) like concat('%', trim(lower(:nomeProfessorOrientador)),'%') )
+                and (:nomeAluno is null or lower(a.nome) like concat('%', trim(lower(:nomeAluno)),'%') )"""
+    )
+    List<ProjetoTccExportProjection> export(Long id,
+                                            String tema,
+                                            String anoPeriodo,
+                                            TipoTcc tipoTcc,
+                                            SituacaoTcc situacaoTcc,
+                                            String nomeProfessorOrientador,
+                                            String nomeAluno);
 
     @Query(value = """  
             SELECT count(distinct pt.id) > 0

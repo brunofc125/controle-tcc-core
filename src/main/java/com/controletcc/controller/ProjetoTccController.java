@@ -1,6 +1,7 @@
 package com.controletcc.controller;
 
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.csv.ReturnExportCsvDTO;
 import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.dto.options.ProjetoTccGridOptions;
 import com.controletcc.error.BusinessException;
@@ -53,6 +54,12 @@ public class ProjetoTccController {
     @PatchMapping("reprovar/{id}")
     public void reprovar(@PathVariable Long id, @RequestBody String motivo) throws BusinessException {
         projetoTccFacade.reprovar(id, motivo);
+    }
+
+    @PreAuthorize("hasAuthority('projeto-tcc.export')")
+    @PostMapping("export")
+    public ReturnExportCsvDTO export(@RequestBody ProjetoTccGridOptions options) throws Exception {
+        return projetoTccFacade.export(options);
     }
 
 }

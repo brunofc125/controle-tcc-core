@@ -1,6 +1,8 @@
 package com.controletcc.facade;
 
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.csv.ProjetoTccExportCsvDTO;
+import com.controletcc.dto.csv.ReturnExportCsvDTO;
 import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.dto.options.ProjetoTccGridOptions;
 import com.controletcc.error.BusinessException;
@@ -8,17 +10,17 @@ import com.controletcc.model.dto.ProjetoTccDTO;
 import com.controletcc.model.entity.ProjetoTcc;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.repository.projection.ProjetoTccProjection;
-import com.controletcc.service.AlunoService;
-import com.controletcc.service.ProfessorService;
-import com.controletcc.service.ProjetoTccService;
-import com.controletcc.service.ProjetoTccSituacaoService;
+import com.controletcc.service.*;
 import com.controletcc.util.AuthUtil;
+import com.controletcc.util.LocalDateTimeUtil;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -35,6 +37,8 @@ public class ProjetoTccFacade {
     private final ProfessorService professorService;
 
     private final ProjetoTccSituacaoFacade projetoTccSituacaoFacade;
+
+    private final CsvService csvService;
 
     public ProjetoTccDTO getById(Long id) {
         return ModelMapperUtil.map(projetoTccService.getById(id), ProjetoTccDTO.class);
@@ -88,5 +92,12 @@ public class ProjetoTccFacade {
         projetoTccSituacaoFacade.nextStep(id, SituacaoTcc.REPROVADO, motivo);
     }
 
-}
+    public ReturnExportCsvDTO export(@NonNull ProjetoTccGridOptions options) throws Exception {
+        var projetosTcc = projetoTccService.export(options);
+        var records = projetosTcc.stream().map(ProjetoTccExportCsvDTO::new).toList();
+        var dataAtualStr = LocalDateTimeUtil.localDateTimeToString(LocalDateTime.now(), "dd-MM-yyyy_HH-mm-ss");
+        var fileName = "projeto_tcc_" + dataAtualStr;
+        return csvService.getExportedCsv(fileName, records, ProjetoTccExportCsvDTO.class);
+    }
 
+}
