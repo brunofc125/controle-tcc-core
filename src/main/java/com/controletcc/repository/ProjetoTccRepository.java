@@ -166,7 +166,11 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
             join pt.alunos a
             join pt.professorOrientador po
             join pt.professorSupervisor ps
+            left join MembroBanca mb on mb.projetoTcc.id = pt.id
                 where 1 = 1
+                and (:idSupervisor is null or ps.id = :idSupervisor)
+                and (:idOrientador is null or po.id = :idOrientador)
+                and (:idMembroBanca is null or mb.professor.id = :idMembroBanca)
                 and (:id is null or pt.id = :id)
                 and (:tema is null or lower(pt.tema) like concat('%', trim(lower(:tema)),'%') )
                 and (:anoPeriodo is null or lower(pt.anoPeriodo) like concat('%', trim(lower(:anoPeriodo)),'%') )
@@ -181,7 +185,10 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
                                             TipoTcc tipoTcc,
                                             SituacaoTcc situacaoTcc,
                                             String nomeProfessorOrientador,
-                                            String nomeAluno);
+                                            String nomeAluno,
+                                            Long idSupervisor,
+                                            Long idOrientador,
+                                            Long idMembroBanca);
 
     @Query(value = """  
             SELECT count(distinct pt.id) > 0

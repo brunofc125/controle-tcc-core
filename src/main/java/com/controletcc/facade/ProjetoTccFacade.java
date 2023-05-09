@@ -9,6 +9,7 @@ import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccDTO;
 import com.controletcc.model.entity.ProjetoTcc;
 import com.controletcc.model.enums.SituacaoTcc;
+import com.controletcc.repository.projection.ProjetoTccExportProjection;
 import com.controletcc.repository.projection.ProjetoTccProjection;
 import com.controletcc.service.*;
 import com.controletcc.util.AuthUtil;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -70,6 +73,25 @@ public class ProjetoTccFacade {
         throw new BusinessException("Tipo de usuário inválido para acessar esta consulta");
     }
 
+    public ReturnExportCsvDTO export(@NonNull TccRoute tccRoute, @NonNull ProjetoTccGridOptions options) throws Exception {
+        var userType = AuthUtil.getUserTypeLogged();
+        if (userType == null || !tccRoute.userTypeMatches(userType)) {
+            throw new BusinessException("Tipo de usuário inválido");
+        }
+        List<ProjetoTccExportProjection> projetosTcc = null;
+        var professor = professorService.getProfessorLogado();
+        switch (tccRoute) {
+            case SUPERVISOR -> projetosTcc = projetoTccService.exportSupervisor(options, professor.getId());
+            case ORIENTADOR -> projetosTcc = projetoTccService.exportOrientador(options, professor.getId());
+            case MEMBRO_BANCA -> projetosTcc = projetoTccService.exportMembroBanca(options, professor.getId());
+            case default -> projetosTcc = Collections.emptyList();
+        }
+        var records = projetosTcc.stream().map(ProjetoTccExportCsvDTO::new).toList();
+        var dataAtualStr = LocalDateTimeUtil.localDateTimeToString(LocalDateTime.now(), "dd-MM-yyyy_HH-mm-ss");
+        var fileName = "projeto_tcc_" + dataAtualStr;
+        return csvService.getExportedCsv(fileName, records, ProjetoTccExportCsvDTO.class);
+    }
+
     public ProjetoTccDTO insert(ProjetoTccDTO projetoTccDTO) throws BusinessException {
         var projetoTcc = ModelMapperUtil.map(projetoTccDTO, ProjetoTcc.class);
         projetoTcc = projetoTccService.insert(projetoTcc);
@@ -90,14 +112,6 @@ public class ProjetoTccFacade {
 
     public void reprovar(Long id, String motivo) throws BusinessException {
         projetoTccSituacaoFacade.nextStep(id, SituacaoTcc.REPROVADO, motivo);
-    }
-
-    public ReturnExportCsvDTO export(@NonNull ProjetoTccGridOptions options) throws Exception {
-        var projetosTcc = projetoTccService.export(options);
-        var records = projetosTcc.stream().map(ProjetoTccExportCsvDTO::new).toList();
-        var dataAtualStr = LocalDateTimeUtil.localDateTimeToString(LocalDateTime.now(), "dd-MM-yyyy_HH-mm-ss");
-        var fileName = "projeto_tcc_" + dataAtualStr;
-        return csvService.getExportedCsv(fileName, records, ProjetoTccExportCsvDTO.class);
     }
 
 }

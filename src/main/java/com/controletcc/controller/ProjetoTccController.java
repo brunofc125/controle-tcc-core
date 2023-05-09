@@ -31,6 +31,12 @@ public class ProjetoTccController {
         return projetoTccFacade.search(tccRoute, options);
     }
 
+    @PreAuthorize("hasAuthority('projeto-tcc.export')")
+    @PostMapping("export/{tccRoute}")
+    public ReturnExportCsvDTO export(@PathVariable TccRoute tccRoute, @RequestBody ProjetoTccGridOptions options) throws Exception {
+        return projetoTccFacade.export(tccRoute, options);
+    }
+
     @PreAuthorize("hasAuthority('projeto-tcc.create')")
     @PostMapping
     public ProjetoTccDTO insert(@RequestBody ProjetoTccDTO projetoTcc) throws BusinessException {
@@ -56,10 +62,5 @@ public class ProjetoTccController {
         projetoTccFacade.reprovar(id, motivo);
     }
 
-    @PreAuthorize("hasAuthority('projeto-tcc.export')")
-    @PostMapping("export")
-    public ReturnExportCsvDTO export(@RequestBody ProjetoTccGridOptions options) throws Exception {
-        return projetoTccFacade.export(options);
-    }
 
 }

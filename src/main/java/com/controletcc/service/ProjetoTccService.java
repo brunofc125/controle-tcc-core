@@ -124,8 +124,16 @@ public class ProjetoTccService {
         }
     }
 
-    public List<ProjetoTccExportProjection> export(@NonNull ProjetoTccGridOptions options) {
-        return projetoTccRepository.export(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno());
+    public List<ProjetoTccExportProjection> exportSupervisor(@NonNull ProjetoTccGridOptions options, @NonNull Long idSupervisor) {
+        return projetoTccRepository.export(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno(), idSupervisor, null, null);
+    }
+
+    public List<ProjetoTccExportProjection> exportOrientador(@NonNull ProjetoTccGridOptions options, @NonNull Long idOrientador) {
+        return projetoTccRepository.export(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno(), null, idOrientador, null);
+    }
+
+    public List<ProjetoTccExportProjection> exportMembroBanca(@NonNull ProjetoTccGridOptions options, @NonNull Long idMembroBanca) {
+        return projetoTccRepository.export(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno(), null, null, idMembroBanca);
     }
 
 }
