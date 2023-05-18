@@ -5,8 +5,6 @@ public interface AlunoProjection {
 
     String getNome();
 
-    String getCpf();
-
     String getEmail();
 
     String getMatricula();

@@ -15,7 +15,6 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
             SELECT
                 p.id as id,
                 p.nome as nome,
-                p.cpf as cpf,
                 p.email as email,
                 p.supervisorTcc as supervisorTcc,
                 u.id as idUser,
@@ -24,22 +23,14 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
             JOIN p.usuario u
                 where (:id is null or p.id = :id)
                 and (:nome is null or lower(p.nome) like concat('%', trim(lower(:nome)),'%') )
-                and (:cpf is null or lower(p.cpf) like concat('%', trim(lower(:cpf)),'%') )
-                and (:rg is null or lower(p.rg) like concat('%', trim(lower(:rg)),'%') )
                 and (:email is null or lower(p.email) like concat('%', trim(lower(:email)),'%') )
                 and (:supervisor is null or p.supervisorTcc = :supervisor)"""
     )
     Page<ProfessorProjection> search(Long id,
                                      String nome,
-                                     String cpf,
-                                     String rg,
                                      String email,
                                      Boolean supervisor,
                                      Pageable pageable);
-
-    boolean existsByCpf(String cpf);
-
-    boolean existsByCpfAndIdNot(String cpf, Long id);
 
     Professor getProfessorByUsuarioId(Long idUsuario);
 

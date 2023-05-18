@@ -10,8 +10,6 @@ import java.time.LocalDate;
 @Setter
 public class PessoaDTO extends BaseDTO {
     protected String nome;
-    protected String cpf;
-    protected String rg;
     protected String email;
     protected Sexo sexo;
     protected LocalDate dataNascimento;
