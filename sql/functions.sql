@@ -2,7 +2,7 @@
 DROP FUNCTION public.get_disponibilidades;
 
 CREATE OR REPLACE FUNCTION get_disponibilidades(id_professores BIGINT[], id_projeto_tcc BIGINT, data_inicio TIMESTAMP,
-                                                data_fim TIMESTAMP)
+                                                data_fim TIMESTAMP, id_agenda BIGINT)
     RETURNS TABLE
             (
                 date_event        TIMESTAMP,
@@ -20,26 +20,37 @@ BEGIN
                  JOIN professor p ON p.id = pd.id_professor
                  JOIN generate_series(pd.data_inicial, pd.data_final, interval '1 hour') AS data_event
                       ON data_event >= pd.data_inicial AND data_event < pd.data_final
+                 LEFT JOIN (SELECT DISTINCT a.id           AS id_apresentacao,
+                                            a.data_inicial as data_inicial,
+                                            a.data_final   as data_final,
+                                            po.id          AS id_po,
+                                            ps.id          AS id_ps,
+                                            pmb.id         AS id_pmb
+                            FROM apresentacao a
+                                     JOIN projeto_tcc pt ON pt.id = a.id_projeto_tcc
+                                     JOIN professor po ON pt.id_professor_orientador = po.id
+                                     JOIN professor ps ON pt.id_professor_supervisor = ps.id
+                                     LEFT JOIN membro_banca mb ON mb.id_projeto_tcc = pt.id
+                                     LEFT JOIN professor pmb ON mb.id_professor = pmb.id
+                            WHERE pt.id != $2) AS tb_apresentacao
+                           ON data_event >= tb_apresentacao.data_inicial
+                               AND data_event < tb_apresentacao.data_final
+                               AND (tb_apresentacao.id_po = p.id OR tb_apresentacao.id_ps = p.id OR
+                                    tb_apresentacao.id_pmb = p.id)
+                 LEFT JOIN (SELECT DISTINCT r.id           AS id_restricao,
+                                            r.data_inicial AS data_inicial,
+                                            r.data_final   AS data_final
+                            FROM agenda_apresentacao_restricao r
+                            WHERE r.id_agenda_apresentacao = $5) AS tb_restricao
+                           ON data_event >= tb_restricao.data_inicial
+                               AND data_event < tb_restricao.data_final
         WHERE p.id = ANY ($1)
-          AND NOT EXISTS(
-                SELECT a.id
-                FROM apresentacao a
-                         JOIN projeto_tcc pt ON pt.id = a.id_projeto_tcc
-                         JOIN professor po ON pt.id_professor_orientador = po.id
-                         JOIN professor ps ON pt.id_professor_supervisor = ps.id
-                         LEFT JOIN membro_banca mb ON mb.id_projeto_tcc = pt.id
-                         LEFT JOIN professor pmb ON mb.id_professor = pmb.id
-                WHERE pt.id != $2
-                  AND data_event >= a.data_inicial
-                  AND data_event < a.data_final
-                  AND (
-                            po.id = p.id
-                        OR ps.id = p.id
-                        OR pmb.id = p.id
-                    )
-            )
+          AND tb_apresentacao.id_apresentacao IS NULL
+          AND tb_restricao.id_restricao IS NULL
           AND data_event >= $3
           AND data_event < $4
+          AND EXTRACT(HOUR FROM data_event) >= EXTRACT(HOUR FROM $3)
+          AND EXTRACT(HOUR FROM data_event) < EXTRACT(HOUR FROM $4)
         group by data_event
         order by data_event;
 END;

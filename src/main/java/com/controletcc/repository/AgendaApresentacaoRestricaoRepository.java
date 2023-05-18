@@ -1,6 +1,7 @@
 package com.controletcc.repository;
 
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
+import com.controletcc.model.enums.TipoTcc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,8 +17,9 @@ public interface AgendaApresentacaoRestricaoRepository extends JpaRepository<Age
             join aar.agendaApresentacao aa
             where aa.ano = :ano
                 and aa.periodo = :periodo
+                and aa.tipoTcc in :tipoTccList
                 and aa.areaTcc.id in :idAreaTccList"""
     )
-    List<AgendaApresentacaoRestricao> getAllByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<Long> idAreaTccList);
+    List<AgendaApresentacaoRestricao> getAllByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<TipoTcc> tipoTccList, List<Long> idAreaTccList);
 
 }

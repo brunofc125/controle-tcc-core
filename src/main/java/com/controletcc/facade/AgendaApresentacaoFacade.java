@@ -12,6 +12,7 @@ import com.controletcc.model.dto.ProfessorDisponibilidadeDTO;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.model.entity.MembroBanca;
+import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import com.controletcc.service.*;
 import com.controletcc.util.ModelMapperUtil;
@@ -22,10 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -98,15 +97,14 @@ public class AgendaApresentacaoFacade {
         agendaParaApresentacao.setOutrasApresentacoes(apresentacaoService.getAllByAgendaApresentacaoIdAndProjetoTccIdNot(idAgendaApresentacao, idProjetoTcc));
 
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
-        var idProfessorList = new ArrayList<>(Stream.of(projetoTcc.getIdProfessorSupervisor(), projetoTcc.getIdProfessorOrientador()).distinct().toList());
         var membrosBanca = membroBancaService.getByIdProjetoTcc(idProjetoTcc);
-        var idProfessorBancaList = membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList();
-        idProfessorList.addAll(idProfessorBancaList);
+        var idProfessorList = new java.util.ArrayList<>(membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList());
+        idProfessorList.add(projetoTcc.getIdProfessorOrientador());
 
         var qtdProfessor = idProfessorList.size();
         var dataHoraInicial = agendaApresentacao.getDataHoraInicial();
         var dataHoraFinal = agendaApresentacao.getDataHoraFinal();
-        var disponibilidadeAgrupadaList = professorDisponibilidadeService.getDisponibilidades(idProfessorList, idProjetoTcc, dataHoraInicial, dataHoraFinal);
+        var disponibilidadeAgrupadaList = professorDisponibilidadeService.getDisponibilidades(idProfessorList, idProjetoTcc, idAgendaApresentacao, dataHoraInicial, dataHoraFinal);
 
         var disponibilidadeAgrupadaMap = disponibilidadeAgrupadaList.stream()
                 .map(d -> new ProfessorDisponibilidadeAgrupadaDTO(d, d.getQtdProfessores() != null && d.getQtdProfessores().intValue() == qtdProfessor))
@@ -116,8 +114,8 @@ public class AgendaApresentacaoFacade {
         return agendaParaApresentacao;
     }
 
-    public AgendaPeriodoDTO getAgendaPeriodo(String anoPeriodo) throws BusinessException {
-        if (StringUtil.isNullOrBlank(anoPeriodo) || !anoPeriodo.matches("\\d{4}-\\d")) {
+    public AgendaPeriodoDTO getAgendaPeriodo(String anoPeriodo, List<TipoTcc> tipoTccList) throws BusinessException {
+        if (StringUtil.isNullOrBlank(anoPeriodo) || !anoPeriodo.matches("\\d{4}-\\d") || tipoTccList == null || tipoTccList.isEmpty()) {
             return null;
         }
         var ano = Integer.valueOf(anoPeriodo.substring(0, 4));
@@ -128,7 +126,7 @@ public class AgendaApresentacaoFacade {
             return null;
         }
         var agendaPeriodo = new AgendaPeriodoDTO(agendaPeriodoProjection);
-        var restricoes = agendaApresentacaoRestricaoService.getAllByAnoPeriodoAndAreasTcc(ano, periodo, professor.getIdAreaList());
+        var restricoes = agendaApresentacaoRestricaoService.getAllByAnoPeriodoAndAreasTcc(ano, periodo, tipoTccList, professor.getIdAreaList());
         agendaPeriodo.setRestricoes(ModelMapperUtil.mapAll(restricoes, AgendaApresentacaoRestricaoDTO.class));
         var disponibilidades = professorDisponibilidadeService.getAllByAnoPeriodoAndProfessor(ano, periodo, professor.getId());
         agendaPeriodo.setDisponibilidades(ModelMapperUtil.mapAll(disponibilidades, ProfessorDisponibilidadeDTO.class));
