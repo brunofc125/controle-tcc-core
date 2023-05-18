@@ -5,8 +5,6 @@ public interface ProfessorProjection {
 
     String getNome();
 
-    String getCpf();
-
     String getEmail();
 
     boolean isSupervisorTcc();

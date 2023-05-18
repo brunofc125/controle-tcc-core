@@ -15,28 +15,23 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class AlunoImportCsvDTO extends BaseImportCsvDTO {
-    @CsvColumn(name = "CPF", type = CsvType.STRING)
-    private String cpf;
 
     @CsvColumn(name = "Nome", type = CsvType.STRING)
     private String nome;
 
-    @CsvColumn(name = "RG", type = CsvType.STRING)
-    private String rg;
-
     @CsvColumn(name = "E-mail", type = CsvType.STRING)
     private String email;
 
-    @CsvColumn(name = "Sexo", type = CsvType.ENUM, enumClass = Sexo.class)
+    @CsvColumn(name = "Sexo (MASC/FEM/INDF)", type = CsvType.ENUM, enumClass = Sexo.class)
     private Sexo sexo;
 
-    @CsvColumn(name = "Data de nascimento", type = CsvType.LOCAL_DATE)
+    @CsvColumn(name = "Data de nascimento (dd/MM/yyyy)", type = CsvType.LOCAL_DATE)
     private LocalDate dataNascimento;
 
     @CsvColumn(name = "Matricula", type = CsvType.STRING)
     private String matricula;
 
-    @CsvColumn(name = "ID Área de TCC", type = CsvType.LONG)
+    @CsvColumn(name = "ID Área de TCC (Consulte o Sistema)", type = CsvType.LONG)
     private Long idAreaTcc;
 
 }

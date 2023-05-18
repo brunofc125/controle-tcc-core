@@ -17,28 +17,23 @@ import java.util.List;
 @Getter
 @Setter
 public class ProfessorImportCsvDTO extends BaseImportCsvDTO {
-    @CsvColumn(name = "CPF", type = CsvType.STRING)
-    private String cpf;
 
     @CsvColumn(name = "Nome", type = CsvType.STRING)
     private String nome;
 
-    @CsvColumn(name = "RG", type = CsvType.STRING)
-    private String rg;
-
     @CsvColumn(name = "E-mail", type = CsvType.STRING)
     private String email;
 
-    @CsvColumn(name = "Sexo", type = CsvType.ENUM, enumClass = Sexo.class)
+    @CsvColumn(name = "Sexo (MASC/FEM/INDF)", type = CsvType.ENUM, enumClass = Sexo.class)
     private Sexo sexo;
 
-    @CsvColumn(name = "Data de nascimento", type = CsvType.LOCAL_DATE)
+    @CsvColumn(name = "Data de nascimento (dd/MM/yyyy)", type = CsvType.LOCAL_DATE)
     private LocalDate dataNascimento;
 
-    @CsvColumn(name = "Supervisor de TCC", type = CsvType.BOOLEAN)
+    @CsvColumn(name = "Supervisor de TCC (S/N)", type = CsvType.BOOLEAN)
     private boolean supervisorTcc;
 
-    @CsvColumn(name = "ID's Áreas de TCC", type = CsvType.LIST, listClass = LongType.class)
+    @CsvColumn(name = "ID's Áreas de TCC (Lista separada por '-', Consulte o Sistema)", type = CsvType.LIST, listClass = LongType.class)
     private List<Long> idAreasTcc;
 
 }

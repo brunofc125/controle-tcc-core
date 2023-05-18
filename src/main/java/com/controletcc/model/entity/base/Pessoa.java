@@ -22,12 +22,6 @@ public class Pessoa extends BaseEntity {
     @Column(name = "nome", nullable = false)
     protected String nome;
 
-    @Column(name = "cpf", nullable = false, unique = true)
-    protected String cpf;
-
-    @Column(name = "rg")
-    protected String rg;
-
     @Column(name = "email", nullable = false)
     protected String email;
 

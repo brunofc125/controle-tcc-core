@@ -8,7 +8,6 @@ import com.controletcc.repository.AlunoRepository;
 import com.controletcc.repository.projection.AlunoProjection;
 import com.controletcc.util.AuthUtil;
 import com.controletcc.util.StringUtil;
-import com.controletcc.util.ValidatorUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ public class AlunoService {
     }
 
     public ListResponse<AlunoProjection> search(AlunoGridOptions options) {
-        var page = alunoRepository.search(options.getId(), options.getNome(), options.getCpf(), options.getRg(), options.getEmail(), options.getMatricula(), options.getIdAreaTcc(), options.getPageable());
+        var page = alunoRepository.search(options.getId(), options.getNome(), options.getEmail(), options.getMatricula(), options.getIdAreaTcc(), options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 
@@ -53,19 +52,6 @@ public class AlunoService {
         var errors = new ArrayList<String>();
         if (StringUtil.isNullOrBlank(aluno.getNome())) {
             errors.add("Nome não informado");
-        }
-        if (StringUtil.isNullOrBlank(aluno.getCpf())) {
-            errors.add("CPF não informado");
-        } else if (!ValidatorUtil.isValidCPF(aluno.getCpf())) {
-            errors.add("CPF inválido");
-        } else {
-            if (aluno.getId() == null) {
-                if (alunoRepository.existsByCpf(aluno.getCpf())) {
-                    errors.add("Já existe outro aluno com este CPF");
-                }
-            } else if (alunoRepository.existsByCpfAndIdNot(aluno.getCpf(), aluno.getId())) {
-                errors.add("Já existe outro aluno com este CPF");
-            }
         }
 
         if (aluno.getId() == null) {

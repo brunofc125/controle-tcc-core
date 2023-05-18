@@ -14,8 +14,6 @@ public class AlunoGridOptions extends BaseGridOptions {
 
     private Long id;
     private String nome;
-    private String cpf;
-    private String rg;
     private String email;
     private String matricula;
     private Long idAreaTcc;

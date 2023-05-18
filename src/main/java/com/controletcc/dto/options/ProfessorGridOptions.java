@@ -17,8 +17,6 @@ public class ProfessorGridOptions extends BaseGridOptions {
 
     private Long id;
     private String nome;
-    private String cpf;
-    private String rg;
     private String email;
     private String categoria;
 
