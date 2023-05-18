@@ -31,10 +31,10 @@ public interface ProfessorDisponibilidadeRepository extends JpaRepository<Profes
                 date_event as dataHora,
                 nomes_professores as descricao,
                 qtd_professor as qtdProfessores
-            from get_disponibilidades(to_bigint_array(:idProfessores), :idProjetoTcc, :dataInicio, :dataFim)
+            from get_disponibilidades(to_bigint_array(:idProfessores), :idProjetoTcc, :dataInicio, :dataFim, :idAgendaApresentacao)
             """,
             nativeQuery = true
     )
-    List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, LocalDateTime dataInicio, LocalDateTime dataFim);
+    List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, Long idAgendaApresentacao, LocalDateTime dataInicio, LocalDateTime dataFim);
 
 }

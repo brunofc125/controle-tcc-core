@@ -3,6 +3,7 @@ package com.controletcc.service;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
+import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.AgendaApresentacaoRestricaoRepository;
 import com.controletcc.util.EventTimeUtil;
 import lombok.NonNull;
@@ -74,8 +75,8 @@ public class AgendaApresentacaoRestricaoService {
         }
     }
 
-    public List<AgendaApresentacaoRestricao> getAllByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<Long> idAreaTccList) {
-        return agendaApresentacaoRestricaoRepository.getAllByAnoPeriodoAndAreasTcc(ano, periodo, idAreaTccList);
+    public List<AgendaApresentacaoRestricao> getAllByAnoPeriodoAndAreasTcc(Integer ano, Integer periodo, List<TipoTcc> tipoTccList, List<Long> idAreaTccList) {
+        return agendaApresentacaoRestricaoRepository.getAllByAnoPeriodoAndAreasTcc(ano, periodo, tipoTccList, idAreaTccList);
     }
 
 }

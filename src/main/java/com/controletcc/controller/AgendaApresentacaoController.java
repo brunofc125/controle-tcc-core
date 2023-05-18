@@ -7,6 +7,7 @@ import com.controletcc.dto.options.AgendaApresentacaoGridOptions;
 import com.controletcc.error.BusinessException;
 import com.controletcc.facade.AgendaApresentacaoFacade;
 import com.controletcc.model.dto.AgendaApresentacaoDTO;
+import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,9 +29,9 @@ public class AgendaApresentacaoController {
     }
 
     @PreAuthorize("hasAuthority('agenda-apresentacao.read')")
-    @GetMapping("ano-periodo/{anoPeriodo}")
-    public AgendaPeriodoDTO getAgendaPeriodo(@PathVariable String anoPeriodo) throws BusinessException {
-        return agendaApresentacaoFacade.getAgendaPeriodo(anoPeriodo);
+    @PostMapping("ano-periodo/{anoPeriodo}")
+    public AgendaPeriodoDTO getAgendaPeriodo(@PathVariable String anoPeriodo, @RequestBody List<TipoTcc> tipoTccList) throws BusinessException {
+        return agendaApresentacaoFacade.getAgendaPeriodo(anoPeriodo, tipoTccList);
     }
 
     @PreAuthorize("hasAuthority('agenda-apresentacao.read')")

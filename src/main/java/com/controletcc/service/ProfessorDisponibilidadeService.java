@@ -78,8 +78,8 @@ public class ProfessorDisponibilidadeService {
         professorDisponibilidadeRepository.deleteById(id);
     }
 
-    public List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, LocalDateTime dataInicio, LocalDateTime dataFim) {
-        return professorDisponibilidadeRepository.getDisponibilidades(idProfessores, idProjetoTcc, dataInicio, dataFim);
+    public List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, Long idAgendaApresentacao, LocalDateTime dataInicio, LocalDateTime dataFim) {
+        return professorDisponibilidadeRepository.getDisponibilidades(idProfessores, idProjetoTcc, idAgendaApresentacao, dataInicio, dataFim);
     }
 
 }
