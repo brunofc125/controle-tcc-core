@@ -16,6 +16,7 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
                 p.id as id,
                 p.nome as nome,
                 p.email as email,
+                p.matricula as matricula,
                 p.supervisorTcc as supervisorTcc,
                 u.id as idUser,
                 u.enabled as userEnabled
@@ -24,11 +25,13 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
                 where (:id is null or p.id = :id)
                 and (:nome is null or lower(p.nome) like concat('%', trim(lower(:nome)),'%') )
                 and (:email is null or lower(p.email) like concat('%', trim(lower(:email)),'%') )
+                and (:matricula is null or lower(p.matricula) like concat('%', trim(lower(:matricula)),'%') )
                 and (:supervisor is null or p.supervisorTcc = :supervisor)"""
     )
     Page<ProfessorProjection> search(Long id,
                                      String nome,
                                      String email,
+                                     String matricula,
                                      Boolean supervisor,
                                      Pageable pageable);
 
@@ -57,5 +60,9 @@ public interface ProfessorRepository extends JpaRepository<Professor, Long> {
     List<Professor> getAllByAreaTccAndNotProfessores(Long idAreaTcc, List<Long> idProfessores);
 
     List<Professor> getAllByIdIn(List<Long> idList);
+
+    boolean existsByMatricula(String matricula);
+
+    boolean existsByMatriculaAndIdNot(String matricula, Long id);
 
 }

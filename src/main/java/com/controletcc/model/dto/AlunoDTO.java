@@ -14,7 +14,6 @@ import lombok.Setter;
 public class AlunoDTO extends PessoaDTO {
     private Long id;
     private Long idUsuario;
-    private String matricula;
     private Long idAreaTcc;
 
     public AlunoDTO(AlunoImportCsvDTO csv) {

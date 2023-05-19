@@ -7,6 +7,8 @@ public interface ProfessorProjection {
 
     String getEmail();
 
+    String getMatricula();
+
     boolean isSupervisorTcc();
 
     Long getIdUser();

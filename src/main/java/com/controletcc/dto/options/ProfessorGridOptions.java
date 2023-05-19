@@ -18,6 +18,7 @@ public class ProfessorGridOptions extends BaseGridOptions {
     private Long id;
     private String nome;
     private String email;
+    private String matricula;
     private String categoria;
 
     public Boolean isCategoriaSupervisor() {

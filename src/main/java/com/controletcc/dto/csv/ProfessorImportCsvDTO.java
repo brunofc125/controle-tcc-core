@@ -27,6 +27,9 @@ public class ProfessorImportCsvDTO extends BaseImportCsvDTO {
     @CsvColumn(name = "Sexo (MASC/FEM/INDF)", type = CsvType.ENUM, enumClass = Sexo.class)
     private Sexo sexo;
 
+    @CsvColumn(name = "Matrícula", type = CsvType.STRING)
+    private String matricula;
+
     @CsvColumn(name = "Data de nascimento (dd/MM/yyyy)", type = CsvType.LOCAL_DATE)
     private LocalDate dataNascimento;
 
