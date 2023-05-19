@@ -25,6 +25,9 @@ public class Pessoa extends BaseEntity {
     @Column(name = "email", nullable = false)
     protected String email;
 
+    @Column(name = "matricula", nullable = false, unique = true)
+    protected String matricula;
+
     @Column(name = "sexo", nullable = false)
     @Enumerated(EnumType.STRING)
     protected Sexo sexo;

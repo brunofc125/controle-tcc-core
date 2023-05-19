@@ -22,9 +22,6 @@ public class Aluno extends Pessoa {
     @JoinColumn(name = "id_usuario", nullable = false, unique = true)
     private User usuario;
 
-    @Column(name = "matricula", nullable = false, unique = true)
-    private String matricula;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_area_tcc", nullable = false)
     private AreaTcc areaTcc;

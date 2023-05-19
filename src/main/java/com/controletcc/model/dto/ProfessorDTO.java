@@ -24,6 +24,7 @@ public class ProfessorDTO extends PessoaDTO {
         this.email = csv.getEmail();
         this.sexo = csv.getSexo();
         this.dataNascimento = csv.getDataNascimento();
+        this.matricula = csv.getMatricula();
         this.supervisorTcc = csv.isSupervisorTcc();
         this.idAreaList = csv.getIdAreasTcc();
     }

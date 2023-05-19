@@ -16,9 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +30,7 @@ public class ProfessorService {
     }
 
     public ListResponse<ProfessorProjection> search(ProfessorGridOptions options) {
-        var page = professorRepository.search(options.getId(), options.getNome(), options.getEmail(), options.isCategoriaSupervisor(), options.getPageable());
+        var page = professorRepository.search(options.getId(), options.getNome(), options.getEmail(), options.getMatricula(), options.isCategoriaSupervisor(), options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 
@@ -55,6 +52,16 @@ public class ProfessorService {
         var errors = new ArrayList<String>();
         if (StringUtil.isNullOrBlank(professor.getNome())) {
             errors.add("Nome não informado");
+        }
+
+        if (StringUtil.isNullOrBlank(professor.getMatricula())) {
+            errors.add("Matrícula não informada");
+        } else if (professor.getId() == null) {
+            if (professorRepository.existsByMatricula(professor.getMatricula())) {
+                errors.add("Já existe outro professor com esta matrícula");
+            }
+        } else if (professorRepository.existsByMatriculaAndIdNot(professor.getMatricula(), professor.getId())) {
+            errors.add("Já existe outro professor com esta matrícula");
         }
 
         errors.addAll(professor.getPessoaErrors());
@@ -97,11 +104,6 @@ public class ProfessorService {
             throw new BusinessException("O usuário logado não é um professor");
         }
         return professor;
-    }
-
-    public Map<Long, String> getNomeMappedByIds(List<Long> idList) {
-        var professores = professorRepository.getAllByIdIn(idList);
-        return professores.stream().collect(toMap(Professor::getId, Professor::getNome));
     }
 
 }

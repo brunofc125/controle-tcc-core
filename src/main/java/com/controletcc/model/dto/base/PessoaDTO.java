@@ -11,6 +11,7 @@ import java.time.LocalDate;
 public class PessoaDTO extends BaseDTO {
     protected String nome;
     protected String email;
+    protected String matricula;
     protected Sexo sexo;
     protected LocalDate dataNascimento;
 }

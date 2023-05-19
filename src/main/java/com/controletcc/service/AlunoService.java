@@ -54,7 +54,9 @@ public class AlunoService {
             errors.add("Nome não informado");
         }
 
-        if (aluno.getId() == null) {
+        if (StringUtil.isNullOrBlank(aluno.getMatricula())) {
+            errors.add("Matrícula não informada");
+        } else if (aluno.getId() == null) {
             if (alunoRepository.existsByMatricula(aluno.getMatricula())) {
                 errors.add("Já existe outro aluno com esta matrícula");
             }
@@ -73,10 +75,6 @@ public class AlunoService {
             } else if (!aluno.getIdUsuario().equals(alunoBanco.getIdUsuario())) {
                 errors.add("Não é possível alterar o usuário de um aluno");
             }
-        }
-
-        if (StringUtil.isNullOrBlank(aluno.getMatricula())) {
-            errors.add("Matrícula não informada");
         }
 
         if (aluno.getAreaTcc() == null) {
