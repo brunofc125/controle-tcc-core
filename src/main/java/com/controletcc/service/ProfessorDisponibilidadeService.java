@@ -82,4 +82,8 @@ public class ProfessorDisponibilidadeService {
         return professorDisponibilidadeRepository.getDisponibilidades(idProfessores, idProjetoTcc, idAgendaApresentacao, dataInicio, dataFim);
     }
 
+    public boolean existsByAnoAndPeriodoAndProfessorId(Integer ano, Integer periodo, Long idProfessor) {
+        return professorDisponibilidadeRepository.existsByAnoAndPeriodoAndProfessorId(ano, periodo, idProfessor);
+    }
+
 }

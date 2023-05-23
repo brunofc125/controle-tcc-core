@@ -25,4 +25,6 @@ public interface ProjetoTccProjection {
     LocalDateTime getDataConfirmacaoBanca();
 
     SituacaoTcc getSituacaoTcc();
+
+    boolean isApresentacaoAgendada();
 }

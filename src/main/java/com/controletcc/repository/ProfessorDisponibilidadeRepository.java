@@ -37,4 +37,6 @@ public interface ProfessorDisponibilidadeRepository extends JpaRepository<Profes
     )
     List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, Long idAgendaApresentacao, LocalDateTime dataInicio, LocalDateTime dataFim);
 
+    boolean existsByAnoAndPeriodoAndProfessorId(Integer ano, Integer periodo, Long idProfessor);
+
 }

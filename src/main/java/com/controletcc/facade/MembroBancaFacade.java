@@ -4,7 +4,6 @@ import com.controletcc.dto.base.ListResponse;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.MembroBancaDTO;
 import com.controletcc.model.entity.MembroBanca;
-import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.projection.MembroBancaProjection;
 import com.controletcc.service.EmailService;
 import com.controletcc.service.MembroBancaService;
@@ -45,8 +44,9 @@ public class MembroBancaFacade {
     public MembroBancaDTO solicitar(Long idProjetoTcc, Long idProfessor) throws BusinessException {
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var professor = professorService.getById(idProfessor);
-        if (!TipoTcc.DEFESA.equals(projetoTcc.getTipoTcc())) {
-            throw new BusinessException("A solicitação de membros à banca são apenas para TCCs em etapa de Defesa");
+        var membrosBancaAtuais = membroBancaService.getByIdProjetoTcc(idProjetoTcc);
+        if (membrosBancaAtuais.size() == 2) {
+            throw new BusinessException("Já foram solicitados 2 membros de banca");
         }
         if (projetoTcc.getIdProfessorOrientador().equals(idProfessor)) {
             throw new BusinessException("O professor orientador não pode ser solicitado como membro de banca");
