@@ -3,6 +3,7 @@ package com.controletcc.service;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.entity.MembroBanca;
 import com.controletcc.model.entity.Professor;
+import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.MembroBancaRepository;
 import com.controletcc.repository.projection.MembroBancaProjection;
 import lombok.NonNull;
@@ -75,16 +76,8 @@ public class MembroBancaService {
         membroBancaRepository.deleteById(id);
     }
 
-    private MembroBanca getByProjetoTccIdAndProfessorId(@NonNull Long idProjetoTcc, @NonNull Long idProfessor) throws BusinessException {
-        var membroBanca = membroBancaRepository.getByProjetoTccIdAndProfessorId(idProjetoTcc, idProfessor);
-        if (membroBanca == null) {
-            throw new BusinessException("Você não é membro da banca deste projeto de TCC");
-        }
-        return membroBanca;
-    }
-
-    public void confirmar(@NonNull Long idProjetoTcc, @NonNull Professor professor) throws BusinessException {
-        var membroBanca = getByProjetoTccIdAndProfessorId(idProjetoTcc, professor.getId());
+    public void confirmar(@NonNull Long idProjetoTcc, @NonNull TipoTcc tipoTcc, @NonNull Professor professor) throws BusinessException {
+        var membroBanca = getByProjetoTccIdAndTipoTccAndProfessorId(idProjetoTcc, tipoTcc, professor.getId());
         if (membroBanca.getDataConfirmacao() != null) {
             throw new BusinessException("A confirmação já foi realizada");
         }
@@ -92,13 +85,21 @@ public class MembroBancaService {
         membroBancaRepository.save(membroBanca);
     }
 
-    public void desconfirmar(@NonNull Long idProjetoTcc, @NonNull Professor professor) throws BusinessException {
-        var membroBanca = getByProjetoTccIdAndProfessorId(idProjetoTcc, professor.getId());
+    public void desconfirmar(@NonNull Long idProjetoTcc, @NonNull TipoTcc tipoTcc, @NonNull Professor professor) throws BusinessException {
+        var membroBanca = getByProjetoTccIdAndTipoTccAndProfessorId(idProjetoTcc, tipoTcc, professor.getId());
         if (membroBanca.getDataConfirmacao() == null) {
             throw new BusinessException("A confirmação não foi feita ainda");
         }
         membroBanca.setDataConfirmacao(null);
         membroBancaRepository.save(membroBanca);
+    }
+
+    private MembroBanca getByProjetoTccIdAndTipoTccAndProfessorId(@NonNull Long idProjetoTcc, @NonNull TipoTcc tipoTcc, @NonNull Long idProfessor) throws BusinessException {
+        var membroBanca = membroBancaRepository.getByProjetoTccIdAndTipoTccAndProfessorId(idProjetoTcc, tipoTcc, idProfessor);
+        if (membroBanca == null) {
+            throw new BusinessException("Você não é membro da banca deste projeto de TCC");
+        }
+        return membroBanca;
     }
 
 }

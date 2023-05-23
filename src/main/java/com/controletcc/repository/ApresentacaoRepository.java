@@ -43,9 +43,10 @@ public interface ApresentacaoRepository extends JpaRepository<Apresentacao, Long
             FROM Apresentacao a
             JOIN a.agendaApresentacao aa
             JOIN a.projetoTcc pt
+            JOIN pt.situacaoAtual sa
             JOIN pt.professorSupervisor ps
             JOIN pt.professorOrientador po
-            LEFT JOIN MembroBanca mb on mb.projetoTcc.id = pt.id
+            LEFT JOIN MembroBanca mb on mb.projetoTcc.id = pt.id and mb.tipoTcc = sa.tipoTcc
             LEFT JOIN mb.professor pmb
             WHERE aa.ano = :ano
             AND aa.periodo = :periodo

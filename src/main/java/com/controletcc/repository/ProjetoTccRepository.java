@@ -102,7 +102,7 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
             join pt.alunos a
             join pt.professorOrientador po
             join pt.professorSupervisor ps
-            join MembroBanca mb on mb.projetoTcc.id = pt.id
+            join MembroBanca mb on mb.projetoTcc.id = pt.id and mb.tipoTcc = s.tipoTcc
             join mb.professor pmb
             left join Apresentacao ap on ap.projetoTcc.id = pt.id and ap.tipoTcc = s.tipoTcc
                 where pmb.id = :idProfessorMembroBanca
@@ -172,7 +172,7 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
             join pt.alunos a
             join pt.professorOrientador po
             join pt.professorSupervisor ps
-            left join MembroBanca mb on mb.projetoTcc.id = pt.id
+            left join MembroBanca mb on mb.projetoTcc.id = pt.id and mb.tipoTcc = s.tipoTcc
                 where 1 = 1
                 and (:idSupervisor is null or ps.id = :idSupervisor)
                 and (:idOrientador is null or po.id = :idOrientador)
