@@ -28,9 +28,11 @@ BEGIN
                                             pmb.id         AS id_pmb
                             FROM apresentacao a
                                      JOIN projeto_tcc pt ON pt.id = a.id_projeto_tcc
+                                     JOIN projeto_tcc_situacao pts ON pts.id = pt.id_situacao_atual
                                      JOIN professor po ON pt.id_professor_orientador = po.id
                                      JOIN professor ps ON pt.id_professor_supervisor = ps.id
-                                     LEFT JOIN membro_banca mb ON mb.id_projeto_tcc = pt.id
+                                     LEFT JOIN membro_banca mb
+                                               ON mb.id_projeto_tcc = pt.id AND mb.tipo_tcc = pts.tipo_tcc
                                      LEFT JOIN professor pmb ON mb.id_professor = pmb.id
                             WHERE pt.id != $2) AS tb_apresentacao
                            ON data_event >= tb_apresentacao.data_inicial

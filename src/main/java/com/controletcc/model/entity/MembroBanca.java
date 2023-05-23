@@ -1,6 +1,7 @@
 package com.controletcc.model.entity;
 
 import com.controletcc.model.entity.base.BaseEntity;
+import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "membro_banca", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_projeto_tcc", "id_professor"})})
+@Table(name = "membro_banca", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_projeto_tcc", "id_professor", "tipo_tcc"})})
 public class MembroBanca extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +28,10 @@ public class MembroBanca extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_professor", nullable = false)
     private Professor professor;
+
+    @Column(name = "tipo_tcc", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TipoTcc tipoTcc;
 
     @Column(name = "data_solicitacao", nullable = false)
     private LocalDateTime dataSolicitacao;

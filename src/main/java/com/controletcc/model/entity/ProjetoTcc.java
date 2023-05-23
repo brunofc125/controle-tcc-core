@@ -51,10 +51,24 @@ public class ProjetoTcc extends BaseEntity {
     @JoinTable(name = "projeto_tcc_aluno", joinColumns = @JoinColumn(name = "id_projeto_tcc"), inverseJoinColumns = @JoinColumn(name = "id_aluno"))
     private List<Aluno> alunos;
 
-    @Formula("(select string_agg(a.nome, ', ') from aluno a join projeto_tcc_aluno pta on pta.id_aluno = a.id where pta.id_projeto_tcc = id)")
+    @Formula("""
+                (select
+                    string_agg(a.nome, ', ' order by a.nome)
+                from aluno a
+                join projeto_tcc_aluno pta on pta.id_aluno = a.id
+                where pta.id_projeto_tcc = id)
+            """)
     private String alunosNome;
 
-    @Formula("(select string_agg(p.nome, ', ') from professor p join membro_banca mb on mb.id_professor = p.id where mb.id_projeto_tcc = id)")
+    @Formula("""
+                (select
+                    string_agg(p.nome, ', ' order by p.nome)
+                from projeto_tcc pt
+                join projeto_tcc_situacao pts on pts.id = pt.id_situacao_atual
+                join membro_banca mb on mb.id_projeto_tcc = pt.id and mb.tipo_tcc = pts.tipo_tcc
+                join professor p on p.id = mb.id_professor
+                where pt.id = id)
+            """)
     private String membrosBancaNome;
 
     public Long getIdAreaTcc() {

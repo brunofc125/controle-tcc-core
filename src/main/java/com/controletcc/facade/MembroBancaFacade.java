@@ -57,6 +57,7 @@ public class MembroBancaFacade {
         var membroBanca = new MembroBanca();
         membroBanca.setProfessor(professor);
         membroBanca.setProjetoTcc(projetoTcc);
+        membroBanca.setTipoTcc(projetoTcc.getTipoTcc());
         membroBanca.setDataSolicitacao(LocalDateTime.now());
         membroBanca = membroBancaService.insert(membroBanca);
         emailService.sendSolicitacaoMembroBanca(professor, projetoTcc);
@@ -71,12 +72,14 @@ public class MembroBancaFacade {
 
     public void confirmar(Long idProjetoTcc) throws BusinessException {
         var professorLogado = professorService.getProfessorLogado();
-        membroBancaService.confirmar(idProjetoTcc, professorLogado);
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        membroBancaService.confirmar(idProjetoTcc, projetoTcc.getTipoTcc(), professorLogado);
     }
 
     public void desconfirmar(Long idProjetoTcc) throws BusinessException {
         var professorLogado = professorService.getProfessorLogado();
-        membroBancaService.desconfirmar(idProjetoTcc, professorLogado);
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        membroBancaService.desconfirmar(idProjetoTcc, projetoTcc.getTipoTcc(), professorLogado);
     }
 }
 
