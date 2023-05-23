@@ -43,6 +43,13 @@ public class ApresentacaoService {
         return apresentacaoRepository.save(apresentacao);
     }
 
+    public void deleteIfExistsByProjetoTccIdAndTipoTcc(@NonNull Long idProjetoTcc, @NonNull TipoTcc tipoTcc) {
+        var apresentacao = getFirstByProjetoTccIdAndTipoTcc(idProjetoTcc, tipoTcc);
+        if (apresentacao != null) {
+            apresentacaoRepository.delete(apresentacao);
+        }
+    }
+
     public boolean existsIntersect(Long id, @NonNull Long idAgendaApresentacao, @NonNull LocalDateTime dataInicial, @NonNull LocalDateTime dataFinal) {
         return apresentacaoRepository.existsIntersect(id, idAgendaApresentacao, dataInicial, dataFinal);
     }
