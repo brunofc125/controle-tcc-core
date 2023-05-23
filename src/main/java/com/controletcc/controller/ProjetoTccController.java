@@ -62,5 +62,10 @@ public class ProjetoTccController {
         projetoTccFacade.reprovar(id, motivo);
     }
 
+    @PreAuthorize("hasAuthority('projeto-tcc.read')")
+    @GetMapping("valido-agendar-apresentacao/{id}")
+    public void validoAgendarApresentacao(@PathVariable Long id) throws BusinessException {
+        projetoTccFacade.validoAgendarApresentacao(id);
+    }
 
 }

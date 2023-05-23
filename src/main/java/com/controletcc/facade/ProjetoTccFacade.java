@@ -9,6 +9,7 @@ import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccDTO;
 import com.controletcc.model.entity.ProjetoTcc;
 import com.controletcc.model.enums.SituacaoTcc;
+import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.projection.ProjetoTccExportProjection;
 import com.controletcc.repository.projection.ProjetoTccProjection;
 import com.controletcc.service.*;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,6 +44,10 @@ public class ProjetoTccFacade {
     private final ProjetoTccSituacaoFacade projetoTccSituacaoFacade;
 
     private final CsvService csvService;
+
+    private final MembroBancaService membroBancaService;
+
+    private final ProfessorDisponibilidadeService professorDisponibilidadeService;
 
     public ProjetoTccDTO getById(Long id) {
         return ModelMapperUtil.map(projetoTccService.getById(id), ProjetoTccDTO.class);
@@ -112,6 +118,41 @@ public class ProjetoTccFacade {
 
     public void reprovar(Long id, String motivo) throws BusinessException {
         projetoTccSituacaoFacade.nextStep(id, SituacaoTcc.REPROVADO, motivo);
+    }
+
+    public void validoAgendarApresentacao(@NonNull Long idProjetoTcc) throws BusinessException {
+        var errors = new ArrayList<String>();
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        var membrosBanca = membroBancaService.getByIdProjetoTcc(idProjetoTcc);
+
+        if (membrosBanca.size() > 0) {
+            var membrosBancaNaoConfirmados = membrosBanca.stream().filter(mb -> mb.getDataConfirmacao() == null).toList();
+            var membrosBancaConfirmados = membrosBanca.stream().filter(mb -> mb.getDataConfirmacao() != null).toList();
+            for (var naoConfirmado : membrosBancaNaoConfirmados) {
+                var professor = naoConfirmado.getProfessor();
+                errors.add("O professor membro de banca " + professor.getNome() + " ainda não confirmou sua participação.");
+            }
+            for (var confirmado : membrosBancaConfirmados) {
+                var professor = confirmado.getProfessor();
+                if (!professorDisponibilidadeService.existsByAnoAndPeriodoAndProfessorId(projetoTcc.getAno(), projetoTcc.getPeriodo(), professor.getId())) {
+                    errors.add("O professor membro de banca " + professor.getNome() + " confirmou sua participação, porém não cadastrou suas disponibilidades.");
+                }
+            }
+            if (membrosBanca.size() != 2) {
+                errors.add("É necessário a definição de exatamente 2 membros de banca");
+            }
+        } else if (TipoTcc.DEFESA.equals(projetoTcc.getTipoTcc())) {
+            errors.add("É necessário a definição de 2 membros de banca antes do agendamento da apresentação.");
+        }
+
+        var professorOrientador = projetoTcc.getProfessorOrientador();
+        if (!professorDisponibilidadeService.existsByAnoAndPeriodoAndProfessorId(projetoTcc.getAno(), projetoTcc.getPeriodo(), professorOrientador.getId())) {
+            errors.add("O professor orientador " + professorOrientador.getNome() + " não cadastrou suas disponibilidades.");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new BusinessException(errors);
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package com.controletcc.model.entity;
 import com.controletcc.model.entity.base.BaseEntity;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoTcc;
+import com.controletcc.util.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -123,6 +124,14 @@ public class ProjetoTcc extends BaseEntity {
 
     public TipoTcc getTipoTcc() {
         return situacaoAtual != null ? situacaoAtual.getTipoTcc() : null;
+    }
+
+    public Integer getAno() {
+        return StringUtil.isNullOrBlank(anoPeriodo) || !anoPeriodo.matches("\\d{4}/\\d") ? null : Integer.valueOf(anoPeriodo.substring(0, 4));
+    }
+
+    public Integer getPeriodo() {
+        return StringUtil.isNullOrBlank(anoPeriodo) || !anoPeriodo.matches("\\d{4}/\\d") ? null : Integer.valueOf(anoPeriodo.substring(5));
     }
 
 }
