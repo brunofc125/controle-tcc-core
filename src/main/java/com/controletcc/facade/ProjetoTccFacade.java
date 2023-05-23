@@ -49,6 +49,8 @@ public class ProjetoTccFacade {
 
     private final ProfessorDisponibilidadeService professorDisponibilidadeService;
 
+    private final ApresentacaoService apresentacaoService;
+
     public ProjetoTccDTO getById(Long id) {
         return ModelMapperUtil.map(projetoTccService.getById(id), ProjetoTccDTO.class);
     }
@@ -113,10 +115,14 @@ public class ProjetoTccFacade {
     }
 
     public void cancelar(Long id, String motivo) throws BusinessException {
+        var projetoTcc = projetoTccService.getById(id);
+        apresentacaoService.deleteIfExistsByProjetoTccIdAndTipoTcc(id, projetoTcc.getTipoTcc());
         projetoTccSituacaoFacade.nextStep(id, SituacaoTcc.CANCELADO, motivo);
     }
 
     public void reprovar(Long id, String motivo) throws BusinessException {
+        var projetoTcc = projetoTccService.getById(id);
+        apresentacaoService.deleteIfExistsByProjetoTccIdAndTipoTcc(id, projetoTcc.getTipoTcc());
         projetoTccSituacaoFacade.nextStep(id, SituacaoTcc.REPROVADO, motivo);
     }
 
