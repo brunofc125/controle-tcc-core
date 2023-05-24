@@ -135,12 +135,14 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
                 ps.nome as professorSupervisor,
                 pt.anoPeriodo as anoPeriodo,
                 s.tipoTcc as tipoTcc,
-                s.situacaoTcc as situacaoTcc
+                s.situacaoTcc as situacaoTcc,
+                (ap.id is not null) as apresentacaoAgendada
             FROM ProjetoTcc pt
             join pt.situacaoAtual s
             join pt.alunos a
             join pt.professorOrientador po
             join pt.professorSupervisor ps
+            left join Apresentacao ap on ap.projetoTcc.id = pt.id and ap.tipoTcc = s.tipoTcc
                 where a.id = :idAluno
                 and (:id is null or pt.id = :id)
                 and (:tema is null or lower(pt.tema) like concat('%', trim(lower(:tema)),'%') )
