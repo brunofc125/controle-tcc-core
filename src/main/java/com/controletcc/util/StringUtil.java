@@ -33,4 +33,12 @@ public class StringUtil {
         return Normalizer.normalize(firstName, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "").toLowerCase();
     }
 
+    public static boolean equalsTrimIgnoreCase(String str1, String str2) {
+        if (str1 != null && str2 != null) {
+            return str1.trim().equalsIgnoreCase(str2.trim());
+        } else {
+            return str1 == null && str2 == null;
+        }
+    }
+
 }

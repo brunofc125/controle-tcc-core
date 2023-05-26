@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "modelo_avaliacao")
+@Table(name = "modelo_item_avaliacao")
 public class ModeloItemAvaliacao extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

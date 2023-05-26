@@ -45,7 +45,7 @@ public class ModeloItemAvaliacaoService {
                 if (StringUtil.isNullOrBlank(item.getDescricao())) {
                     errors.add("Existe item sem a descrição");
                     break;
-                } else if (validDescricaoDuplicate(item.getId(), item.getIdModeloAvaliacao(), item.getDescricao())) {
+                } else if (modeloItens.stream().anyMatch(i -> modeloItens.indexOf(item) != modeloItens.indexOf(i) && StringUtil.equalsTrimIgnoreCase(item.getDescricao(), i.getDescricao()))) {
                     errors.add("Existe itens com a descrição duplicada");
                     break;
                 }
@@ -53,7 +53,6 @@ public class ModeloItemAvaliacaoService {
                     errors.add("Existe item sem o peso");
                     break;
                 }
-
             }
         }
 
