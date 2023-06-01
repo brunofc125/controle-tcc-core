@@ -1,17 +1,13 @@
 package com.controletcc.model.entity;
 
 import com.controletcc.model.entity.base.BaseEntity;
-import com.controletcc.model.enums.TipoProfessor;
-import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,26 +24,14 @@ public class ModeloAvaliacao extends BaseEntity {
     @JoinColumn(name = "id_area_tcc", nullable = false)
     private AreaTcc areaTcc;
 
-    @ElementCollection(targetClass = TipoTcc.class)
-    @CollectionTable(name = "modelo_avaliacao_tipo_tcc", joinColumns = @JoinColumn(name = "id_modelo_avaliacao"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_tcc", nullable = false)
-    private Set<TipoTcc> tipoTccs;
+    @Column(name = "nota_media", nullable = false)
+    private Double notaMedia;
 
-    @ElementCollection(targetClass = TipoProfessor.class)
-    @CollectionTable(name = "modelo_avaliacao_tipo_professor", joinColumns = @JoinColumn(name = "id_modelo_avaliacao"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_professor", nullable = false)
-    private Set<TipoProfessor> tipoProfessores;
+    @Column(name = "nota_maxima", nullable = false)
+    private Double notaMaxima;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "modeloAvaliacao")
-    private List<ModeloItemAvaliacao> modeloItensAvaliacao;
-
-    @Formula("(select string_agg(matt.tipo_tcc, ', ' order by matt.tipo_tcc) from modelo_avaliacao_tipo_tcc matt where matt.id_modelo_avaliacao = id)")
-    private String tipoTccsNome;
-
-    @Formula("(select string_agg(matp.tipo_professor, ', ' order by matp.tipo_professor) from modelo_avaliacao_tipo_professor matp where matp.id_modelo_avaliacao = id)")
-    private String tipoProfessoresNome;
+    @Column(name = "data_exclusao")
+    private LocalDateTime dataExclusao;
 
     public Long getIdAreaTcc() {
         return this.areaTcc != null ? this.areaTcc.getId() : null;

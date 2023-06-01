@@ -42,4 +42,10 @@ public class ModeloAvaliacaoController {
         return modeloAvaliacaoFacade.update(modeloAvaliacao);
     }
 
+    @PreAuthorize("hasAuthority('modelo-avaliacao.delete')")
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable Long id) throws Exception {
+        modeloAvaliacaoFacade.deleteLogic(id);
+    }
+
 }
