@@ -136,5 +136,8 @@ public class ProjetoTccService {
         return projetoTccRepository.export(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno(), null, null, idMembroBanca);
     }
 
+    public boolean existsApresentacaoAgendada(@NonNull Long idProjetoTcc) {
+        return projetoTccRepository.existsApresentacaoAgendada(idProjetoTcc);
+    }
 
 }

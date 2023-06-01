@@ -98,3 +98,5 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('modelo-avaliacao.delete', false, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('modelo-avaliacao.read', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc-avaliacao.create', false, true, false, false);

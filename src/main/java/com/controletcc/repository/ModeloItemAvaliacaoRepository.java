@@ -49,4 +49,16 @@ public interface ModeloItemAvaliacaoRepository extends JpaRepository<ModeloItemA
             """
     )
     List<ModeloAvaliacaoValidateProjection> getValidateByTipoTccsAndTipoProfessoresAndNotId(Set<TipoTcc> tipoTccs, Set<TipoProfessor> tipoProfessores, Long id);
+
+    @Query(value = """
+            SELECT distinct mia
+            FROM ModeloItemAvaliacao mia
+            JOIN mia.tipoTccs tc
+            JOIN mia.modeloAvaliacao ma
+            WHERE mia.dataExclusao is null
+                AND ma.areaTcc.id = :idAreaTcc
+                AND tc = :tipoTcc
+            """
+    )
+    List<ModeloItemAvaliacao> getItensByAreaTccAndTipoTcc(Long idAreaTcc, TipoTcc tipoTcc);
 }
