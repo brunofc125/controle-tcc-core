@@ -22,6 +22,10 @@ public class ProjetoTccAvaliacaoService {
 
     private final ProjetoTccAvaliacaoRepository projetoTccAvaliacaoRepository;
 
+    public ProjetoTccAvaliacao getById(@NonNull Long id) {
+        return projetoTccAvaliacaoRepository.getReferenceById(id);
+    }
+
     public boolean existsAvaliacaoIniciada(@NonNull Long idProjetoTcc) {
         return projetoTccAvaliacaoRepository.existsAvaliacaoIniciada(idProjetoTcc);
     }
@@ -40,6 +44,10 @@ public class ProjetoTccAvaliacaoService {
         projetoTccAvaliacao.setProjetoTcc(projetoTcc);
         projetoTccAvaliacao.setProfessor(professor);
         return projetoTccAvaliacaoRepository.save(projetoTccAvaliacao);
+    }
+
+    public ProjetoTccAvaliacao getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(TipoTcc tipoTcc, TipoProfessor tipoProfessor, Long idProjetoTcc, Long idProfessor) {
+        return projetoTccAvaliacaoRepository.getProjetoTccAvaliacaoByTipoTccAndTipoProfessorAndProjetoTccIdAndProfessorId(tipoTcc, tipoProfessor, idProjetoTcc, idProfessor);
     }
 
 }

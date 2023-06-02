@@ -100,3 +100,11 @@ INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('modelo-avaliacao.read', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('projeto-tcc-avaliacao.create', false, true, false, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc-avaliacao.assess', false, true, true, false);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc-avaliacao.read', false, true, true, true);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc-nota.read', false, true, true, true);
+INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
+VALUES ('projeto-tcc-nota.grade', false, true, false, false);

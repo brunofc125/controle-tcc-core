@@ -8,9 +8,10 @@ import java.util.List;
 public enum SituacaoTcc {
     EM_ANDAMENTO("Em andamento", false),
     A_APRESENTAR("Á apresentar", false, EM_ANDAMENTO),
-    APROVADO("Aprovado", true, A_APRESENTAR),
-    REPROVADO("Reprovado", true, EM_ANDAMENTO, A_APRESENTAR),
-    CANCELADO("Cancelado", true, EM_ANDAMENTO, A_APRESENTAR);
+    EM_AVALIACAO("Em avaliação", false, A_APRESENTAR),
+    APROVADO("Aprovado", true, EM_AVALIACAO),
+    REPROVADO("Reprovado", true, EM_ANDAMENTO, A_APRESENTAR, EM_AVALIACAO),
+    CANCELADO("Cancelado", true, EM_ANDAMENTO, A_APRESENTAR, EM_AVALIACAO);
 
     private SituacaoTcc(String descricao, boolean situacaoFinal, SituacaoTcc... situacoesAnteriores) {
         this.descricao = descricao;

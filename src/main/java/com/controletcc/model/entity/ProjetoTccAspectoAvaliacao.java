@@ -20,7 +20,7 @@ public class ProjetoTccAspectoAvaliacao extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_projeto_tcc_avaliacao", nullable = false)
+    @JoinColumn(name = "id_projeto_tcc_avaliacao", nullable = false, updatable = false)
     private ProjetoTccAvaliacao projetoTccAvaliacao;
 
     @Column(name = "descricao", nullable = false)

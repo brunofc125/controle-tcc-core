@@ -1,6 +1,8 @@
 package com.controletcc.repository;
 
 import com.controletcc.model.entity.ProjetoTccAvaliacao;
+import com.controletcc.model.enums.TipoProfessor;
+import com.controletcc.model.enums.TipoTcc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,5 +17,7 @@ public interface ProjetoTccAvaliacaoRepository extends JpaRepository<ProjetoTccA
             """
     )
     boolean existsAvaliacaoIniciada(Long idProjetoTcc);
+
+    ProjetoTccAvaliacao getProjetoTccAvaliacaoByTipoTccAndTipoProfessorAndProjetoTccIdAndProfessorId(TipoTcc tipoTcc, TipoProfessor tipoProfessor, Long idProjetoTcc, Long idProfessor);
 
 }

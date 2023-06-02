@@ -56,6 +56,7 @@ public interface ModeloItemAvaliacaoRepository extends JpaRepository<ModeloItemA
             JOIN mia.tipoTccs tc
             JOIN mia.modeloAvaliacao ma
             WHERE mia.dataExclusao is null
+                AND ma.dataExclusao is null
                 AND ma.areaTcc.id = :idAreaTcc
                 AND tc = :tipoTcc
             """

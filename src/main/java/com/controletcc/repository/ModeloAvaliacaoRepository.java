@@ -32,4 +32,6 @@ public interface ModeloAvaliacaoRepository extends JpaRepository<ModeloAvaliacao
 
     boolean existsByAreaTccIdAndDataExclusaoNull(Long idAreaTcc);
 
+    ModeloAvaliacao getModeloAvaliacaoByAreaTccIdAndDataExclusaoNull(Long idAreaTcc);
+
 }

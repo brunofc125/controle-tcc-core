@@ -9,7 +9,6 @@ import com.controletcc.model.entity.ModeloItemAvaliacao;
 import com.controletcc.repository.projection.ModeloItemAvaliacaoProjection;
 import com.controletcc.service.ModeloAspectoAvaliacaoService;
 import com.controletcc.service.ModeloItemAvaliacaoService;
-import com.controletcc.service.ProfessorService;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +26,6 @@ public class ModeloItemAvaliacaoFacade {
     private final ModeloItemAvaliacaoService modeloItemAvaliacaoService;
 
     private final ModeloAspectoAvaliacaoService modeloAspectoAvaliacaoService;
-
-    private final ProfessorService professorService;
 
     public ModeloItemAvaliacaoDTO getById(Long id) {
         var modeloItemAvaliacao = modeloItemAvaliacaoService.getById(id);

@@ -96,4 +96,8 @@ public class ModeloAvaliacaoService {
                 : modeloAvaliacaoRepository.existsByAreaTccIdAndDataExclusaoNull(modeloAvaliacao.getIdAreaTcc());
     }
 
+    public ModeloAvaliacao getByAreaTcc(Long idAreaTcc) {
+        return modeloAvaliacaoRepository.getModeloAvaliacaoByAreaTccIdAndDataExclusaoNull(idAreaTcc);
+    }
+
 }

@@ -75,7 +75,7 @@ public class ModelMapperUtil {
     }
 
     public static <D, T> D map(final T entity, Class<D> outClass) {
-        return map(entity, outClass, null, null);
+        return entity != null ? map(entity, outClass, null, null) : null;
     }
 
     public static <D, T> List<D> mapAll(final Collection<T> entityList, Class<D> outCLass) {
