@@ -93,4 +93,17 @@ public class ProjetoTccAspectoAvaliacaoService {
         return projetoTccAspectoAvaliacaoRepository.getAllByProjetoTcc(idProjetoTcc);
     }
 
+    public Double calculateValorFinal(List<ProjetoTccAspectoAvaliacao> aspectos) {
+        var pesoTotal = Double.valueOf(0);
+        var notaFinal = Double.valueOf(0);
+        for (var aspecto : aspectos) {
+            if (aspecto.getPeso() != null) {
+                pesoTotal += aspecto.getPeso();
+                var valor = aspecto.getValor() != null ? aspecto.getValor() : 0d;
+                notaFinal += aspecto.getPeso() * valor;
+            }
+        }
+        return pesoTotal > 0 ? notaFinal / pesoTotal : 0d;
+    }
+
 }

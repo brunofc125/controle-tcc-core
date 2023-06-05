@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -47,7 +46,7 @@ public class ProjetoTccNotaFacade {
         var aspectosMapByAvaliacao = aspectos.stream().collect(Collectors.groupingBy(ProjetoTccAspectoAvaliacao::getIdProjetoTccAvaliacao));
         var notas = new ArrayList<Double>();
         for (var aspectoEntrySet : aspectosMapByAvaliacao.entrySet()) {
-            notas.add(calculateValorFinal(aspectoEntrySet.getValue()));
+            notas.add(projetoTccAspectoAvaliacaoService.calculateValorFinal(aspectoEntrySet.getValue()));
         }
         var notaFinal = Double.valueOf(0);
         for (var nota : notas) {
@@ -60,16 +59,6 @@ public class ProjetoTccNotaFacade {
                 : projetoTccSituacaoService.nextStep(idProjetoTcc, SituacaoTcc.REPROVADO, "Nota abaixo da média");
         projetoTccService.updateSituacao(idProjetoTcc, situacaoNova);
         return ModelMapperUtil.map(projetoTccNota, ProjetoTccNotaDTO.class);
-    }
-
-    private Double calculateValorFinal(List<ProjetoTccAspectoAvaliacao> aspectos) {
-        var pesoTotal = Double.valueOf(0);
-        var notaFinal = Double.valueOf(0);
-        for (var aspecto : aspectos) {
-            pesoTotal += aspecto.getPeso();
-            notaFinal += aspecto.getPeso() * aspecto.getValor();
-        }
-        return pesoTotal > 0 ? notaFinal / pesoTotal : 0d;
     }
 
 }

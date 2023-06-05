@@ -2,15 +2,19 @@ package com.controletcc.facade;
 
 import com.controletcc.dto.DescriptionModelDTO;
 import com.controletcc.dto.ProjetoTccAvaliacaoInfoDTO;
+import com.controletcc.dto.ProjetoTccAvaliacaoResumeDTO;
+import com.controletcc.dto.base.ListResponse;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccAspectoAvaliacaoDTO;
 import com.controletcc.model.dto.ProjetoTccAvaliacaoDTO;
 import com.controletcc.model.entity.ModeloItemAvaliacao;
 import com.controletcc.model.entity.Professor;
 import com.controletcc.model.entity.ProjetoTcc;
+import com.controletcc.model.entity.ProjetoTccAspectoAvaliacao;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoProfessor;
 import com.controletcc.service.*;
+import com.controletcc.util.DoubleUtil;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -123,11 +127,7 @@ public class ProjetoTccAvaliacaoFacade {
     }
 
     public ProjetoTccAvaliacaoDTO saveAspectosValor(Long idProjetoTccAvaliacao, List<ProjetoTccAspectoAvaliacaoDTO> aspectos) throws Exception {
-        var projetoTccAvaliacao = projetoTccAvaliacaoService.getById(idProjetoTccAvaliacao);
-        var projetoTcc = projetoTccAvaliacao.getProjetoTcc();
-        if (!SituacaoTcc.EM_AVALIACAO.equals(projetoTcc.getSituacaoAtual().getSituacaoTcc())) {
-            throw new BusinessException("Este TCC não está em etapa de avaliação");
-        }
+        validateSituacao(idProjetoTccAvaliacao);
         var idAspectoList = aspectos.stream().map(ProjetoTccAspectoAvaliacaoDTO::getId).toList();
         var aspectoMap = aspectos.stream().collect(Collectors.toMap(ProjetoTccAspectoAvaliacaoDTO::getId, ProjetoTccAspectoAvaliacaoDTO::getValor));
         var projetoTccAspectoAvaliacaoList = projetoTccAspectoAvaliacaoService.getAllByIdList(idAspectoList);
@@ -139,17 +139,50 @@ public class ProjetoTccAvaliacaoFacade {
     }
 
     public ProjetoTccAvaliacaoDTO saveAspectos(Long idProjetoTccAvaliacao, List<ProjetoTccAspectoAvaliacaoDTO> aspectos) throws Exception {
+        validateSituacao(idProjetoTccAvaliacao);
         var idAspectoList = aspectos.stream().map(ProjetoTccAspectoAvaliacaoDTO::getId).toList();
-        var aspectoMap = aspectos.stream().collect(Collectors.toMap(ProjetoTccAspectoAvaliacaoDTO::getId, Function.identity()));
+        var aspectosEdit = aspectos.stream().filter(a -> a.getId() != null).toList();
+        var aspectosInsert = aspectos.stream().filter(a -> a.getId() == null).toList();
+        aspectosInsert.forEach(a -> a.setIdProjetoTccAvaliacao(idProjetoTccAvaliacao));
+        var aspectoMap = aspectosEdit.stream().collect(Collectors.toMap(ProjetoTccAspectoAvaliacaoDTO::getId, Function.identity()));
         var projetoTccAspectoAvaliacaoList = projetoTccAspectoAvaliacaoService.getAllByIdList(idAspectoList);
         for (var aspecto : projetoTccAspectoAvaliacaoList) {
             var aspectoUpdate = aspectoMap.get(aspecto.getId());
             aspecto.setDescricao(aspectoUpdate.getDescricao());
             aspecto.setPeso(aspectoUpdate.getPeso());
         }
+        projetoTccAspectoAvaliacaoList.addAll(ModelMapperUtil.mapAll(aspectosInsert, ProjetoTccAspectoAvaliacao.class));
         projetoTccAspectoAvaliacaoService.saveAll(idProjetoTccAvaliacao, projetoTccAspectoAvaliacaoList);
         return ModelMapperUtil.map(projetoTccAvaliacaoService.getById(idProjetoTccAvaliacao), ProjetoTccAvaliacaoDTO.class);
     }
 
+    private void validateSituacao(Long idProjetoTccAvaliacao) throws BusinessException {
+        var projetoTccAvaliacao = projetoTccAvaliacaoService.getById(idProjetoTccAvaliacao);
+        var projetoTcc = projetoTccAvaliacao.getProjetoTcc();
+        if (!SituacaoTcc.EM_AVALIACAO.equals(projetoTcc.getSituacaoAtual().getSituacaoTcc())) {
+            throw new BusinessException("Este TCC não está em etapa de avaliação");
+        }
+    }
+
+    public ListResponse<ProjetoTccAvaliacaoResumeDTO> getAllByProjetoTcc(@NonNull Long idProjetoTcc) {
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        var projetoTccAvaliacaoList = projetoTccAvaliacaoService.getAllByProjetoTccAndTipoTcc(idProjetoTcc, projetoTcc.getTipoTcc());
+        var resultList = projetoTccAvaliacaoList.stream().map(pta -> {
+            var resume = new ProjetoTccAvaliacaoResumeDTO();
+            resume.setId(pta.getId());
+            resume.setTipoTcc(pta.getTipoTcc());
+            resume.setTipoProfessor(pta.getTipoProfessor());
+            resume.setIdProjetoTcc(idProjetoTcc);
+            resume.setIdProfessor(pta.getIdProfessor());
+            resume.setNomeProfessor(pta.getProfessor().getNome());
+            var aspectos = pta.getProjetoTccAspectosAvaliacao();
+            if (aspectos.stream().allMatch(a -> a.getValor() != null)) {
+                var nota = projetoTccAspectoAvaliacaoService.calculateValorFinal(pta.getProjetoTccAspectosAvaliacao());
+                resume.setNota(DoubleUtil.roundingHalfUp(2, nota));
+            }
+            return resume;
+        }).toList();
+        return new ListResponse<>(resultList, (long) resultList.size());
+    }
 
 }

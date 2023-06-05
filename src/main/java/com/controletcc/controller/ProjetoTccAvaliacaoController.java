@@ -1,6 +1,8 @@
 package com.controletcc.controller;
 
 import com.controletcc.dto.ProjetoTccAvaliacaoInfoDTO;
+import com.controletcc.dto.ProjetoTccAvaliacaoResumeDTO;
+import com.controletcc.dto.base.ListResponse;
 import com.controletcc.facade.ProjetoTccAvaliacaoFacade;
 import com.controletcc.model.dto.ProjetoTccAspectoAvaliacaoDTO;
 import com.controletcc.model.dto.ProjetoTccAvaliacaoDTO;
@@ -52,6 +54,12 @@ public class ProjetoTccAvaliacaoController {
     @PostMapping("save-aspectos/{idProjetoTccAvaliacao}")
     public ProjetoTccAvaliacaoDTO saveAspectos(@PathVariable Long idProjetoTccAvaliacao, @RequestBody List<ProjetoTccAspectoAvaliacaoDTO> aspectos) throws Exception {
         return projetoTccAvaliacaoFacade.saveAspectos(idProjetoTccAvaliacao, aspectos);
+    }
+
+    @PreAuthorize("hasAuthority('projeto-tcc-avaliacao.read')")
+    @GetMapping("get-all-by-projeto-tcc/{idProjetoTcc}")
+    public ListResponse<ProjetoTccAvaliacaoResumeDTO> getAllByProjetoTcc(@PathVariable Long idProjetoTcc) throws Exception {
+        return projetoTccAvaliacaoFacade.getAllByProjetoTcc(idProjetoTcc);
     }
 
 }

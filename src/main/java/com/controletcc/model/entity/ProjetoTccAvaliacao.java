@@ -43,6 +43,7 @@ public class ProjetoTccAvaliacao extends BaseEntity {
     private Professor professor;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "projetoTccAvaliacao")
+    @OrderBy("id asc")
     private List<ProjetoTccAspectoAvaliacao> projetoTccAspectosAvaliacao;
 
     public Long getIdModeloItemAvaliacao() {

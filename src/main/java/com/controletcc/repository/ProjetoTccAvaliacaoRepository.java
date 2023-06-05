@@ -6,7 +6,11 @@ import com.controletcc.model.enums.TipoTcc;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface ProjetoTccAvaliacaoRepository extends JpaRepository<ProjetoTccAvaliacao, Long> {
+
+    List<ProjetoTccAvaliacao> getAllByProjetoTccIdAndTipoTcc(Long idProjetoTcc, TipoTcc tipoTcc);
 
     @Query(value = """  
             SELECT count(distinct pta.id) > 0

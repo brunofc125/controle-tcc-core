@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = BusinessException.class)
@@ -48,6 +50,10 @@ public class ProjetoTccAvaliacaoService {
 
     public ProjetoTccAvaliacao getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(TipoTcc tipoTcc, TipoProfessor tipoProfessor, Long idProjetoTcc, Long idProfessor) {
         return projetoTccAvaliacaoRepository.getProjetoTccAvaliacaoByTipoTccAndTipoProfessorAndProjetoTccIdAndProfessorId(tipoTcc, tipoProfessor, idProjetoTcc, idProfessor);
+    }
+
+    public List<ProjetoTccAvaliacao> getAllByProjetoTccAndTipoTcc(Long idProjetoTcc, TipoTcc tipoTcc) {
+        return projetoTccAvaliacaoRepository.getAllByProjetoTccIdAndTipoTcc(idProjetoTcc, tipoTcc);
     }
 
 }
