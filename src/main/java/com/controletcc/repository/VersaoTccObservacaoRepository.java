@@ -15,12 +15,15 @@ public interface VersaoTccObservacaoRepository extends JpaRepository<VersaoTccOb
                 u.name as professor,
                 vto.dataInclusao as dataInclusao,
                 vto.nomeArquivo as nomeArquivo,
-                vto.observacao as observacao
+                vto.observacao as observacao,
+                vto.avaliacao as avaliacao
             FROM VersaoTccObservacao vto
             JOIN User u on u.id = vto.idUserInclusao
-                where vto.versaoTcc.id = :idVersaoTcc"""
+                where vto.versaoTcc.id = :idVersaoTcc
+                and (:onlyAvaliacao = false or vto.avaliacao = true)"""
     )
     Page<VersaoTccObservacaoProjection> search(Long idVersaoTcc,
+                                               boolean onlyAvaliacao,
                                                Pageable pageable);
 
 }

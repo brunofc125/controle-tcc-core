@@ -65,14 +65,14 @@ public class ProjetoTccService {
         return projetoTccRepository.save(projetoTcc);
     }
 
-    public void updateSituacao(@NonNull Long idProjetoTcc, @NonNull ProjetoTccSituacao situacao) {
+    public ProjetoTcc updateSituacao(@NonNull Long idProjetoTcc, @NonNull ProjetoTccSituacao situacao) {
         var projetoTcc = getById(idProjetoTcc);
         projetoTcc.setSituacaoAtual(situacao);
-        projetoTccRepository.save(projetoTcc);
+        return projetoTccRepository.save(projetoTcc);
     }
 
-    public boolean existsAtivoByIdAluno(@NonNull Long idAluno) {
-        return projetoTccRepository.existsAtivoByIdAluno(idAluno, Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR, SituacaoTcc.APROVADO), Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR));
+    public boolean existsAtivoByIdAluno(@NonNull Long idAluno, Long idProjetoTcc) {
+        return projetoTccRepository.existsAtivoByIdAluno(idAluno, idProjetoTcc, Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR, SituacaoTcc.APROVADO), Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR));
     }
 
     private void validate(ProjetoTcc projetoTcc) throws BusinessException {
@@ -105,7 +105,7 @@ public class ProjetoTccService {
         if (errors.isEmpty()) {
             var idAlunoListError = new ArrayList<Long>();
             for (var idAluno : projetoTcc.getIdAlunoList()) {
-                if (existsAtivoByIdAluno(idAluno)) {
+                if (existsAtivoByIdAluno(idAluno, projetoTcc.getId())) {
                     idAlunoListError.add(idAluno);
                 }
             }
@@ -136,5 +136,8 @@ public class ProjetoTccService {
         return projetoTccRepository.export(options.getId(), options.getTema(), options.getAnoPeriodo(), options.getTipoTcc(), options.getSituacaoTcc(), options.getNomeProfessorOrientador(), options.getNomeAluno(), null, null, idMembroBanca);
     }
 
+    public boolean existsApresentacaoAgendada(@NonNull Long idProjetoTcc) {
+        return projetoTccRepository.existsApresentacaoAgendada(idProjetoTcc);
+    }
 
 }

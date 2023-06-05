@@ -24,4 +24,8 @@ public class AreaTcc extends BaseEntity {
 
     @Column(name = "curso", nullable = false)
     private String curso;
+
+    public String getDescricao() {
+        return faculdade + " - " + curso;
+    }
 }

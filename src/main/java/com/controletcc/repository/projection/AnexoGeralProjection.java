@@ -10,4 +10,6 @@ public interface AnexoGeralProjection {
     String getModelo();
 
     String getProfessor();
+
+    boolean isAvaliacao();
 }

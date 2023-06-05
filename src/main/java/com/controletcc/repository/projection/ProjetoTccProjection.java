@@ -27,4 +27,6 @@ public interface ProjetoTccProjection {
     SituacaoTcc getSituacaoTcc();
 
     boolean isApresentacaoAgendada();
+
+    boolean isAvaliacaoIniciada();
 }

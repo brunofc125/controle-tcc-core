@@ -12,4 +12,6 @@ public interface VersaoTccObservacaoProjection {
     String getNomeArquivo();
 
     String getObservacao();
+
+    boolean isAvaliacao();
 }

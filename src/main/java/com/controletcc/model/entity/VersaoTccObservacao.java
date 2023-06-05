@@ -26,6 +26,9 @@ public class VersaoTccObservacao extends ArquivoOpcional {
     @JoinColumn(name = "id_versao_tcc", nullable = false)
     private VersaoTcc versaoTcc;
 
+    @Column(name = "avaliacao")
+    private boolean avaliacao;
+
     public Long getIdVersaoTcc() {
         return versaoTcc != null ? versaoTcc.getId() : null;
     }

@@ -25,9 +25,9 @@ public class AnexoGeralController {
     }
 
     @PreAuthorize("hasAuthority('anexo-geral.read')")
-    @PostMapping("search/{idProjetoTcc}")
-    public ListResponse<AnexoGeralProjection> search(@PathVariable Long idProjetoTcc, @RequestBody AnexoGeralGridOptions options) throws BusinessException {
-        return anexoGeralFacade.search(idProjetoTcc, options);
+    @PostMapping("search/{idProjetoTcc}/{onlyAvaliacao}")
+    public ListResponse<AnexoGeralProjection> search(@PathVariable Long idProjetoTcc, @PathVariable boolean onlyAvaliacao, @RequestBody AnexoGeralGridOptions options) throws BusinessException {
+        return anexoGeralFacade.search(idProjetoTcc, onlyAvaliacao, options);
     }
 
     @PreAuthorize("hasAuthority('anexo-geral.create')")

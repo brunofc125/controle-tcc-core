@@ -32,12 +32,12 @@ public class VersaoTccObservacaoService {
         return versaoTccObservacaoRepository.getReferenceById(id);
     }
 
-    public ListResponse<VersaoTccObservacaoProjection> search(@NonNull Long idVersaoTcc, BaseGridOptions options) {
+    public ListResponse<VersaoTccObservacaoProjection> search(@NonNull Long idVersaoTcc, boolean onlyAvaliacao, BaseGridOptions options) {
         if (StringUtil.isNullOrBlank(options.getOrderByField())) {
             options.setOrderByField("dataInclusao");
             options.setOrderByDirection(OrderByDirection.DESC);
         }
-        var page = versaoTccObservacaoRepository.search(idVersaoTcc, options.getPageable());
+        var page = versaoTccObservacaoRepository.search(idVersaoTcc, onlyAvaliacao, options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 

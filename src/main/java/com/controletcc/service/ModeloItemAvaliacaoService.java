@@ -116,4 +116,8 @@ public class ModeloItemAvaliacaoService {
                         }).toList();
     }
 
+    public List<ModeloItemAvaliacao> getItensByAreaTccAndTipoTcc(Long idAreaTcc, TipoTcc tipoTcc) {
+        return modeloItemAvaliacaoRepository.getItensByAreaTccAndTipoTcc(idAreaTcc, tipoTcc);
+    }
+
 }

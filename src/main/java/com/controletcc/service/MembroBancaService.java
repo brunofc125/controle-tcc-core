@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -70,6 +71,11 @@ public class MembroBancaService {
 
     public List<MembroBanca> getByIdProjetoTcc(Long idProjetoTcc) {
         return membroBancaRepository.getAllByProjetoTccId(idProjetoTcc);
+    }
+
+    public List<Professor> getProfessoresByIdProjetoTcc(Long idProjetoTcc) {
+        var membroBancaList = membroBancaRepository.getAllByProjetoTccId(idProjetoTcc);
+        return membroBancaList != null && !membroBancaList.isEmpty() ? membroBancaList.stream().map(MembroBanca::getProfessor).toList() : Collections.emptyList();
     }
 
     public void delete(Long id) {

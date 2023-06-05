@@ -31,8 +31,8 @@ public class VersaoTccObservacaoFacade {
         return ModelMapperUtil.map(versaoTccObservacao, VersaoTccObservacaoDTO.class);
     }
 
-    public ListResponse<VersaoTccObservacaoProjection> search(Long idVersaoTcc, BaseGridOptions options) {
-        return versaoTccObservacaoService.search(idVersaoTcc, options);
+    public ListResponse<VersaoTccObservacaoProjection> search(Long idVersaoTcc, boolean onlyAvaliacao, BaseGridOptions options) {
+        return versaoTccObservacaoService.search(idVersaoTcc, onlyAvaliacao, options);
     }
 
     public VersaoTccObservacaoDTO insert(VersaoTccObservacaoDTO versaoTccObservacaoDTO) throws Exception {
