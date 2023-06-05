@@ -68,4 +68,10 @@ public class ProjetoTccController {
         projetoTccFacade.validoAgendarApresentacao(id);
     }
 
+    @PreAuthorize("hasAuthority('projeto-tcc.create')")
+    @PatchMapping("to-defesa/{id}")
+    public void avancarParaDefesa(@PathVariable Long id) throws BusinessException {
+        projetoTccFacade.avancarParaDefesa(id);
+    }
+
 }

@@ -16,7 +16,8 @@ public interface AnexoGeralRepository extends JpaRepository<AnexoGeral, Long> {
                 ag.descricao as descricao,
                 md.tipoTccsNome as tipoTccsNome,
                 md.descricao as modelo,
-                p.nome as professor
+                p.nome as professor,
+                ag.avaliacao as avaliacao
             FROM AnexoGeral ag
             JOIN ag.professor p
             LEFT JOIN ag.modeloDocumento md
@@ -26,14 +27,16 @@ public interface AnexoGeralRepository extends JpaRepository<AnexoGeral, Long> {
                 and (:id is null or ag.id = :id)
                 and (:descricao is null or lower(ag.descricao) like concat('%', trim(lower(:descricao)),'%')
                     or lower(md.descricao) like concat('%', trim(lower(:descricao)),'%')  )
-                and (:tipoTcc is null or tc = :tipoTcc)"""
+                and (:tipoTcc is null or tc = :tipoTcc)
+                and (:onlyAvaliacao = false or ag.avaliacao = true)"""
     )
     Page<AnexoGeralProjection> search(Long id,
                                       String descricao,
                                       TipoTcc tipoTcc,
                                       Long idProjetoTcc,
+                                      boolean onlyAvaliacao,
                                       Pageable pageable);
 
-    boolean existsByProjetoTccIdAndDescricaoIgnoreCaseAndDataExclusaoIsNull(Long idProjetoTcc, String descricao);
+    boolean existsByProjetoTccIdAndDescricaoIgnoreCaseAndDataExclusaoIsNullAndAvaliacao(Long idProjetoTcc, String descricao, boolean avaliacao);
 
 }

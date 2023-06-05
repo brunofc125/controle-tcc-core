@@ -49,6 +49,8 @@ public class ProjetoTccAvaliacaoFacade {
 
     private final ProjetoTccNotaService projetoTccNotaService;
 
+    private final VersaoTccService versaoTccService;
+
     public ProjetoTccAvaliacaoDTO getById(Long id) {
         return ModelMapperUtil.map(projetoTccAvaliacaoService.getById(id), ProjetoTccAvaliacaoDTO.class);
     }
@@ -56,6 +58,9 @@ public class ProjetoTccAvaliacaoFacade {
     public void iniciarEtapaAvaliacao(Long idProjetoTcc) throws Exception {
         if (!projetoTccService.existsApresentacaoAgendada(idProjetoTcc)) {
             throw new BusinessException("Não foi agendada a apresentação deste TCC");
+        }
+        if (!versaoTccService.existsByProjetoTccId(idProjetoTcc)) {
+            throw new BusinessException("Não foi anexado nenhum documento neste TCC");
         }
         if (!projetoTccAvaliacaoService.existsAvaliacaoIniciada(idProjetoTcc)) {
             var projetoTcc = projetoTccService.getById(idProjetoTcc);

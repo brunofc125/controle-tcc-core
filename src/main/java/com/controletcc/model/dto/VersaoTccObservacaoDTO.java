@@ -14,4 +14,5 @@ public class VersaoTccObservacaoDTO extends ArquivoDTO {
     private Long id;
     private String observacao;
     private Long idVersaoTcc;
+    private boolean avaliacao;
 }

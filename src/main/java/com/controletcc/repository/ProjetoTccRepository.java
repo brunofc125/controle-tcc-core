@@ -212,13 +212,14 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
             join pt.situacaoAtual s
             join pt.alunos a
                 where a.id = :idAluno
+                and (:idProjetoTcc is null or pt.id != :idProjetoTcc)
                 and (
                     (s.tipoTcc = 'QUALIFICACAO' and s.situacaoTcc in :situacaoTccsAtivosQualificacao)
                     or (s.tipoTcc = 'DEFESA' and s.situacaoTcc in :situacaoTccsAtivosDefesa)
                 )
                """
     )
-    boolean existsAtivoByIdAluno(Long idAluno, List<SituacaoTcc> situacaoTccsAtivosQualificacao, List<SituacaoTcc> situacaoTccsAtivosDefesa);
+    boolean existsAtivoByIdAluno(Long idAluno, Long idProjetoTcc, List<SituacaoTcc> situacaoTccsAtivosQualificacao, List<SituacaoTcc> situacaoTccsAtivosDefesa);
 
     @Query(value = """  
             SELECT count(distinct a.id) > 0

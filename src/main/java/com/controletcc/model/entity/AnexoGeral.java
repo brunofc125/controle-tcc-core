@@ -38,6 +38,9 @@ public class AnexoGeral extends Arquivo {
     @Column(name = "data_exclusao")
     private LocalDateTime dataExclusao;
 
+    @Column(name = "avaliacao")
+    private boolean avaliacao;
+
     public Long getIdModeloDocumento() {
         return modeloDocumento != null ? modeloDocumento.getId() : null;
     }

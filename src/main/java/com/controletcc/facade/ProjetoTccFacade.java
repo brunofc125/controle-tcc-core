@@ -103,15 +103,15 @@ public class ProjetoTccFacade {
     public ProjetoTccDTO insert(ProjetoTccDTO projetoTccDTO) throws BusinessException {
         var projetoTcc = ModelMapperUtil.map(projetoTccDTO, ProjetoTcc.class);
         projetoTcc = projetoTccService.insert(projetoTcc);
-        projetoTcc.setSituacaoAtual(projetoTccSituacaoService.insert(projetoTcc.getId(), projetoTccDTO.getTipoTcc()));
-        return ModelMapperUtil.map(projetoTccService.update(projetoTcc.getId(), projetoTcc), ProjetoTccDTO.class);
+        var situacao = projetoTccSituacaoService.insert(projetoTcc.getId(), projetoTccDTO.getTipoTcc());
+        return ModelMapperUtil.map(projetoTccService.updateSituacao(projetoTcc.getId(), situacao), ProjetoTccDTO.class);
     }
 
     public ProjetoTccDTO update(ProjetoTccDTO projetoTccDTO) throws BusinessException {
         var projetoTcc = projetoTccService.getById(projetoTccDTO.getId());
         projetoTcc.setTema(projetoTcc.getTema());
         projetoTcc = projetoTccService.update(projetoTcc.getId(), projetoTcc);
-        return ModelMapperUtil.map(projetoTccService.update(projetoTcc.getId(), projetoTcc), ProjetoTccDTO.class);
+        return ModelMapperUtil.map(projetoTcc, ProjetoTccDTO.class);
     }
 
     public void cancelar(Long id, String motivo) throws BusinessException {
@@ -159,6 +159,18 @@ public class ProjetoTccFacade {
         if (!errors.isEmpty()) {
             throw new BusinessException(errors);
         }
+    }
+
+    public void avancarParaDefesa(@NonNull Long idProjetoTcc) throws BusinessException {
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        var situacaoAtual = projetoTcc.getSituacaoAtual();
+        if (TipoTcc.DEFESA.equals(situacaoAtual.getTipoTcc())) {
+            throw new BusinessException("Este TCC já se encontra em defesa");
+        }
+        if (!SituacaoTcc.APROVADO.equals(situacaoAtual.getSituacaoTcc())) {
+            throw new BusinessException("Este TCC está " + situacaoAtual.getSituacaoTcc().getDescricao() + ", é necessário que esteja aprovado");
+        }
+        projetoTccSituacaoFacade.toDefesa(idProjetoTcc);
     }
 
 }

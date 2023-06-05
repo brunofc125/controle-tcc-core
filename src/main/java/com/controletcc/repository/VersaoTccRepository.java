@@ -30,4 +30,6 @@ public interface VersaoTccRepository extends JpaRepository<VersaoTcc, Long> {
 
     VersaoTcc getFirstByProjetoTccIdOrderByVersaoDesc(Long idProjetoTcc);
 
+    boolean existsByProjetoTccId(Long idProjetoTcc);
+
 }

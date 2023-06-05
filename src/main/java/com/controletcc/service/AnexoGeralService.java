@@ -29,12 +29,12 @@ public class AnexoGeralService {
         return anexoGeralRepository.getReferenceById(id);
     }
 
-    public ListResponse<AnexoGeralProjection> search(@NonNull Long idProjetoTcc, AnexoGeralGridOptions options) {
+    public ListResponse<AnexoGeralProjection> search(@NonNull Long idProjetoTcc, boolean onlyAvaliacao, AnexoGeralGridOptions options) {
         if (StringUtil.isNullOrBlank(options.getOrderByField())) {
             options.setOrderByField("id");
             options.setOrderByDirection(OrderByDirection.DESC);
         }
-        var page = anexoGeralRepository.search(options.getId(), options.getDescricao(), options.getTipoTcc(), idProjetoTcc, options.getPageable());
+        var page = anexoGeralRepository.search(options.getId(), options.getDescricao(), options.getTipoTcc(), idProjetoTcc, onlyAvaliacao, options.getPageable());
         return new ListResponse<>(page.getContent(), page.getTotalElements());
     }
 
@@ -56,7 +56,7 @@ public class AnexoGeralService {
 
         if (StringUtil.isNullOrBlank(anexoGeral.getDescricao())) {
             errors.add("Descrição do anexo não informada");
-        } else if (anexoGeral.getProjetoTcc() != null && anexoGeralRepository.existsByProjetoTccIdAndDescricaoIgnoreCaseAndDataExclusaoIsNull(anexoGeral.getIdProjetoTcc(), anexoGeral.getDescricao().trim().toLowerCase())) {
+        } else if (anexoGeral.getProjetoTcc() != null && anexoGeralRepository.existsByProjetoTccIdAndDescricaoIgnoreCaseAndDataExclusaoIsNullAndAvaliacao(anexoGeral.getIdProjetoTcc(), anexoGeral.getDescricao().trim().toLowerCase(), anexoGeral.isAvaliacao())) {
             errors.add("Já existe outro anexo com esta descrição");
         }
 

@@ -25,9 +25,9 @@ public class VersaoTccObservacaoController {
     }
 
     @PreAuthorize("hasAuthority('versao-tcc-observacao.read')")
-    @PostMapping("search/{idVersaoTcc}")
-    public ListResponse<VersaoTccObservacaoProjection> search(@PathVariable Long idVersaoTcc, @RequestBody BaseGridOptions options) throws BusinessException {
-        return versaoTccObservacaoFacade.search(idVersaoTcc, options);
+    @PostMapping("search/{idVersaoTcc}/{onlyAvaliacao}")
+    public ListResponse<VersaoTccObservacaoProjection> search(@PathVariable Long idVersaoTcc, @PathVariable boolean onlyAvaliacao, @RequestBody BaseGridOptions options) throws BusinessException {
+        return versaoTccObservacaoFacade.search(idVersaoTcc, onlyAvaliacao, options);
     }
 
     @PreAuthorize("hasAuthority('versao-tcc-observacao.create')")

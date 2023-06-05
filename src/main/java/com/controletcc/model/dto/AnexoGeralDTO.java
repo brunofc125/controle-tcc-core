@@ -19,4 +19,5 @@ public class AnexoGeralDTO extends ArquivoDTO {
     private Long idProfessor;
     private Long idProjetoTcc;
     private LocalDateTime dataExclusao;
+    private boolean avaliacao;
 }

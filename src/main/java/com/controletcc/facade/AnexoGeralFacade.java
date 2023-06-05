@@ -28,8 +28,8 @@ public class AnexoGeralFacade {
         return ModelMapperUtil.map(anexoGeral, AnexoGeralDTO.class);
     }
 
-    public ListResponse<AnexoGeralProjection> search(Long idProjetoTcc, AnexoGeralGridOptions options) {
-        return anexoGeralService.search(idProjetoTcc, options);
+    public ListResponse<AnexoGeralProjection> search(Long idProjetoTcc, boolean onlyAvaliacao, AnexoGeralGridOptions options) {
+        return anexoGeralService.search(idProjetoTcc, onlyAvaliacao, options);
     }
 
     public AnexoGeralDTO insert(AnexoGeralDTO anexoGeralDTO) throws Exception {

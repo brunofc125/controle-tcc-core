@@ -75,4 +75,8 @@ public class VersaoTccService {
         }
     }
 
+    public boolean existsByProjetoTccId(Long idProjetoTcc) {
+        return versaoTccRepository.existsByProjetoTccId(idProjetoTcc);
+    }
+
 }
