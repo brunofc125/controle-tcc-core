@@ -47,7 +47,7 @@ VALUES ('modelo-documento.create', false, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('modelo-documento.read', false, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
-VALUES ('area-tcc.create', false, true, false, false);
+VALUES ('area-tcc.create', true, true, false, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
 VALUES ('area-tcc.read', true, true, true, false);
 INSERT INTO public."role" (id, "admin", supervisor, professor, aluno)
