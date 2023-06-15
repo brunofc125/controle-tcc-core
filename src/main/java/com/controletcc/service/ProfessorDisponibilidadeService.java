@@ -49,7 +49,7 @@ public class ProfessorDisponibilidadeService {
 
         if (professorDisponibilidade.getAno() == null || professorDisponibilidade.getPeriodo() == null) {
             errors.add("Ano/Período não informado");
-        } else if (professorDisponibilidade.getAno() != null && dataAtual.getYear() < professorDisponibilidade.getAno()) {
+        } else if (dataAtual.getYear() < professorDisponibilidade.getAno()) {
             errors.add("Ano/Período não pode ser futuro");
         }
 
@@ -76,6 +76,10 @@ public class ProfessorDisponibilidadeService {
 
     public void delete(Long id) {
         professorDisponibilidadeRepository.deleteById(id);
+    }
+
+    public void deleteAllById(List<Long> ids) {
+        professorDisponibilidadeRepository.deleteAllById(ids);
     }
 
     public List<ProfessorDisponibilidadeAgrupadaProjection> getDisponibilidades(List<Long> idProfessores, Long idProjetoTcc, Long idAgendaApresentacao, LocalDateTime dataInicio, LocalDateTime dataFim) {

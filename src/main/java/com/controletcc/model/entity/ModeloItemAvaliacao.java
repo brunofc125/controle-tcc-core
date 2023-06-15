@@ -42,6 +42,7 @@ public class ModeloItemAvaliacao extends BaseEntity {
     private Set<TipoProfessor> tipoProfessores;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "modeloItemAvaliacao")
+    @OrderBy("id asc")
     private List<ModeloAspectoAvaliacao> modeloAspectosAvaliacao;
 
     @Column(name = "data_exclusao")

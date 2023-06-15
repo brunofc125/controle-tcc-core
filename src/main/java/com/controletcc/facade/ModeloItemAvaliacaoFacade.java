@@ -9,6 +9,7 @@ import com.controletcc.model.entity.ModeloItemAvaliacao;
 import com.controletcc.repository.projection.ModeloItemAvaliacaoProjection;
 import com.controletcc.service.ModeloAspectoAvaliacaoService;
 import com.controletcc.service.ModeloItemAvaliacaoService;
+import com.controletcc.service.ProjetoTccAspectoAvaliacaoService;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,8 @@ public class ModeloItemAvaliacaoFacade {
     private final ModeloItemAvaliacaoService modeloItemAvaliacaoService;
 
     private final ModeloAspectoAvaliacaoService modeloAspectoAvaliacaoService;
+
+    private final ProjetoTccAspectoAvaliacaoService projetoTccAspectoAvaliacaoService;
 
     public ModeloItemAvaliacaoDTO getById(Long id) {
         var modeloItemAvaliacao = modeloItemAvaliacaoService.getById(id);
@@ -46,9 +49,8 @@ public class ModeloItemAvaliacaoFacade {
 
     public ModeloItemAvaliacaoDTO update(ModeloItemAvaliacaoDTO modeloItemAvaliacaoDTO) throws Exception {
         var modeloItemAvaliacao = ModelMapperUtil.map(modeloItemAvaliacaoDTO, ModeloItemAvaliacao.class);
-        var modeloAspectosAvaliacao = modeloItemAvaliacao.getModeloAspectosAvaliacao();
-        modeloItemAvaliacao = modeloItemAvaliacaoService.update(modeloItemAvaliacao.getId(), modeloItemAvaliacao);
-        modeloItemAvaliacao.setModeloAspectosAvaliacao(saveItens(modeloItemAvaliacao, modeloAspectosAvaliacao));
+        modeloItemAvaliacao.setModeloAspectosAvaliacao(saveItens(modeloItemAvaliacao, modeloItemAvaliacao.getModeloAspectosAvaliacao()));
+        projetoTccAspectoAvaliacaoService.updateByModelo(modeloItemAvaliacao.getId(), modeloItemAvaliacao.getModeloAspectosAvaliacao());
         return ModelMapperUtil.map(modeloItemAvaliacao, ModeloItemAvaliacaoDTO.class);
     }
 

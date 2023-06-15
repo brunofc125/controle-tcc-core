@@ -23,6 +23,7 @@ public class ProjetoTccAvaliacaoInfoDTO implements Serializable {
     private List<DescriptionModelDTO> alunos;
     private Double notaFinal;
     private String situacaoAluno;
+    private boolean avaliacaoParametrizada;
 
     public void setUpNotaFinalAndSituacaoAluno(@NonNull ProjetoTccNota projetoTccNota) {
         this.notaFinal = projetoTccNota.getNotaFinal();

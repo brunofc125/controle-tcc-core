@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public interface ProfessorDisponibilidadeAgrupadaProjection {
     LocalDateTime getDataHora();
 
-    String getDescricao();
+    String getIdsProfessores();
 
     Long getQtdProfessores();
 }

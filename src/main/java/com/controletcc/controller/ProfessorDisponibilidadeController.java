@@ -29,9 +29,9 @@ public class ProfessorDisponibilidadeController {
     }
 
     @PreAuthorize("hasAuthority('professor-disponibilidade.delete')")
-    @DeleteMapping("{id}")
-    public void delete(@PathVariable Long id) throws Exception {
-        professorDisponibilidadeFacade.delete(id);
+    @DeleteMapping("{id}/{outrasOcorrencias}")
+    public void delete(@PathVariable Long id, @PathVariable boolean outrasOcorrencias) throws Exception {
+        professorDisponibilidadeFacade.delete(id, outrasOcorrencias);
     }
 
 }

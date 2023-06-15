@@ -49,4 +49,18 @@ public interface ProjetoTccAspectoAvaliacaoRepository extends JpaRepository<Proj
     )
     List<ProjetoTccAspectoAvaliacao> getAllByProjetoTcc(Long idProjetoTcc);
 
+    @Query(value = """
+                SELECT distinct pta.id
+                FROM ProjetoTccAvaliacao pta
+                JOIN pta.projetoTcc pt
+                JOIN pt.situacaoAtual sa
+                WHERE sa.situacaoTcc = 'EM_AVALIACAO'
+                    AND sa.tipoTcc = pta.tipoTcc
+                    AND pta.modeloItemAvaliacao.id = :idModeloItemAvaliacao
+            """
+    )
+    List<Long> getIdsAvaliacaoByModeloItemAvaliacao(Long idModeloItemAvaliacao);
+
+    List<ProjetoTccAspectoAvaliacao> getAllByProjetoTccAvaliacaoIdIn(List<Long> idProjetoTccAvaliacaoList);
+
 }

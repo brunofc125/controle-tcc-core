@@ -106,4 +106,8 @@ public class ProfessorService {
         return professor;
     }
 
+    public List<Professor> getAllByIdList(List<Long> idList) {
+        return professorRepository.getAllByIdIn(idList);
+    }
+
 }

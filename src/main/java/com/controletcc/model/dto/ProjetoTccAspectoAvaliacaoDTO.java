@@ -13,6 +13,7 @@ import lombok.Setter;
 public class ProjetoTccAspectoAvaliacaoDTO extends BaseEntity {
     private Long id;
     private Long idProjetoTccAvaliacao;
+    private Long idModeloAspectoAvaliacao;
     private String descricao;
     private Long peso;
     private Double valor;

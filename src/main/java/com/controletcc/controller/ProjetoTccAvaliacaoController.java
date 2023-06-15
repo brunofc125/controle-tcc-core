@@ -3,6 +3,7 @@ package com.controletcc.controller;
 import com.controletcc.dto.ProjetoTccAvaliacaoInfoDTO;
 import com.controletcc.dto.ProjetoTccAvaliacaoResumeDTO;
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.facade.ProjetoTccAvaliacaoFacade;
 import com.controletcc.model.dto.ProjetoTccAspectoAvaliacaoDTO;
 import com.controletcc.model.dto.ProjetoTccAvaliacaoDTO;
@@ -33,9 +34,9 @@ public class ProjetoTccAvaliacaoController {
     }
 
     @PreAuthorize("hasAuthority('projeto-tcc-avaliacao.read')")
-    @GetMapping("info-avaliacao/{idProjetoTcc}")
-    public ProjetoTccAvaliacaoInfoDTO getInfoByProjetoTcc(@PathVariable Long idProjetoTcc) throws Exception {
-        return projetoTccAvaliacaoFacade.getInfoByProjetoTcc(idProjetoTcc);
+    @GetMapping("info-avaliacao/{idProjetoTcc}/{tccRoute}")
+    public ProjetoTccAvaliacaoInfoDTO getInfoByProjetoTcc(@PathVariable Long idProjetoTcc, @PathVariable TccRoute tccRoute) throws Exception {
+        return projetoTccAvaliacaoFacade.getInfoByProjetoTcc(idProjetoTcc, tccRoute);
     }
 
     @PreAuthorize("hasAuthority('projeto-tcc-avaliacao.read')")

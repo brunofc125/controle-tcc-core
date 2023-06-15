@@ -1,6 +1,7 @@
 package com.controletcc.model.entity;
 
 import com.controletcc.model.entity.base.EventTime;
+import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,10 @@ public class AgendaApresentacaoRestricao extends EventTime {
         } else {
             this.agendaApresentacao = null;
         }
+    }
+
+    public TipoTcc getTipoTcc() {
+        return this.agendaApresentacao != null ? this.agendaApresentacao.getTipoTcc() : null;
     }
 
 }

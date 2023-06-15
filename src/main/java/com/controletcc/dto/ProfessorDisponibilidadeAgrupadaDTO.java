@@ -20,9 +20,9 @@ public class ProfessorDisponibilidadeAgrupadaDTO implements Serializable {
     private Long qtdProfessores;
     private boolean todosProfessoresDisponiveis;
 
-    public ProfessorDisponibilidadeAgrupadaDTO(ProfessorDisponibilidadeAgrupadaProjection projection, boolean todosProfessoresDisponiveis) {
+    public ProfessorDisponibilidadeAgrupadaDTO(ProfessorDisponibilidadeAgrupadaProjection projection, String nomesProfessores, boolean todosProfessoresDisponiveis) {
         this.dataHora = projection.getDataHora();
-        this.descricao = projection.getDescricao();
+        this.descricao = nomesProfessores;
         this.qtdProfessores = projection.getQtdProfessores();
         this.todosProfessoresDisponiveis = todosProfessoresDisponiveis;
     }

@@ -25,15 +25,41 @@ public class ProjetoTccAspectoAvaliacaoService {
     private final ProjetoTccAspectoAvaliacaoRepository projetoTccAspectoAvaliacaoRepository;
 
     public List<ProjetoTccAspectoAvaliacao> generateByList(@NonNull ProjetoTccAvaliacao projetoTccAvaliacao, List<ModeloAspectoAvaliacao> aspectos) {
-        return aspectos != null && !aspectos.isEmpty() ? aspectos.stream().map(a -> generate(projetoTccAvaliacao, a)).toList() : Collections.emptyList();
+        return aspectos != null && !aspectos.isEmpty() ? aspectos.stream().map(a -> generate(projetoTccAvaliacao.getId(), a)).toList() : Collections.emptyList();
     }
 
-    private ProjetoTccAspectoAvaliacao generate(@NonNull ProjetoTccAvaliacao projetoTccAvaliacao, @NonNull ModeloAspectoAvaliacao modeloAspectoAvaliacao) {
+    private ProjetoTccAspectoAvaliacao generate(@NonNull Long idProjetoTccAvaliacao, @NonNull ModeloAspectoAvaliacao modeloAspectoAvaliacao) {
         var projetoTccAspectoAvaliacao = new ProjetoTccAspectoAvaliacao();
-        projetoTccAspectoAvaliacao.setProjetoTccAvaliacao(projetoTccAvaliacao);
+        projetoTccAspectoAvaliacao.setIdProjetoTccAvaliacao(idProjetoTccAvaliacao);
+        projetoTccAspectoAvaliacao.setIdModeloAspectoAvaliacao(modeloAspectoAvaliacao.getId());
         projetoTccAspectoAvaliacao.setDescricao(modeloAspectoAvaliacao.getDescricao());
         projetoTccAspectoAvaliacao.setPeso(modeloAspectoAvaliacao.getPeso());
         return projetoTccAspectoAvaliacaoRepository.save(projetoTccAspectoAvaliacao);
+    }
+
+    public void updateByModelo(Long idModeloItemAvaliacao, List<ModeloAspectoAvaliacao> modeloAspectoList) {
+        var idAvaliacaoList = projetoTccAspectoAvaliacaoRepository.getIdsAvaliacaoByModeloItemAvaliacao(idModeloItemAvaliacao);
+        var aspectoList = projetoTccAspectoAvaliacaoRepository.getAllByProjetoTccAvaliacaoIdIn(idAvaliacaoList);
+        var modeloInsertList = modeloAspectoList.stream().filter(ma -> aspectoList.stream().noneMatch(a -> a.getIdModeloAspectoAvaliacao().equals(ma.getId()))).toList();
+        for (var aspecto : aspectoList) {
+            var modeloAspecto = modeloAspectoList.stream().filter(ma -> ma.getId().equals(aspecto.getIdModeloAspectoAvaliacao())).findFirst().orElse(null);
+            if (modeloAspecto != null) {
+                if (!aspecto.isEqualModelo(modeloAspecto)) {
+                    aspecto.setValor(null);
+                    aspecto.setDescricao(modeloAspecto.getDescricao());
+                    aspecto.setPeso(modeloAspecto.getPeso());
+                    projetoTccAspectoAvaliacaoRepository.save(aspecto);
+                }
+            } else {
+                projetoTccAspectoAvaliacaoRepository.delete(aspecto);
+            }
+        }
+        for (var idAvaliacao : idAvaliacaoList) {
+            for (var modeloInsert : modeloInsertList) {
+                this.generate(idAvaliacao, modeloInsert);
+            }
+        }
+
     }
 
     public List<ProjetoTccAspectoAvaliacao> saveAll(@NonNull Long idProjetoTccAvaliacao, List<ProjetoTccAspectoAvaliacao> aspectos) throws BusinessException {

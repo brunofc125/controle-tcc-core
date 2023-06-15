@@ -4,6 +4,7 @@ import com.controletcc.dto.DescriptionModelDTO;
 import com.controletcc.dto.ProjetoTccAvaliacaoInfoDTO;
 import com.controletcc.dto.ProjetoTccAvaliacaoResumeDTO;
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccAspectoAvaliacaoDTO;
 import com.controletcc.model.dto.ProjetoTccAvaliacaoDTO;
@@ -50,6 +51,8 @@ public class ProjetoTccAvaliacaoFacade {
     private final ProjetoTccNotaService projetoTccNotaService;
 
     private final VersaoTccService versaoTccService;
+
+    private final ProfessorService professorService;
 
     public ProjetoTccAvaliacaoDTO getById(Long id) {
         return ModelMapperUtil.map(projetoTccAvaliacaoService.getById(id), ProjetoTccAvaliacaoDTO.class);
@@ -99,7 +102,7 @@ public class ProjetoTccAvaliacaoFacade {
         }
     }
 
-    public ProjetoTccAvaliacaoInfoDTO getInfoByProjetoTcc(@NonNull Long idProjetoTcc) {
+    public ProjetoTccAvaliacaoInfoDTO getInfoByProjetoTcc(@NonNull Long idProjetoTcc, @NonNull TccRoute tccRoute) throws BusinessException {
         var info = new ProjetoTccAvaliacaoInfoDTO();
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var areaTcc = projetoTcc.getAreaTcc();
@@ -122,6 +125,12 @@ public class ProjetoTccAvaliacaoFacade {
         info.setMembroBancaList(membroBancaDescriptionList);
         info.setAlunos(alunoDescriptionList);
         info.setUpNotaFinalAndSituacaoAluno(projetoTccNota);
+
+        if (TccRoute.isProfessor(tccRoute)) {
+            var professorLogado = professorService.getProfessorLogado();
+            var avaliacao = projetoTccAvaliacaoService.getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(projetoTcc.getTipoTcc(), tccRoute.getTipoProfessor(), projetoTcc.getId(), professorLogado.getId());
+            info.setAvaliacaoParametrizada(avaliacao != null);
+        }
 
         return info;
     }
