@@ -56,4 +56,8 @@ public class ProjetoTccNota extends BaseEntity {
         }
     }
 
+    public boolean isEqualModelo(ModeloAvaliacao modeloAvaliacao) {
+        return this.notaMedia.equals(modeloAvaliacao.getNotaMedia()) && this.notaMaxima.equals(modeloAvaliacao.getNotaMaxima());
+    }
+
 }

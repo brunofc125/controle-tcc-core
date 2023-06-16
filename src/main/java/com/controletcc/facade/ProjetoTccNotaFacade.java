@@ -1,5 +1,6 @@
 package com.controletcc.facade;
 
+import com.controletcc.dto.ProjetoTccNotaResumeDTO;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccNotaDTO;
 import com.controletcc.model.entity.ProjetoTccAspectoAvaliacao;
@@ -42,6 +43,31 @@ public class ProjetoTccNotaFacade {
         if (!projetoTccAspectoAvaliacaoService.isValidoLancamentoNota(idProjetoTcc)) {
             throw new BusinessException("Existem avaliações não finalizadas");
         }
+        Double notaFinal = calculateNotaFinal(idProjetoTcc);
+        var projetoTccNota = projetoTccNotaService.updateNotaFinal(idProjetoTcc, notaFinal);
+        ProjetoTccSituacao situacaoNova = projetoTccNota.getNotaMedia().compareTo(notaFinal) <= 0 ?
+                projetoTccSituacaoService.nextStep(idProjetoTcc, SituacaoTcc.APROVADO, "Nota acima da média")
+                : projetoTccSituacaoService.nextStep(idProjetoTcc, SituacaoTcc.REPROVADO, "Nota abaixo da média");
+        projetoTccService.updateSituacao(idProjetoTcc, situacaoNova);
+        return ModelMapperUtil.map(projetoTccNota, ProjetoTccNotaDTO.class);
+    }
+
+    public ProjetoTccNotaResumeDTO getNotaCalculada(@NonNull Long idProjetoTcc) throws Exception {
+        var nota = ModelMapperUtil.map(projetoTccNotaService.getByProjetoTcc(idProjetoTcc), ProjetoTccNotaResumeDTO.class);
+        if (nota == null) {
+            return null;
+        } else if (nota.getNotaFinal() != null) {
+            nota.setAvaliacaoFinalizada(true);
+            return nota;
+        }
+        nota.setAvaliacaoFinalizada(projetoTccAspectoAvaliacaoService.isValidoLancamentoNota(idProjetoTcc));
+        if (nota.isAvaliacaoFinalizada()) {
+            nota.setNotaFinal(calculateNotaFinal(idProjetoTcc));
+        }
+        return nota;
+    }
+
+    private Double calculateNotaFinal(@NonNull Long idProjetoTcc) {
         var aspectos = projetoTccAspectoAvaliacaoService.getAllByProjetoTcc(idProjetoTcc);
         var aspectosMapByAvaliacao = aspectos.stream().collect(Collectors.groupingBy(ProjetoTccAspectoAvaliacao::getIdProjetoTccAvaliacao));
         var notas = new ArrayList<Double>();
@@ -53,12 +79,7 @@ public class ProjetoTccNotaFacade {
             notaFinal += nota;
         }
         notaFinal = DoubleUtil.roundingHalfUp(2, notaFinal / notas.size());
-        var projetoTccNota = projetoTccNotaService.updateNotaFinal(idProjetoTcc, notaFinal);
-        ProjetoTccSituacao situacaoNova = projetoTccNota.getNotaMedia().compareTo(notaFinal) <= 0 ?
-                projetoTccSituacaoService.nextStep(idProjetoTcc, SituacaoTcc.APROVADO, "Nota acima da média")
-                : projetoTccSituacaoService.nextStep(idProjetoTcc, SituacaoTcc.REPROVADO, "Nota abaixo da média");
-        projetoTccService.updateSituacao(idProjetoTcc, situacaoNova);
-        return ModelMapperUtil.map(projetoTccNota, ProjetoTccNotaDTO.class);
+        return notaFinal;
     }
-
+    
 }

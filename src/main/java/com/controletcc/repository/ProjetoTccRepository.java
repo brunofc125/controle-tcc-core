@@ -230,5 +230,17 @@ public interface ProjetoTccRepository extends JpaRepository<ProjetoTcc, Long> {
             """
     )
     boolean existsApresentacaoAgendada(Long idProjetoTcc);
+    
+    @Query(value = """  
+            SELECT count(distinct pt.id) > 0
+            FROM ProjetoTcc pt
+            JOIN pt.situacaoAtual sa
+            JOIN pt.areaTcc at
+            JOIN ModeloAvaliacao ma on ma.areaTcc.id = at.id
+                WHERE ma.id = :idModeloAvaliacao
+                AND sa.situacaoTcc = 'EM_AVALIACAO'
+            """
+    )
+    boolean existsEmAvaliacaoByModeloAvaliacao(Long idModeloAvaliacao);
 
 }

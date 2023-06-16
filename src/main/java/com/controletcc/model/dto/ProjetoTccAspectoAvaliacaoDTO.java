@@ -1,6 +1,6 @@
 package com.controletcc.model.dto;
 
-import com.controletcc.model.entity.base.BaseEntity;
+import com.controletcc.model.dto.base.BaseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProjetoTccAspectoAvaliacaoDTO extends BaseEntity {
+public class ProjetoTccAspectoAvaliacaoDTO extends BaseDTO {
     private Long id;
     private Long idProjetoTccAvaliacao;
     private Long idModeloAspectoAvaliacao;

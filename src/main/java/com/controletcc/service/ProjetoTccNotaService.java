@@ -29,6 +29,19 @@ public class ProjetoTccNotaService {
         return projetoTccNotaRepository.save(projetoTccNota);
     }
 
+    public void updateByModelo(ModeloAvaliacao modeloAvaliacao) {
+        var notas = projetoTccNotaRepository.getAllEmAvaliacaoByAreaTcc(modeloAvaliacao.getIdAreaTcc());
+        if (!notas.isEmpty()) {
+            for (var nota : notas) {
+                if (!nota.isEqualModelo(modeloAvaliacao)) {
+                    nota.setNotaMedia(modeloAvaliacao.getNotaMedia());
+                    nota.setNotaMaxima(modeloAvaliacao.getNotaMaxima());
+                    projetoTccNotaRepository.save(nota);
+                }
+            }
+        }
+    }
+
     public ProjetoTccNota getByProjetoTcc(Long idProjetoTcc) {
         return projetoTccNotaRepository.getProjetoTccNotaByProjetoTccId(idProjetoTcc);
     }

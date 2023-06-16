@@ -1,5 +1,6 @@
 package com.controletcc.controller;
 
+import com.controletcc.dto.ProjetoTccNotaResumeDTO;
 import com.controletcc.facade.ProjetoTccNotaFacade;
 import com.controletcc.model.dto.ProjetoTccNotaDTO;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,12 @@ public class ProjetoTccNotaController {
     @PatchMapping("lancar-nota/{idProjetoTcc}")
     public ProjetoTccNotaDTO lancarNota(@PathVariable Long idProjetoTcc) throws Exception {
         return projetoTccNotaFacade.lancarNota(idProjetoTcc);
+    }
+
+    @PreAuthorize("hasAuthority('projeto-tcc-nota.read')")
+    @GetMapping("nota-calculada/{idProjetoTcc}")
+    public ProjetoTccNotaResumeDTO getNotaCalculada(@PathVariable Long idProjetoTcc) throws Exception {
+        return projetoTccNotaFacade.getNotaCalculada(idProjetoTcc);
     }
 
 }

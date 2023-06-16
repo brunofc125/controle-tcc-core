@@ -39,27 +39,41 @@ public class ProjetoTccAspectoAvaliacaoService {
 
     public void updateByModelo(Long idModeloItemAvaliacao, List<ModeloAspectoAvaliacao> modeloAspectoList) {
         var idAvaliacaoList = projetoTccAspectoAvaliacaoRepository.getIdsAvaliacaoByModeloItemAvaliacao(idModeloItemAvaliacao);
-        var aspectoList = projetoTccAspectoAvaliacaoRepository.getAllByProjetoTccAvaliacaoIdIn(idAvaliacaoList);
-        var modeloInsertList = modeloAspectoList.stream().filter(ma -> aspectoList.stream().noneMatch(a -> a.getIdModeloAspectoAvaliacao().equals(ma.getId()))).toList();
-        for (var aspecto : aspectoList) {
-            var modeloAspecto = modeloAspectoList.stream().filter(ma -> ma.getId().equals(aspecto.getIdModeloAspectoAvaliacao())).findFirst().orElse(null);
-            if (modeloAspecto != null) {
-                if (!aspecto.isEqualModelo(modeloAspecto)) {
-                    aspecto.setValor(null);
-                    aspecto.setDescricao(modeloAspecto.getDescricao());
-                    aspecto.setPeso(modeloAspecto.getPeso());
-                    projetoTccAspectoAvaliacaoRepository.save(aspecto);
+        if (!idAvaliacaoList.isEmpty()) {
+            var aspectoList = projetoTccAspectoAvaliacaoRepository.getAllByProjetoTccAvaliacaoIdIn(idAvaliacaoList);
+            var modeloInsertList = modeloAspectoList.stream().filter(ma -> aspectoList.stream().noneMatch(a -> a.getIdModeloAspectoAvaliacao().equals(ma.getId()))).toList();
+            for (var aspecto : aspectoList) {
+                var modeloAspecto = modeloAspectoList.stream().filter(ma -> ma.getId().equals(aspecto.getIdModeloAspectoAvaliacao())).findFirst().orElse(null);
+                if (modeloAspecto != null) {
+                    if (!aspecto.isEqualModelo(modeloAspecto)) {
+                        aspecto.setValor(null);
+                        aspecto.setDescricao(modeloAspecto.getDescricao());
+                        aspecto.setPeso(modeloAspecto.getPeso());
+                        projetoTccAspectoAvaliacaoRepository.save(aspecto);
+                    }
+                } else {
+                    projetoTccAspectoAvaliacaoRepository.delete(aspecto);
                 }
-            } else {
-                projetoTccAspectoAvaliacaoRepository.delete(aspecto);
+            }
+            if (!modeloInsertList.isEmpty()) {
+                for (var idAvaliacao : idAvaliacaoList) {
+                    for (var modeloInsert : modeloInsertList) {
+                        this.generate(idAvaliacao, modeloInsert);
+                    }
+                }
             }
         }
-        for (var idAvaliacao : idAvaliacaoList) {
-            for (var modeloInsert : modeloInsertList) {
-                this.generate(idAvaliacao, modeloInsert);
-            }
-        }
+    }
 
+    public List<Long> deleteByModelo(Long idModeloItemAvaliacao) {
+        var idAvaliacaoList = projetoTccAspectoAvaliacaoRepository.getIdsAvaliacaoByModeloItemAvaliacao(idModeloItemAvaliacao);
+        if (!idAvaliacaoList.isEmpty()) {
+            var aspectoList = projetoTccAspectoAvaliacaoRepository.getAllByProjetoTccAvaliacaoIdIn(idAvaliacaoList);
+            if (!aspectoList.isEmpty()) {
+                projetoTccAspectoAvaliacaoRepository.deleteAll(aspectoList);
+            }
+        }
+        return idAvaliacaoList;
     }
 
     public List<ProjetoTccAspectoAvaliacao> saveAll(@NonNull Long idProjetoTccAvaliacao, List<ProjetoTccAspectoAvaliacao> aspectos) throws BusinessException {

@@ -140,4 +140,8 @@ public class ProjetoTccService {
         return projetoTccRepository.existsApresentacaoAgendada(idProjetoTcc);
     }
 
+    public boolean existsEmAvaliacaoByModeloAvaliacao(Long idModeloAvaliacao) {
+        return projetoTccRepository.existsEmAvaliacaoByModeloAvaliacao(idModeloAvaliacao);
+    }
+
 }

@@ -8,10 +8,7 @@ import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccAspectoAvaliacaoDTO;
 import com.controletcc.model.dto.ProjetoTccAvaliacaoDTO;
-import com.controletcc.model.entity.ModeloItemAvaliacao;
-import com.controletcc.model.entity.Professor;
-import com.controletcc.model.entity.ProjetoTcc;
-import com.controletcc.model.entity.ProjetoTccAspectoAvaliacao;
+import com.controletcc.model.entity.*;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoProfessor;
 import com.controletcc.service.*;
@@ -97,9 +94,14 @@ public class ProjetoTccAvaliacaoFacade {
     private void generate(List<ModeloItemAvaliacao> itens, ProjetoTcc projetoTcc, TipoProfessor tipoProfessor, Professor professor) {
         var item = itens.stream().filter(i -> i.getTipoProfessores().contains(tipoProfessor)).findFirst().orElse(null);
         if (item != null) {
-            var projetoTccAvaliacao = projetoTccAvaliacaoService.generate(item, projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc, professor);
-            projetoTccAspectoAvaliacaoService.generateByList(projetoTccAvaliacao, item.getModeloAspectosAvaliacao());
+            generateAvaliacao(tipoProfessor, projetoTcc, item, professor);
         }
+    }
+
+    private ProjetoTccAvaliacao generateAvaliacao(TipoProfessor tipoProfessor, ProjetoTcc projetoTcc, ModeloItemAvaliacao modeloItemAvaliacao, Professor professor) {
+        var projetoTccAvaliacao = projetoTccAvaliacaoService.generate(modeloItemAvaliacao, projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc, professor);
+        projetoTccAvaliacao.setProjetoTccAspectosAvaliacao(projetoTccAspectoAvaliacaoService.generateByList(projetoTccAvaliacao, modeloItemAvaliacao.getModeloAspectosAvaliacao()));
+        return projetoTccAvaliacao;
     }
 
     public ProjetoTccAvaliacaoInfoDTO getInfoByProjetoTcc(@NonNull Long idProjetoTcc, @NonNull TccRoute tccRoute) throws BusinessException {
@@ -129,15 +131,29 @@ public class ProjetoTccAvaliacaoFacade {
         if (TccRoute.isProfessor(tccRoute)) {
             var professorLogado = professorService.getProfessorLogado();
             var avaliacao = projetoTccAvaliacaoService.getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(projetoTcc.getTipoTcc(), tccRoute.getTipoProfessor(), projetoTcc.getId(), professorLogado.getId());
-            info.setAvaliacaoParametrizada(avaliacao != null);
+            if (avaliacao == null) {
+                var modeloItemAvaliacao = modeloItemAvaliacaoService.getByAreaTccAndTipoTccAndTipoProfessor(projetoTcc.getIdAreaTcc(), projetoTcc.getTipoTcc(), tccRoute.getTipoProfessor());
+                info.setAvaliacaoParametrizada(modeloItemAvaliacao != null);
+            } else {
+                info.setAvaliacaoParametrizada(true);
+            }
         }
 
         return info;
     }
 
-    public ProjetoTccAvaliacaoDTO getByProjetoTccAndTipoProfessorAndProfessor(Long idProjetoTcc, TipoProfessor tipoProfessor, Long idProfessor) {
+    public ProjetoTccAvaliacaoDTO getByProjetoTccAndTipoProfessorAndProfessor(Long idProjetoTcc, TipoProfessor tipoProfessor, Long idProfessor) throws BusinessException {
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
-        return ModelMapperUtil.map(projetoTccAvaliacaoService.getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc.getId(), idProfessor), ProjetoTccAvaliacaoDTO.class);
+        var avaliacao = projetoTccAvaliacaoService.getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc.getId(), idProfessor);
+        if (avaliacao != null) {
+            return ModelMapperUtil.map(avaliacao, ProjetoTccAvaliacaoDTO.class);
+        }
+        var modeloItemAvaliacao = modeloItemAvaliacaoService.getByAreaTccAndTipoTccAndTipoProfessor(projetoTcc.getIdAreaTcc(), projetoTcc.getTipoTcc(), tipoProfessor);
+        if (modeloItemAvaliacao == null) {
+            throw new BusinessException("Avaliação não parametrizada para " + tipoProfessor.getDescricao());
+        }
+        var professor = professorService.getById(idProfessor);
+        return ModelMapperUtil.map(generateAvaliacao(tipoProfessor, projetoTcc, modeloItemAvaliacao, professor), ProjetoTccAvaliacaoDTO.class);
     }
 
     public ProjetoTccAvaliacaoDTO saveAspectosValor(Long idProjetoTccAvaliacao, List<ProjetoTccAspectoAvaliacaoDTO> aspectos) throws Exception {

@@ -120,4 +120,9 @@ public class ModeloItemAvaliacaoService {
         return modeloItemAvaliacaoRepository.getItensByAreaTccAndTipoTcc(idAreaTcc, tipoTcc);
     }
 
+    public ModeloItemAvaliacao getByAreaTccAndTipoTccAndTipoProfessor(Long idAreaTcc, TipoTcc tipoTcc, TipoProfessor tipoProfessor) {
+        var itens = modeloItemAvaliacaoRepository.getByAreaTccAndTipoTccAndTipoProfessor(idAreaTcc, tipoTcc, tipoProfessor);
+        return itens.isEmpty() ? null : itens.get(0);
+    }
+
 }

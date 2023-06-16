@@ -10,6 +10,7 @@ import com.controletcc.repository.projection.ModeloItemAvaliacaoProjection;
 import com.controletcc.service.ModeloAspectoAvaliacaoService;
 import com.controletcc.service.ModeloItemAvaliacaoService;
 import com.controletcc.service.ProjetoTccAspectoAvaliacaoService;
+import com.controletcc.service.ProjetoTccAvaliacaoService;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,8 @@ public class ModeloItemAvaliacaoFacade {
     private final ModeloAspectoAvaliacaoService modeloAspectoAvaliacaoService;
 
     private final ProjetoTccAspectoAvaliacaoService projetoTccAspectoAvaliacaoService;
+
+    private final ProjetoTccAvaliacaoService projetoTccAvaliacaoService;
 
     public ModeloItemAvaliacaoDTO getById(Long id) {
         var modeloItemAvaliacao = modeloItemAvaliacaoService.getById(id);
@@ -56,6 +59,8 @@ public class ModeloItemAvaliacaoFacade {
 
     public void deleteLogic(Long id) throws Exception {
         modeloItemAvaliacaoService.deleteLogic(id);
+        var idAvaliacaoList = projetoTccAspectoAvaliacaoService.deleteByModelo(id);
+        projetoTccAvaliacaoService.deleteByIds(idAvaliacaoList);
     }
 
     private List<ModeloAspectoAvaliacao> saveItens(ModeloItemAvaliacao modeloItemAvaliacao, List<ModeloAspectoAvaliacao> modeloAspectosAvaliacao) throws BusinessException {

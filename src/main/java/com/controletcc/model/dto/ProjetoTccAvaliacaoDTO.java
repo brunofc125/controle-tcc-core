@@ -1,6 +1,6 @@
 package com.controletcc.model.dto;
 
-import com.controletcc.model.entity.base.BaseEntity;
+import com.controletcc.model.dto.base.BaseDTO;
 import com.controletcc.model.enums.TipoProfessor;
 import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProjetoTccAvaliacaoDTO extends BaseEntity {
+public class ProjetoTccAvaliacaoDTO extends BaseDTO {
     private Long id;
     private Long idModeloItemAvaliacao;
     private TipoTcc tipoTcc;
