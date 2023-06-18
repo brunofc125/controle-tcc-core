@@ -74,4 +74,10 @@ public class ProjetoTccController {
         projetoTccFacade.avancarParaDefesa(id);
     }
 
+    @PreAuthorize("hasAuthority('projeto-tcc.read')")
+    @PatchMapping("visualizar-doc/{id}")
+    public void visualizarDoc(@PathVariable Long id) {
+        projetoTccFacade.visualizarDoc(id);
+    }
+
 }

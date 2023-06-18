@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -142,6 +143,14 @@ public class ProjetoTccService {
 
     public boolean existsEmAvaliacaoByModeloAvaliacao(Long idModeloAvaliacao) {
         return projetoTccRepository.existsEmAvaliacaoByModeloAvaliacao(idModeloAvaliacao);
+    }
+
+    public void updateVisualizadoPor(Long idProjetoTcc, Long idUser, boolean reset) {
+        var projetoTcc = getById(idProjetoTcc);
+        var docVisualizadoPor = projetoTcc.getDocVisualizadoPor() != null && !reset ? projetoTcc.getDocVisualizadoPor() : new HashSet<Long>();
+        docVisualizadoPor.add(idUser);
+        projetoTcc.setDocVisualizadoPor(docVisualizadoPor);
+        projetoTccRepository.save(projetoTcc);
     }
 
 }

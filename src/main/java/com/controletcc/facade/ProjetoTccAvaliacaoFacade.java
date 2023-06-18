@@ -12,6 +12,7 @@ import com.controletcc.model.entity.*;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoProfessor;
 import com.controletcc.service.*;
+import com.controletcc.util.AuthUtil;
 import com.controletcc.util.DoubleUtil;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.NonNull;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -127,6 +129,8 @@ public class ProjetoTccAvaliacaoFacade {
         info.setMembroBancaList(membroBancaDescriptionList);
         info.setAlunos(alunoDescriptionList);
         info.setUpNotaFinalAndSituacaoAluno(projetoTccNota);
+        var visualizadoPor = projetoTcc.getDocVisualizadoPor() != null ? projetoTcc.getDocVisualizadoPor() : new HashSet<Long>();
+        info.setNovoDocParaAnalise(!visualizadoPor.contains(AuthUtil.getUserIdLogged()));
 
         if (TccRoute.isProfessor(tccRoute)) {
             var professorLogado = professorService.getProfessorLogado();
@@ -137,6 +141,7 @@ public class ProjetoTccAvaliacaoFacade {
             } else {
                 info.setAvaliacaoParametrizada(true);
             }
+            info.setAvaliado(projetoTccAspectoAvaliacaoService.isAvaliacaoFeitaProfessor(idProjetoTcc, professorLogado.getId()));
         }
 
         return info;

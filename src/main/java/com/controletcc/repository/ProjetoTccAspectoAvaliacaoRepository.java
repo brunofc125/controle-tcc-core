@@ -19,10 +19,11 @@ public interface ProjetoTccAspectoAvaliacaoRepository extends JpaRepository<Proj
                 JOIN pta.projetoTcc pt
                 JOIN pt.situacaoAtual sa
                 WHERE pt.id = :idProjetoTcc
+                    AND (:idProfessor is null OR pta.professor.id = :idProfessor)
                     AND sa.tipoTcc = pta.tipoTcc
             """
     )
-    Long countByProjetoTcc(Long idProjetoTcc);
+    Long countByProjetoTcc(Long idProjetoTcc, Long idProfessor);
 
     @Query(value = """
                 SELECT count(distinct ptaa.id)
@@ -31,11 +32,12 @@ public interface ProjetoTccAspectoAvaliacaoRepository extends JpaRepository<Proj
                 JOIN pta.projetoTcc pt
                 JOIN pt.situacaoAtual sa
                 WHERE pt.id = :idProjetoTcc
+                    AND (:idProfessor is null OR pta.professor.id = :idProfessor)
                     AND sa.tipoTcc = pta.tipoTcc
                     AND ptaa.valor is null
             """
     )
-    Long countValorNuloByProjetoTcc(Long idProjetoTcc);
+    Long countValorNuloByProjetoTcc(Long idProjetoTcc, Long idProfessor);
 
     @Query(value = """
                 SELECT distinct ptaa

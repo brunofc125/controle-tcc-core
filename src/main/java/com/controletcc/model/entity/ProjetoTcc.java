@@ -13,6 +13,7 @@ import org.hibernate.annotations.Formula;
 import javax.persistence.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -50,6 +51,11 @@ public class ProjetoTcc extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "projeto_tcc_aluno", joinColumns = @JoinColumn(name = "id_projeto_tcc"), inverseJoinColumns = @JoinColumn(name = "id_aluno"))
     private List<Aluno> alunos;
+
+    @ElementCollection
+    @CollectionTable(name = "projeto_tcc_doc_visualizado_por", joinColumns = @JoinColumn(name = "id_projeto_tcc"))
+    @Column(name = "id_user")
+    private Set<Long> docVisualizadoPor;
 
     @Formula("""
                 (select

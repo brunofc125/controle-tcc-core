@@ -51,6 +51,7 @@ public class VersaoTccFacade {
         var userLogged = getUserLogged();
         setResponsavelPublicacao(versaoTcc, projetoTcc, userLogged);
         versaoTcc = versaoTccService.insert(versaoTcc);
+        projetoTccService.updateVisualizadoPor(projetoTcc.getId(), AuthUtil.getUserIdLogged(), true);
         return ModelMapperUtil.map(versaoTcc, VersaoTccDTO.class);
     }
 

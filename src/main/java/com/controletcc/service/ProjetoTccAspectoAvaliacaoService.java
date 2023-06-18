@@ -124,8 +124,14 @@ public class ProjetoTccAspectoAvaliacaoService {
     }
 
     public boolean isValidoLancamentoNota(Long idProjetoTcc) {
-        var qtdAvaliacao = projetoTccAspectoAvaliacaoRepository.countByProjetoTcc(idProjetoTcc);
-        var qtdAvaliacaoNula = projetoTccAspectoAvaliacaoRepository.countValorNuloByProjetoTcc(idProjetoTcc);
+        var qtdAvaliacao = projetoTccAspectoAvaliacaoRepository.countByProjetoTcc(idProjetoTcc, null);
+        var qtdAvaliacaoNula = projetoTccAspectoAvaliacaoRepository.countValorNuloByProjetoTcc(idProjetoTcc, null);
+        return qtdAvaliacao > 0 && qtdAvaliacaoNula == 0;
+    }
+
+    public boolean isAvaliacaoFeitaProfessor(Long idProjetoTcc, Long idProfessor) {
+        var qtdAvaliacao = projetoTccAspectoAvaliacaoRepository.countByProjetoTcc(idProjetoTcc, idProfessor);
+        var qtdAvaliacaoNula = projetoTccAspectoAvaliacaoRepository.countValorNuloByProjetoTcc(idProjetoTcc, idProfessor);
         return qtdAvaliacao > 0 && qtdAvaliacaoNula == 0;
     }
 
