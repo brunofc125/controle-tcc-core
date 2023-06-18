@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +26,5 @@ public class ProjetoTccDTO extends BaseDTO {
     private Long idProfessorOrientador;
     private Long idProfessorSupervisor;
     private List<AlunoDTO> alunos;
+    private Set<Long> docVisualizadoPor;
 }

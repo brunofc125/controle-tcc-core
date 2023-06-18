@@ -12,6 +12,7 @@ import com.controletcc.model.dto.ProfessorDisponibilidadeDTO;
 import com.controletcc.model.entity.AgendaApresentacao;
 import com.controletcc.model.entity.AgendaApresentacaoRestricao;
 import com.controletcc.model.entity.MembroBanca;
+import com.controletcc.model.entity.Professor;
 import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.repository.projection.AgendaApresentacaoProjection;
 import com.controletcc.service.*;
@@ -23,7 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -98,8 +101,12 @@ public class AgendaApresentacaoFacade {
 
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var membrosBanca = membroBancaService.getByIdProjetoTcc(idProjetoTcc);
-        var idProfessorList = new java.util.ArrayList<>(membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList());
+        var idMembroBancaList = membrosBanca.stream().map(MembroBanca::getIdProfessor).distinct().toList();
+        var idProfessorList = new java.util.ArrayList<>(idMembroBancaList);
         idProfessorList.add(projetoTcc.getIdProfessorOrientador());
+
+        var professores = professorService.getAllByIdList(idProfessorList);
+        var professorNomeMap = professores.stream().collect(Collectors.toMap(Professor::getId, p -> idMembroBancaList.contains(p.getId()) ? "<strong>" + p.getNome() + "</strong>" : p.getNome()));
 
         var qtdProfessor = idProfessorList.size();
         var dataHoraInicial = agendaApresentacao.getDataHoraInicial();
@@ -107,8 +114,14 @@ public class AgendaApresentacaoFacade {
         var disponibilidadeAgrupadaList = professorDisponibilidadeService.getDisponibilidades(idProfessorList, idProjetoTcc, idAgendaApresentacao, dataHoraInicial, dataHoraFinal);
 
         var disponibilidadeAgrupadaMap = disponibilidadeAgrupadaList.stream()
-                .map(d -> new ProfessorDisponibilidadeAgrupadaDTO(d, d.getQtdProfessores() != null && d.getQtdProfessores().intValue() == qtdProfessor))
-                .collect(Collectors.toMap(ProfessorDisponibilidadeAgrupadaDTO::getDataHoraStr, d -> d));
+                .map(d -> {
+                    var idList = Arrays.stream(d.getIdsProfessores().split(",")).map(Long::parseLong).toList();
+                    var nomesProfessores = professorNomeMap.entrySet().stream()
+                            .filter(pn -> idList.contains(pn.getKey())).map(Map.Entry::getValue)
+                            .sorted(String::compareToIgnoreCase)
+                            .collect(Collectors.joining("<br>"));
+                    return new ProfessorDisponibilidadeAgrupadaDTO(d, nomesProfessores, d.getQtdProfessores() != null && d.getQtdProfessores().intValue() == qtdProfessor);
+                }).collect(Collectors.toMap(ProfessorDisponibilidadeAgrupadaDTO::getDataHoraStr, d -> d));
 
         agendaParaApresentacao.setDisponibilidades(disponibilidadeAgrupadaMap);
         return agendaParaApresentacao;

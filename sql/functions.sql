@@ -5,17 +5,17 @@ CREATE OR REPLACE FUNCTION get_disponibilidades(id_professores BIGINT[], id_proj
                                                 data_fim TIMESTAMP, id_agenda BIGINT)
     RETURNS TABLE
             (
-                date_event        TIMESTAMP,
-                nomes_professores TEXT,
-                qtd_professor     BIGINT
+                date_event      TIMESTAMP,
+                ids_professores TEXT,
+                qtd_professor   BIGINT
             )
 AS
 $$
 BEGIN
     RETURN QUERY
         SELECT data_event,
-               string_agg(p.nome, '<br>' order by p.nome) nomes_professores,
-               count(p.id)                                qtd_professor
+               string_agg(p.id::varchar, ',' order by p.nome) ids_professores,
+               count(p.id)                                    qtd_professor
         FROM professor_disponibilidade pd
                  JOIN professor p ON p.id = pd.id_professor
                  JOIN generate_series(pd.data_inicial, pd.data_final, interval '1 hour') AS data_event

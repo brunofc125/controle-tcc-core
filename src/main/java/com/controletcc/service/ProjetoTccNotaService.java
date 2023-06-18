@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(rollbackFor = BusinessException.class)
@@ -29,6 +31,19 @@ public class ProjetoTccNotaService {
         return projetoTccNotaRepository.save(projetoTccNota);
     }
 
+    public void updateByModelo(ModeloAvaliacao modeloAvaliacao) {
+        var notas = projetoTccNotaRepository.getAllEmAvaliacaoByAreaTcc(modeloAvaliacao.getIdAreaTcc());
+        if (!notas.isEmpty()) {
+            for (var nota : notas) {
+                if (!nota.isEqualModelo(modeloAvaliacao)) {
+                    nota.setNotaMedia(modeloAvaliacao.getNotaMedia());
+                    nota.setNotaMaxima(modeloAvaliacao.getNotaMaxima());
+                    projetoTccNotaRepository.save(nota);
+                }
+            }
+        }
+    }
+
     public ProjetoTccNota getByProjetoTcc(Long idProjetoTcc) {
         return projetoTccNotaRepository.getProjetoTccNotaByProjetoTccId(idProjetoTcc);
     }
@@ -36,6 +51,7 @@ public class ProjetoTccNotaService {
     public ProjetoTccNota updateNotaFinal(Long idProjetoTcc, Double notaFinal) {
         var projetoTccNota = getByProjetoTcc(idProjetoTcc);
         projetoTccNota.setNotaFinal(notaFinal);
+        projetoTccNota.setDataLancamento(LocalDateTime.now());
         return projetoTccNotaRepository.save(projetoTccNota);
     }
 

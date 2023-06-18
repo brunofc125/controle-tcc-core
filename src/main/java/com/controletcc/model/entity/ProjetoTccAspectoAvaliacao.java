@@ -23,6 +23,9 @@ public class ProjetoTccAspectoAvaliacao extends BaseEntity {
     @JoinColumn(name = "id_projeto_tcc_avaliacao", nullable = false, updatable = false)
     private ProjetoTccAvaliacao projetoTccAvaliacao;
 
+    @Column(name = "id_modelo_aspecto_avaliacao", nullable = false, updatable = false)
+    private Long idModeloAspectoAvaliacao;
+
     @Column(name = "descricao", nullable = false)
     private String descricao;
 
@@ -45,6 +48,10 @@ public class ProjetoTccAspectoAvaliacao extends BaseEntity {
         } else {
             this.projetoTccAvaliacao = null;
         }
+    }
+
+    public boolean isEqualModelo(ModeloAspectoAvaliacao modeloAspecto) {
+        return this.descricao.equals(modeloAspecto.getDescricao()) && this.peso.equals(modeloAspecto.getPeso());
     }
 
 }

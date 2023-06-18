@@ -173,4 +173,8 @@ public class ProjetoTccFacade {
         projetoTccSituacaoFacade.toDefesa(idProjetoTcc);
     }
 
+    public void visualizarDoc(@NonNull Long idProjetoTcc) {
+        projetoTccService.updateVisualizadoPor(idProjetoTcc, AuthUtil.getUserIdLogged(), false);
+    }
+
 }

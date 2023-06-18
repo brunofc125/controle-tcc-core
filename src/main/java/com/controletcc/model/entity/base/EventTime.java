@@ -62,4 +62,15 @@ public class EventTime extends BaseEntity {
         return events.stream().anyMatch(r -> !r.equals(this) && LocalDateTimeUtil.intersectDate(this.getDataInicial(), this.getDataFinal(), r.getDataInicial(), r.getDataFinal()));
     }
 
+    public boolean sameTime(EventTime otherEvent) {
+        var otherTimeInicial = otherEvent != null && otherEvent.getDataInicial() != null ? otherEvent.getDataInicial().toLocalTime() : null;
+        var otherTimeFinal = otherEvent != null && otherEvent.getDataFinal() != null ? otherEvent.getDataFinal().toLocalTime() : null;
+        if (this.dataInicial != null && this.dataFinal != null && otherTimeInicial != null && otherTimeFinal != null) {
+            var timeInicial = this.dataInicial.toLocalTime();
+            var timeFinal = this.dataFinal.toLocalTime();
+            return timeInicial.equals(otherTimeInicial) && timeFinal.equals(otherTimeFinal);
+        }
+        return false;
+    }
+
 }

@@ -56,4 +56,10 @@ public class ProjetoTccAvaliacaoService {
         return projetoTccAvaliacaoRepository.getAllByProjetoTccIdAndTipoTcc(idProjetoTcc, tipoTcc);
     }
 
+    public void deleteByIds(List<Long> idList) {
+        if (!idList.isEmpty()) {
+            projetoTccAvaliacaoRepository.deleteAllById(idList);
+        }
+    }
+
 }

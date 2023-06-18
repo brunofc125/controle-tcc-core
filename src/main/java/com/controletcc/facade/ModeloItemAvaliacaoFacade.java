@@ -9,6 +9,8 @@ import com.controletcc.model.entity.ModeloItemAvaliacao;
 import com.controletcc.repository.projection.ModeloItemAvaliacaoProjection;
 import com.controletcc.service.ModeloAspectoAvaliacaoService;
 import com.controletcc.service.ModeloItemAvaliacaoService;
+import com.controletcc.service.ProjetoTccAspectoAvaliacaoService;
+import com.controletcc.service.ProjetoTccAvaliacaoService;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,10 @@ public class ModeloItemAvaliacaoFacade {
     private final ModeloItemAvaliacaoService modeloItemAvaliacaoService;
 
     private final ModeloAspectoAvaliacaoService modeloAspectoAvaliacaoService;
+
+    private final ProjetoTccAspectoAvaliacaoService projetoTccAspectoAvaliacaoService;
+
+    private final ProjetoTccAvaliacaoService projetoTccAvaliacaoService;
 
     public ModeloItemAvaliacaoDTO getById(Long id) {
         var modeloItemAvaliacao = modeloItemAvaliacaoService.getById(id);
@@ -46,14 +52,15 @@ public class ModeloItemAvaliacaoFacade {
 
     public ModeloItemAvaliacaoDTO update(ModeloItemAvaliacaoDTO modeloItemAvaliacaoDTO) throws Exception {
         var modeloItemAvaliacao = ModelMapperUtil.map(modeloItemAvaliacaoDTO, ModeloItemAvaliacao.class);
-        var modeloAspectosAvaliacao = modeloItemAvaliacao.getModeloAspectosAvaliacao();
-        modeloItemAvaliacao = modeloItemAvaliacaoService.update(modeloItemAvaliacao.getId(), modeloItemAvaliacao);
-        modeloItemAvaliacao.setModeloAspectosAvaliacao(saveItens(modeloItemAvaliacao, modeloAspectosAvaliacao));
+        modeloItemAvaliacao.setModeloAspectosAvaliacao(saveItens(modeloItemAvaliacao, modeloItemAvaliacao.getModeloAspectosAvaliacao()));
+        projetoTccAspectoAvaliacaoService.updateByModelo(modeloItemAvaliacao.getId(), modeloItemAvaliacao.getModeloAspectosAvaliacao());
         return ModelMapperUtil.map(modeloItemAvaliacao, ModeloItemAvaliacaoDTO.class);
     }
 
     public void deleteLogic(Long id) throws Exception {
         modeloItemAvaliacaoService.deleteLogic(id);
+        var idAvaliacaoList = projetoTccAspectoAvaliacaoService.deleteByModelo(id);
+        projetoTccAvaliacaoService.deleteByIds(idAvaliacaoList);
     }
 
     private List<ModeloAspectoAvaliacao> saveItens(ModeloItemAvaliacao modeloItemAvaliacao, List<ModeloAspectoAvaliacao> modeloAspectosAvaliacao) throws BusinessException {

@@ -4,6 +4,7 @@ import com.controletcc.dto.base.ListResponse;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.MembroBancaDTO;
 import com.controletcc.model.entity.MembroBanca;
+import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.repository.projection.MembroBancaProjection;
 import com.controletcc.service.*;
 import com.controletcc.util.ModelMapperUtil;
@@ -29,6 +30,10 @@ public class MembroBancaFacade {
     private final EmailService emailService;
 
     private final ProfessorDisponibilidadeService professorDisponibilidadeService;
+
+    private final ApresentacaoService apresentacaoService;
+
+    private final ProjetoTccSituacaoFacade projetoTccSituacaoFacade;
 
     public MembroBancaDTO getById(Long id) {
         var membroBanca = membroBancaService.getById(id);
@@ -65,8 +70,10 @@ public class MembroBancaFacade {
 
     public void delete(Long id) throws BusinessException {
         var membroBanca = membroBancaService.getById(id);
+        var idProjetoTcc = membroBanca.getProjetoTcc().getId();
         emailService.sendSolicitacaoMembroBancaRemovida(membroBanca.getProfessor(), membroBanca.getProjetoTcc());
         membroBancaService.delete(id);
+        desagendarApresentacao(idProjetoTcc, "Participação à banca removida");
     }
 
     public void confirmar(Long idProjetoTcc) throws BusinessException {
@@ -84,6 +91,19 @@ public class MembroBancaFacade {
         var professorLogado = professorService.getProfessorLogado();
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         membroBancaService.desconfirmar(idProjetoTcc, projetoTcc.getTipoTcc(), professorLogado);
+        desagendarApresentacao(idProjetoTcc, "Membro da banca desconfirmou participação");
+    }
+
+    private void desagendarApresentacao(Long idProjetoTcc, String motivo) throws BusinessException {
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        var situacaoAtual = projetoTcc.getSituacaoAtual();
+        if (SituacaoTcc.EM_AVALIACAO.equals(situacaoAtual.getSituacaoTcc())) {
+            throw new BusinessException("Não é possível realizar esta ação pois o TCC se encontra em avaliação");
+        }
+        apresentacaoService.deleteIfExistsByProjetoTccIdAndTipoTcc(idProjetoTcc, situacaoAtual.getTipoTcc());
+        if (SituacaoTcc.A_APRESENTAR.equals(situacaoAtual.getSituacaoTcc())) {
+            projetoTccSituacaoFacade.nextStep(idProjetoTcc, SituacaoTcc.EM_ANDAMENTO, motivo);
+        }
     }
 }
 

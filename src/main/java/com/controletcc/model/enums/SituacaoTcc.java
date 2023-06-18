@@ -24,6 +24,9 @@ public enum SituacaoTcc {
     private final List<SituacaoTcc> situacoesAnteriores;
 
     public boolean canUpdateTo(SituacaoTcc newSituacao) {
+        if (this.equals(A_APRESENTAR) && EM_ANDAMENTO.equals(newSituacao)) {
+            return true;
+        }
         return newSituacao.situacoesAnteriores.contains(this);
     }
 

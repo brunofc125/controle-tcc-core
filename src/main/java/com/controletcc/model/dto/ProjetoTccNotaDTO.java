@@ -1,6 +1,6 @@
 package com.controletcc.model.dto;
 
-import com.controletcc.model.entity.base.BaseEntity;
+import com.controletcc.model.dto.base.BaseDTO;
 import com.controletcc.model.enums.TipoTcc;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProjetoTccNotaDTO extends BaseEntity {
+public class ProjetoTccNotaDTO extends BaseDTO {
     private Long id;
     private Long idProjetoTcc;
     private TipoTcc tipoTcc;

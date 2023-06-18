@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,6 +29,20 @@ public class ProjetoTccGridOptions extends BaseGridOptions {
 
     public String getSituacaoSolicitacaoBancaName() {
         return situacaoSolicitacaoBanca != null ? situacaoSolicitacaoBanca.name() : null;
+    }
+
+    @Override
+    public Pageable getPageable() {
+        if (this.getPage() == null || this.getPageSize() == null) {
+            return null;
+        }
+
+        if (this.getOrderByDirection() != null && this.getOrderByField() != null && !this.getOrderByField().isBlank()) {
+            return PageRequest.of(this.getPage().intValue(), this.getPageSize().intValue(), this.getOrderByDirection().getDirection(), this.getOrderByField());
+        }
+
+        var sort = Sort.by(Sort.Order.desc("anoPeriodo"), Sort.Order.desc("tipoTcc"), Sort.Order.asc("alunos"));
+        return PageRequest.of(this.getPage().intValue(), this.getPageSize().intValue(), sort);
     }
 
 }

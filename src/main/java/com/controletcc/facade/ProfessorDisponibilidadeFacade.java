@@ -43,7 +43,15 @@ public class ProfessorDisponibilidadeFacade {
         return ModelMapperUtil.mapAll(professorDisponibilidadesSaved, ProfessorDisponibilidadeDTO.class);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, boolean outrasOcorrencias) {
+        if (outrasOcorrencias) {
+            var professorDisponibilidade = professorDisponibilidadeService.getById(id);
+            var disponibilidades = professorDisponibilidadeService.getAllByAnoPeriodoAndProfessor(professorDisponibilidade.getAno(), professorDisponibilidade.getPeriodo(), professorDisponibilidade.getIdProfessor());
+            var disponibilidadesToRemove = disponibilidades.stream().filter(d -> !id.equals(d.getId()) && d.sameTime(professorDisponibilidade)).map(ProfessorDisponibilidade::getId).toList();
+            if (!disponibilidadesToRemove.isEmpty()) {
+                professorDisponibilidadeService.deleteAllById(disponibilidadesToRemove);
+            }
+        }
         professorDisponibilidadeService.delete(id);
     }
 

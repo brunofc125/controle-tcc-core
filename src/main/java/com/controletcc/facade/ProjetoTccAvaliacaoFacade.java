@@ -4,16 +4,15 @@ import com.controletcc.dto.DescriptionModelDTO;
 import com.controletcc.dto.ProjetoTccAvaliacaoInfoDTO;
 import com.controletcc.dto.ProjetoTccAvaliacaoResumeDTO;
 import com.controletcc.dto.base.ListResponse;
+import com.controletcc.dto.enums.TccRoute;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ProjetoTccAspectoAvaliacaoDTO;
 import com.controletcc.model.dto.ProjetoTccAvaliacaoDTO;
-import com.controletcc.model.entity.ModeloItemAvaliacao;
-import com.controletcc.model.entity.Professor;
-import com.controletcc.model.entity.ProjetoTcc;
-import com.controletcc.model.entity.ProjetoTccAspectoAvaliacao;
+import com.controletcc.model.entity.*;
 import com.controletcc.model.enums.SituacaoTcc;
 import com.controletcc.model.enums.TipoProfessor;
 import com.controletcc.service.*;
+import com.controletcc.util.AuthUtil;
 import com.controletcc.util.DoubleUtil;
 import com.controletcc.util.ModelMapperUtil;
 import lombok.NonNull;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,6 +50,8 @@ public class ProjetoTccAvaliacaoFacade {
     private final ProjetoTccNotaService projetoTccNotaService;
 
     private final VersaoTccService versaoTccService;
+
+    private final ProfessorService professorService;
 
     public ProjetoTccAvaliacaoDTO getById(Long id) {
         return ModelMapperUtil.map(projetoTccAvaliacaoService.getById(id), ProjetoTccAvaliacaoDTO.class);
@@ -94,12 +96,17 @@ public class ProjetoTccAvaliacaoFacade {
     private void generate(List<ModeloItemAvaliacao> itens, ProjetoTcc projetoTcc, TipoProfessor tipoProfessor, Professor professor) {
         var item = itens.stream().filter(i -> i.getTipoProfessores().contains(tipoProfessor)).findFirst().orElse(null);
         if (item != null) {
-            var projetoTccAvaliacao = projetoTccAvaliacaoService.generate(item, projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc, professor);
-            projetoTccAspectoAvaliacaoService.generateByList(projetoTccAvaliacao, item.getModeloAspectosAvaliacao());
+            generateAvaliacao(tipoProfessor, projetoTcc, item, professor);
         }
     }
 
-    public ProjetoTccAvaliacaoInfoDTO getInfoByProjetoTcc(@NonNull Long idProjetoTcc) {
+    private ProjetoTccAvaliacao generateAvaliacao(TipoProfessor tipoProfessor, ProjetoTcc projetoTcc, ModeloItemAvaliacao modeloItemAvaliacao, Professor professor) {
+        var projetoTccAvaliacao = projetoTccAvaliacaoService.generate(modeloItemAvaliacao, projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc, professor);
+        projetoTccAvaliacao.setProjetoTccAspectosAvaliacao(projetoTccAspectoAvaliacaoService.generateByList(projetoTccAvaliacao, modeloItemAvaliacao.getModeloAspectosAvaliacao()));
+        return projetoTccAvaliacao;
+    }
+
+    public ProjetoTccAvaliacaoInfoDTO getInfoByProjetoTcc(@NonNull Long idProjetoTcc, @NonNull TccRoute tccRoute) throws BusinessException {
         var info = new ProjetoTccAvaliacaoInfoDTO();
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var areaTcc = projetoTcc.getAreaTcc();
@@ -122,13 +129,36 @@ public class ProjetoTccAvaliacaoFacade {
         info.setMembroBancaList(membroBancaDescriptionList);
         info.setAlunos(alunoDescriptionList);
         info.setUpNotaFinalAndSituacaoAluno(projetoTccNota);
+        var visualizadoPor = projetoTcc.getDocVisualizadoPor() != null ? projetoTcc.getDocVisualizadoPor() : new HashSet<Long>();
+        info.setNovoDocParaAnalise(!visualizadoPor.contains(AuthUtil.getUserIdLogged()));
+
+        if (TccRoute.isProfessor(tccRoute)) {
+            var professorLogado = professorService.getProfessorLogado();
+            var avaliacao = projetoTccAvaliacaoService.getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(projetoTcc.getTipoTcc(), tccRoute.getTipoProfessor(), projetoTcc.getId(), professorLogado.getId());
+            if (avaliacao == null) {
+                var modeloItemAvaliacao = modeloItemAvaliacaoService.getByAreaTccAndTipoTccAndTipoProfessor(projetoTcc.getIdAreaTcc(), projetoTcc.getTipoTcc(), tccRoute.getTipoProfessor());
+                info.setAvaliacaoParametrizada(modeloItemAvaliacao != null);
+            } else {
+                info.setAvaliacaoParametrizada(true);
+            }
+            info.setAvaliado(projetoTccAspectoAvaliacaoService.isAvaliacaoFeitaProfessor(idProjetoTcc, professorLogado.getId()));
+        }
 
         return info;
     }
 
-    public ProjetoTccAvaliacaoDTO getByProjetoTccAndTipoProfessorAndProfessor(Long idProjetoTcc, TipoProfessor tipoProfessor, Long idProfessor) {
+    public ProjetoTccAvaliacaoDTO getByProjetoTccAndTipoProfessorAndProfessor(Long idProjetoTcc, TipoProfessor tipoProfessor, Long idProfessor) throws BusinessException {
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
-        return ModelMapperUtil.map(projetoTccAvaliacaoService.getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc.getId(), idProfessor), ProjetoTccAvaliacaoDTO.class);
+        var avaliacao = projetoTccAvaliacaoService.getByTipoTccAndTipoProfessorAndProjetoTccAndProfessor(projetoTcc.getTipoTcc(), tipoProfessor, projetoTcc.getId(), idProfessor);
+        if (avaliacao != null) {
+            return ModelMapperUtil.map(avaliacao, ProjetoTccAvaliacaoDTO.class);
+        }
+        var modeloItemAvaliacao = modeloItemAvaliacaoService.getByAreaTccAndTipoTccAndTipoProfessor(projetoTcc.getIdAreaTcc(), projetoTcc.getTipoTcc(), tipoProfessor);
+        if (modeloItemAvaliacao == null) {
+            throw new BusinessException("Avaliação não parametrizada para " + tipoProfessor.getDescricao());
+        }
+        var professor = professorService.getById(idProfessor);
+        return ModelMapperUtil.map(generateAvaliacao(tipoProfessor, projetoTcc, modeloItemAvaliacao, professor), ProjetoTccAvaliacaoDTO.class);
     }
 
     public ProjetoTccAvaliacaoDTO saveAspectosValor(Long idProjetoTccAvaliacao, List<ProjetoTccAspectoAvaliacaoDTO> aspectos) throws Exception {
