@@ -72,6 +72,13 @@ public class ProjetoTccService {
         return projetoTccRepository.save(projetoTcc);
     }
 
+    public ProjetoTcc updateSituacaoAndAnoPeriodo(@NonNull Long idProjetoTcc, @NonNull ProjetoTccSituacao situacao, @NonNull String anoPeriodo) {
+        var projetoTcc = getById(idProjetoTcc);
+        projetoTcc.setSituacaoAtual(situacao);
+        projetoTcc.setAnoPeriodo(anoPeriodo);
+        return projetoTccRepository.save(projetoTcc);
+    }
+
     public boolean existsAtivoByIdAluno(@NonNull Long idAluno, Long idProjetoTcc) {
         return projetoTccRepository.existsAtivoByIdAluno(idAluno, idProjetoTcc, Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR, SituacaoTcc.APROVADO), Arrays.asList(SituacaoTcc.EM_ANDAMENTO, SituacaoTcc.A_APRESENTAR));
     }

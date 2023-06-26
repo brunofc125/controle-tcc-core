@@ -162,14 +162,6 @@ public class ProjetoTccFacade {
     }
 
     public void avancarParaDefesa(@NonNull Long idProjetoTcc) throws BusinessException {
-        var projetoTcc = projetoTccService.getById(idProjetoTcc);
-        var situacaoAtual = projetoTcc.getSituacaoAtual();
-        if (TipoTcc.DEFESA.equals(situacaoAtual.getTipoTcc())) {
-            throw new BusinessException("Este TCC já se encontra em defesa");
-        }
-        if (!SituacaoTcc.APROVADO.equals(situacaoAtual.getSituacaoTcc())) {
-            throw new BusinessException("Este TCC está " + situacaoAtual.getSituacaoTcc().getDescricao() + ", é necessário que esteja aprovado");
-        }
         projetoTccSituacaoFacade.toDefesa(idProjetoTcc);
     }
 

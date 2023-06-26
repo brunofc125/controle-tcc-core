@@ -2,6 +2,7 @@ package com.controletcc.facade;
 
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.enums.SituacaoTcc;
+import com.controletcc.model.enums.TipoTcc;
 import com.controletcc.service.ProjetoTccService;
 import com.controletcc.service.ProjetoTccSituacaoService;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +30,24 @@ public class ProjetoTccSituacaoFacade {
     }
 
     public void toDefesa(Long idProjetoTcc) throws BusinessException {
+        var projetoTcc = projetoTccService.getById(idProjetoTcc);
+        var situacaoAtual = projetoTcc.getSituacaoAtual();
+        if (TipoTcc.DEFESA.equals(situacaoAtual.getTipoTcc())) {
+            throw new BusinessException("Este TCC já se encontra em defesa");
+        }
+        if (!SituacaoTcc.APROVADO.equals(situacaoAtual.getSituacaoTcc())) {
+            throw new BusinessException("Este TCC está " + situacaoAtual.getSituacaoTcc().getDescricao() + ", é necessário que esteja aprovado");
+        }
         var situacao = projetoTccSituacaoService.toDefesa(idProjetoTcc);
-        projetoTccService.updateSituacao(idProjetoTcc, situacao);
+        var ano = projetoTcc.getAno();
+        var periodo = projetoTcc.getPeriodo();
+        if (Integer.valueOf(2).equals(periodo)) {
+            ano++;
+            periodo = 1;
+        } else {
+            periodo++;
+        }
+        projetoTccService.updateSituacaoAndAnoPeriodo(idProjetoTcc, situacao, ano + "/" + periodo);
     }
 
 }
