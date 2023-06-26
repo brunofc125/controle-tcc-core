@@ -154,8 +154,8 @@ public class CsvService {
             field.setAccessible(true);
             if (field.isAnnotationPresent(CsvColumn.class)) {
                 var csvColumn = field.getAnnotation(CsvColumn.class);
-                var value = csvRecord.get(csvColumn.name());
                 try {
+                    var value = csvRecord.get(csvColumn.name());
                     switch (csvColumn.type()) {
                         case STRING -> setStringField(field, record, csvColumn, value);
                         case LONG -> setLongField(field, record, csvColumn, value);
@@ -166,6 +166,8 @@ public class CsvService {
                     }
                 } catch (CsvErrorException e) {
                     record.addError(e.getMessage());
+                } catch (Exception e) {
+                    record.addError("Erro ao converter coluna: " + csvColumn.name());
                 }
             }
         }

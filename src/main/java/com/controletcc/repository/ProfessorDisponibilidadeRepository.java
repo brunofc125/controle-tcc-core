@@ -29,7 +29,7 @@ public interface ProfessorDisponibilidadeRepository extends JpaRepository<Profes
     @Query(value = """
             select
                 date_event as dataHora,
-                ids_professores as IdsProfessores,
+                ids_professores as idsProfessores,
                 qtd_professor as qtdProfessores
             from get_disponibilidades(to_bigint_array(:idProfessores), :idProjetoTcc, :dataInicio, :dataFim, :idAgendaApresentacao)
             """,
