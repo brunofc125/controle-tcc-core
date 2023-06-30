@@ -46,7 +46,6 @@ public class ProjetoTccAspectoAvaliacaoService {
                 var modeloAspecto = modeloAspectoList.stream().filter(ma -> ma.getId().equals(aspecto.getIdModeloAspectoAvaliacao())).findFirst().orElse(null);
                 if (modeloAspecto != null) {
                     if (!aspecto.isEqualModelo(modeloAspecto)) {
-                        aspecto.setValor(null);
                         aspecto.setDescricao(modeloAspecto.getDescricao());
                         aspecto.setPeso(modeloAspecto.getPeso());
                         projetoTccAspectoAvaliacaoRepository.save(aspecto);

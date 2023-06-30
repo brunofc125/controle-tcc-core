@@ -118,6 +118,8 @@ public class ProjetoTccAvaliacaoFacade {
                 : new ArrayList<DescriptionModelDTO>();
         var alunoDescriptionList = projetoTcc.getAlunos().stream().map(a -> new DescriptionModelDTO(a.getId(), a.getNome())).toList();
         var projetoTccNota = projetoTccNotaService.getByProjetoTcc(idProjetoTcc);
+        var avaliacoes = projetoTccAvaliacaoService.getAllByProjetoTccAndTipoTcc(idProjetoTcc, projetoTcc.getTipoTcc());
+        var qtdAvaliacoesFaltam = avaliacoes.stream().filter(a -> a.getProjetoTccAspectosAvaliacao().stream().anyMatch(ap -> ap.getValor() == null)).toList().size();
 
         info.setIdProjetoTcc(projetoTcc.getId());
         info.setTema(projetoTcc.getTema());
@@ -131,6 +133,7 @@ public class ProjetoTccAvaliacaoFacade {
         info.setUpNotaFinalAndSituacaoAluno(projetoTccNota);
         var visualizadoPor = projetoTcc.getDocVisualizadoPor() != null ? projetoTcc.getDocVisualizadoPor() : new HashSet<Long>();
         info.setNovoDocParaAnalise(!visualizadoPor.contains(AuthUtil.getUserIdLogged()));
+        info.setQtdAvaliacoesFaltam(qtdAvaliacoesFaltam);
 
         if (TccRoute.isProfessor(tccRoute)) {
             var professorLogado = professorService.getProfessorLogado();

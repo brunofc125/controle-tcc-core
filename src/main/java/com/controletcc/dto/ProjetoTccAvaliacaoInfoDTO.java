@@ -26,12 +26,14 @@ public class ProjetoTccAvaliacaoInfoDTO implements Serializable {
     private boolean avaliacaoParametrizada;
     private boolean avaliado;
     private boolean novoDocParaAnalise;
+    private boolean aprovado;
+    private int qtdAvaliacoesFaltam;
 
     public void setUpNotaFinalAndSituacaoAluno(@NonNull ProjetoTccNota projetoTccNota) {
         this.notaFinal = projetoTccNota.getNotaFinal();
         if (this.notaFinal != null) {
-            var aprovado = this.notaFinal.compareTo(projetoTccNota.getNotaMedia()) >= 0;
-            this.situacaoAluno = (aprovado ? "Aprovado, nota final >= " : "Reprovado, nota final < ") + projetoTccNota.getNotaMedia();
+            this.aprovado = this.notaFinal.compareTo(projetoTccNota.getNotaMedia()) >= 0;
+            this.situacaoAluno = (this.aprovado ? "Aprovado, nota final >= " : "Reprovado, nota final < ") + projetoTccNota.getNotaMedia();
         }
     }
 }
