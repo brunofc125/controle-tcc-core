@@ -1,6 +1,7 @@
 package com.controletcc.facade;
 
 import com.controletcc.dto.AgendaPeriodoDTO;
+import com.controletcc.dto.ProfessorDisponibilidadeAgrupadaDTO;
 import com.controletcc.error.BusinessException;
 import com.controletcc.model.dto.ApresentacaoDTO;
 import com.controletcc.model.entity.Apresentacao;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -33,6 +36,8 @@ public class ApresentacaoFacade {
 
     private final ProfessorService professorService;
 
+    private final AgendaApresentacaoFacade agendaApresentacaoFacade;
+
     public ApresentacaoDTO getByProjetoTcc(@NonNull Long idProjetoTcc) {
         var projetoTcc = projetoTccService.getById(idProjetoTcc);
         var apresentacao = apresentacaoService.getFirstByProjetoTccIdAndTipoTcc(idProjetoTcc, projetoTcc.getTipoTcc());
@@ -41,6 +46,7 @@ public class ApresentacaoFacade {
 
     public ApresentacaoDTO insert(ApresentacaoDTO apresentacaoDTO) throws BusinessException {
         var apresentacao = buildApresentacao(apresentacaoDTO);
+        validateTodosProfessoresDisponiveis(apresentacao);
         apresentacao = apresentacaoService.insert(apresentacao);
         projetoTccSituacaoFacade.nextStep(apresentacao.getIdProjetoTcc(), SituacaoTcc.A_APRESENTAR);
         return ModelMapperUtil.map(apresentacao, ApresentacaoDTO.class);
@@ -48,8 +54,21 @@ public class ApresentacaoFacade {
 
     public ApresentacaoDTO update(ApresentacaoDTO apresentacaoDTO) throws BusinessException {
         var apresentacao = buildApresentacao(apresentacaoDTO);
+        validateTodosProfessoresDisponiveis(apresentacao);
         apresentacao = apresentacaoService.update(apresentacao.getId(), apresentacao);
         return ModelMapperUtil.map(apresentacao, ApresentacaoDTO.class);
+    }
+
+    private void validateTodosProfessoresDisponiveis(@NonNull Apresentacao apresentacao) throws BusinessException {
+        var idAgendaApresentacao = apresentacao.getIdAgendaApresentacao();
+        var idProjetoTcc = apresentacao.getIdProjetoTcc();
+        if (idAgendaApresentacao != null && idProjetoTcc != null && apresentacao.getDataInicial() != null) {
+            var agendaParaApresentacao = agendaApresentacaoFacade.getAgendaParaApresentacao(idAgendaApresentacao, idProjetoTcc);
+            var disponibilidades = agendaParaApresentacao.getDisponibilidades() != null ? agendaParaApresentacao.getDisponibilidades().values() : Collections.<ProfessorDisponibilidadeAgrupadaDTO>emptyList();
+            if (disponibilidades.stream().noneMatch(d -> d.getDataHora() != null && d.getDataHora().equals(apresentacao.getDataInicial()) && d.isTodosProfessoresDisponiveis())) {
+                throw new BusinessException("É necessário que todos os professores estejam disponíveis na apresentação");
+            }
+        }
     }
 
     private Apresentacao buildApresentacao(ApresentacaoDTO apresentacaoDTO) {
